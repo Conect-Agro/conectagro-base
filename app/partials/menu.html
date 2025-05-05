@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu</title>
+  </head>
+  <body>
+    <div class="menu">
+      <div class="tab-container">
+        <input type="radio" name="tab" id="tab1" class="tab tab--1" />
+        <label
+          class="tab_label"
+          for="tab1"
+          onclick="navigateToRolePage('Productor')"
+          >Productor</label
+        >
+
+        <input type="radio" name="tab" id="tab2" class="tab tab--2" />
+        <label
+          class="tab_label"
+          for="tab2"
+          onclick="navigateToRolePage('Client')"
+          >Client</label
+        >
+
+        <input type="radio" name="tab" id="tab3" class="tab tab--3" />
+        <label
+          class="tab_label"
+          for="tab3"
+          onclick="navigateToRolePage('SuperAdmin')"
+          >SuperAdmin</label
+        >
+
+        
+        <!-- <input type="radio" name="tab" id="tab4" class="tab tab--4" />
+        <label
+          class="tab_label"
+          for="tab4"
+          onclick="navigateToRolePage('SuperAdmin')"
+          >SuperAdmin</label
+        > -->
+
+        <div class="indicator"></div>
+      </div>
+    </div>
+
+    <!-- Añadir este enlace en la barra de navegación o donde sea apropiado -->
+    <a href="/views/music-dashboard.html" class="nav-link">
+        <i class="bi bi-music-note"></i> Reproductor de Música
+    </a>
+  </body>
+</html>

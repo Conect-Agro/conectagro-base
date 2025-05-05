@@ -1,0 +1,142 @@
+stages:
+  - build
+  - test
+
+variables:
+  # Database configuration for testing
+  DB_HOST: mysql
+  DB_USER: test_user
+  DB_PASSWORD: test_password
+  DB_NAME: test_db
+  # JWT configuration for testing
+  JWT_SECRET: test_jwt_secret_key
+  JWT_EXPIRATION: "1h"
+  JWT_COOKIE_EXPIRES: 1
+  # Application configuration
+  PORT: 3000
+
+# Cache node_modules between jobs
+cache:
+  paths:
+    - node_modules/
+
+build:
+  stage: build
+  image: node:18
+  script:
+    - npm install
+  artifacts:
+    paths:
+      - node_modules/
+
+test_register:
+  stage: test
+  image: node:18
+  services:
+    - name: mysql:8.0
+      alias: mysql
+  variables:
+    MYSQL_DATABASE: test_db
+    MYSQL_USER: test_user
+    MYSQL_PASSWORD: test_password
+    MYSQL_ROOT_PASSWORD: root_password
+  before_script:
+    # Wait for MySQL to be ready
+    - apt-get update && apt-get install -y netcat
+    - |
+      until nc -z -v -w30 mysql 3306; do
+        echo "Waiting for MySQL to be ready..."
+        sleep 1
+      done
+    # Initialize database schema
+    - npm install mysql2
+    - |
+      node -e "
+        const mysql = require('mysql2');
+        const fs = require('fs');
+        const schema = fs.readFileSync('./conectagro_schema.sql', 'utf8');
+        
+        const connection = mysql.createConnection({
+          host: '${DB_HOST}',
+          user: 'root',
+          password: '${MYSQL_ROOT_PASSWORD}',
+        });
+        
+        connection.connect();
+        connection.query('CREATE DATABASE IF NOT EXISTS ${DB_NAME}', (err) => {
+          if (err) console.error('Error creating database:', err);
+          connection.query('USE ${DB_NAME}', (err) => {
+            if (err) console.error('Error selecting database:', err);
+            
+            // Execute schema commands one by one
+            const queries = schema.split(';').filter(q => q.trim());
+            queries.forEach(query => {
+              if (query.trim()) {
+                connection.query(query, (err) => {
+                  if (err) console.error('Error executing query:', err);
+                });
+              }
+            });
+            
+            // Insert test role data
+            const insertRoleQuery = \"INSERT INTO roles (role_id, role_name, role_description) VALUES ('CLI', 'cliente', 'Cliente regular')\";
+            connection.query(insertRoleQuery, (err) => {
+              if (err) console.error('Error inserting test role:', err);
+              connection.end();
+            });
+          });
+        });
+      "
+  script:
+    # Create test file for register function
+    - |
+      cat > test-register.js << 'EOL'
+      const axios = require('axios');
+      const assert = require('assert');
+      
+      // Start the server in the background
+      const server = require('./app/index.js');
+      
+      async function testRegister() {
+        try {
+          // Generate unique test user
+          const timestamp = Date.now();
+          const testUser = {
+            first_name_person: 'Test',
+            last_name_person: 'User',
+            document_number_person: '12345' + timestamp,
+            user_name: 'testuser_' + timestamp,
+            email_user: 'test' + timestamp + '@example.com',
+            password: 'Test123!'
+          };
+          
+          console.log('Waiting for server to start...');
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          
+          console.log('Testing register endpoint with user:', testUser.user_name);
+          const response = await axios.post('http://localhost:3000/api/register', testUser);
+          
+          console.log('Response:', response.data);
+          
+          // Verify response
+          assert.strictEqual(response.status, 201);
+          assert.strictEqual(response.data.status, 'ok');
+          assert.strictEqual(response.data.redirect, '/');
+          
+          console.log('✅ Register test passed successfully!');
+          process.exit(0);
+        } catch (error) {
+          console.error('❌ Test failed:', error.message);
+          if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+          }
+          process.exit(1);
+        }
+      }
+      
+      // Run the test after giving server time to start
+      setTimeout(testRegister, 1000);
+      EOL
+    - npm install axios
+    - node test-register.js

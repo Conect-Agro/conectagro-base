@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConectAgro - Tienda Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .product-card {
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .product-img-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .product-img {
+            max-height: 180px;
+            object-fit: cover;
+        }
+        .category-pill {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .category-pill:hover, .category-pill.active {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #198754;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-bar {
+            border-radius: 20px;
+            border: 1px solid #198754;
+        }
+        .search-btn {
+            border-radius: 0 20px 20px 0;
+        }
+        .featured-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+        .organic-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background-color: #84b96e;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="/public/img/logo.png" alt="ConectAgro" height="40">
+                ConectAgro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Mis Pedidos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Productores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contacto</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <button class="btn btn-outline-success position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                            <i class="bi bi-cart3"></i>
+                            <span class="cart-count">0</span>
+                        </button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            Mi Cuenta
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#">Mis Direcciones</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout">Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Banner Hero -->
+    <div class="bg-success text-white p-4 mb-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1>Productos Frescos del Campo</h1>
+                    <p class="lead">Directo de nuestros productores locales a tu mesa</p>
+                    <div class="mt-3">
+                        <button class="btn btn-light">Conoce más</button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="https://via.placeholder.com/600x300" alt="Productos frescos" class="img-fluid rounded" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Search and Filter Bar -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="text" class="form-control search-bar" placeholder="Buscar productos...">
+                    <button class="btn btn-success search-btn" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select">
+                    <option selected>Ordenar por...</option>
+                    <option>Precio: De menor a mayor</option>
+                    <option>Precio: De mayor a menor</option>
+                    <option>Más populares</option>
+                    <option>Novedades</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="mb-4 d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill bg-light text-dark border category-pill active">Todos</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Frutas</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Verduras</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Tubérculos</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Granos</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Lácteos</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Procesados</span>
+            <span class="badge rounded-pill bg-light text-dark border category-pill">Orgánicos</span>
+        </div>
+
+        <!-- Featured Products Carousel -->
+        <h3 class="mb-3">Productos Destacados</h3>
+        <div class="row mb-5">
+            <div class="col-12">
+                <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card product-card h-100 position-relative">
+                                        <span class="badge bg-danger featured-badge">Destacado</span>
+                                        <div class="product-img-container">
+                                            <img src="https://via.placeholder.com/300" class="product-img" alt="Aguacate Hass">
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title">Aguacate Hass</h5>
+                                            <p class="card-text text-success fw-bold">$2.50 / unidad</p>
+                                            <p class="card-text small text-muted">Productor: Finca El Paraíso</p>
+                                        </div>
+                                        <div class="card-footer bg-white border-0">
+                                            <button class="btn btn-success w-100 add-to-cart">
+                                                <i class="bi bi-cart-plus"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card product-card h-100 position-relative">
+                                        <span class="badge bg-danger featured-badge">Destacado</span>
+                                        <span class="badge organic-badge">Orgánico</span>
+                                        <div class="product-img-container">
+                                            <img src="https://via.placeholder.com/300" class="product-img" alt="Tomates Orgánicos">
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title">Tomates Orgánicos</h5>
+                                            <p class="card-text text-success fw-bold">$3.20 / kg</p>
+                                            <p class="card-text small text-muted">Productor: Huerta San José</p>
+                                        </div>
+                                        <div class="card-footer bg-white border-0">
+                                            <button class="btn btn-success w-100 add-to-cart">
+                                                <i class="bi bi-cart-plus"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card product-card h-100 position-relative">
+                                        <span class="badge bg-danger featured-badge">Destacado</span>
+                                        <div class="product-img-container">
+                                            <img src="https://via.placeholder.com/300" class="product-img" alt="Miel de Abeja">
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title">Miel de Abeja</h5>
+                                            <p class="card-text text-success fw-bold">$8.50 / 500ml</p>
+                                            <p class="card-text small text-muted">Productor: Apiarios Flor</p>
+                                        </div>
+                                        <div class="card-footer bg-white border-0">
+                                            <button class="btn btn-success w-100 add-to-cart">
+                                                <i class="bi bi-cart-plus"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-success rounded-circle" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-success rounded-circle" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Products -->
+        <h3 class="mb-3">Todos los productos</h3>
+        <div class="row g-4">
+            <!-- Product 1 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Papa Criolla">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Papa Criolla</h5>
+                        <p class="card-text text-success fw-bold">$1.80 / kg</p>
+                        <p class="card-text small text-muted">Productor: Finca El Retorno</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Cebolla Cabezona">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Cebolla Cabezona</h5>
+                        <p class="card-text text-success fw-bold">$1.20 / kg</p>
+                        <p class="card-text small text-muted">Productor: La Huerta</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <span class="badge organic-badge">Orgánico</span>
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Frijoles Orgánicos">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Frijoles Orgánicos</h5>
+                        <p class="card-text text-success fw-bold">$5.20 / kg</p>
+                        <p class="card-text small text-muted">Productor: Cultivos Verdes</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Plátano Maduro">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Plátano Maduro</h5>
+                        <p class="card-text text-success fw-bold">$2.10 / kg</p>
+                        <p class="card-text small text-muted">Productor: Finca Bananera</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 5 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Maíz Fresco">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Maíz Fresco</h5>
+                        <p class="card-text text-success fw-bold">$0.75 / unidad</p>
+                        <p class="card-text small text-muted">Productor: Hacienda Los Maizales</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 6 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Queso Campesino">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Queso Campesino</h5>
+                        <p class="card-text text-success fw-bold">$7.50 / 500g</p>
+                        <p class="card-text small text-muted">Productor: Lácteos La Vaca Feliz</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 7 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <span class="badge organic-badge">Orgánico</span>
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Zanahorias Orgánicas">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Zanahorias Orgánicas</h5>
+                        <p class="card-text text-success fw-bold">$2.40 / kg</p>
+                        <p class="card-text small text-muted">Productor: Huerta Verde</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 8 -->
+            <div class="col-md-3 col-sm-6">
+                <div class="card product-card h-100">
+                    <div class="product-img-container">
+                        <img src="https://via.placeholder.com/300" class="product-img" alt="Panela Artesanal">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Panela Artesanal</h5>
+                        <p class="card-text text-success fw-bold">$3.80 / kg</p>
+                        <p class="card-text small text-muted">Productor: Trapiche Don José</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-success w-100 add-to-cart">
+                            <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-5">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
+        <div class="offcanvas-header bg-success text-white">
+            <h5 class="offcanvas-title" id="cartOffcanvasLabel">Tu Carrito</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="cart-items mb-3">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/50" class="me-2" alt="Aguacate">
+                                <div>
+                                    <h6 class="mb-0">Aguacate Hass</h6>
+                                    <small class="text-muted">$2.50 x 2</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold me-3">$5.00</span>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/50" class="me-2" alt="Tomates">
+                                <div>
+                                    <h6 class="mb-0">Tomates Orgánicos</h6>
+                                    <small class="text-muted">$3.20 x 1</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold me-3">$3.20</span>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-summary bg-light p-3 rounded">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span class="fw-bold">$8.20</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Envío:</span>
+                    <span class="fw-bold">$2.00</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="fw-bold">Total:</span>
+                    <span class="fw-bold text-success">$10.20</span>
+                </div>
+                <button class="btn btn-success w-100">Proceder al Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>ConectAgro</h5>
+                    <p class="small">Conectando productores locales con consumidores responsables.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Sobre Nosotros</a></li>
+                        <li><a href="#" class="text-white-50">Productos</a></li>
+                        <li><a href="#" class="text-white-50">Productores</a></li>
+                        <li><a href="#" class="text-white-50">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Ayuda</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Preguntas Frecuentes</a></li>
+                        <li><a href="#" class="text-white-50">Términos y Condiciones</a></li>
+                        <li><a href="#" class="text-white-50">Políticas de Privacidad</a></li>
+                        <li><a href="#" class="text-white-50">Envíos y Devoluciones</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contáctanos</h5>
+                    <p class="small text-white-50">
+                        <i class="bi bi-envelope me-2"></i> info@conectagro.com<br>
+                        <i class="bi bi-telephone me-2"></i> +57 320 348 7890<br>
+                        <i class="bi bi-geo-alt me-2"></i> Duitama, Colombia
+                    </p>
+                    <div class="mt-3">
+                        <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white me-2"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <div class="text-center">
+                <p class="small text-white-50 mb-0">&copy; 2025 ConectAgro. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple cart functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToCartButtons = document.querySelectorAll('.add-to-cart');
+            const cartCount = document.querySelector('.cart-count');
+            let count = 0;
+
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    count++;
+                    cartCount.textContent = count;
+                    
+                    // Animation effect
+                    button.innerHTML = '<i class="bi bi-check-lg"></i> Agregado';
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-success');
+                    
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar';
+                        button.classList.add('btn-success');
+                        button.classList.remove('btn-outline-success');
+                    }, 1500);
+                });
+            });
+
+            // Category filter
+            const categoryPills = document.querySelectorAll('.category-pill');
+            categoryPills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    // Remove active class from all pills
+                    categoryPills.forEach(p => p.classList.remove('active'));
+                    // Add active class to clicked pill
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
