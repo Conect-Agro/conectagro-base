@@ -15,7 +15,6 @@ variables:
   # Application configuration
   PORT: 3000
 
-# Cache node_modules between jobs
 cache:
   paths:
     - node_modules/
