@@ -32,9 +32,9 @@ default:
     - echo "MySQL está disponible, configurando la base de datos..."
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
-    - if [ -f "./database/conectagro_schema.sql" ]; then
+    - if [ -f "./conectagro_schema.sql" ]; then
         echo "Importando esquema de base de datos...";
-        mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./database/conectagro_schema.sql;
+        mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./conectagro_schema.sql;
       else
         echo "ADVERTENCIA: El archivo de esquema no existe en la ruta esperada";
       fi
