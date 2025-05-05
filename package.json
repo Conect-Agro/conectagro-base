@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"nodemon --exec node app/index.js\" \"nodemon --exec node app/server.js\""
+    "dev": "concurrently \"nodemon --exec node app/index.js\" \"nodemon --exec node app/server.js\"",
+    "test:register": "jest --testPathPattern=tests/auth/register",
+    "test:login": "jest --testPathPattern=tests/auth/login"
   },
   "keywords": [],
   "author": "",

@@ -11,6 +11,7 @@ variables:
   JWT_EXPIRATION: "1h"
   JWT_COOKIE_EXPIRES: 1
   PORT: 3000
+  MYSQL_ROOT_PASSWORD: root_password  # Definición explícita de la contraseña root
 
 cache:
   paths:
@@ -21,26 +22,42 @@ default:
   services:
     - name: mysql:8.0
       alias: mysql
+      variables:
+        MYSQL_ROOT_PASSWORD: root_password  # Configuración de MySQL service
+        MYSQL_DATABASE: test_db  # Crear la base de datos automáticamente
   before_script:
     - apt-get update && apt-get install -y default-mysql-client
-    - until mysqladmin ping -h mysql -u root -proot_password --silent; do sleep 1; done
-    - mysql -h mysql -u root -proot_password < conectagro_schema.sql
+    - echo "Esperando a que MySQL esté disponible..."
+    - until mysqladmin ping -h mysql -u root -p$MYSQL_ROOT_PASSWORD --silent; do sleep 1; done
+    - echo "MySQL está disponible, configurando la base de datos..."
+    - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
+    - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
+    - if [ -f "./database/conectagro_schema.sql" ]; then
+        echo "Importando esquema de base de datos...";
+        mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./database/conectagro_schema.sql;
+      else
+        echo "ADVERTENCIA: El archivo de esquema no existe en la ruta esperada";
+      fi
+    - npm ci  # Instalación limpia de dependencias basada en package-lock.json
 
 build:
   stage: build
   script:
+    - echo "Construyendo la aplicación..."
     - npm install
   artifacts:
     paths:
       - node_modules/
-      - . # asegura que los tests puedan acceder al código
+      - .  # asegura que los tests puedan acceder al código
 
 test_register:
   stage: test
   script:
-    - npm test
+    - echo "Ejecutando pruebas de registro..."
+    - npm run test:register
 
 test_login:
   stage: test
   script:
+    - echo "Ejecutando pruebas de login..."
     - npm run test:login
