@@ -41,7 +41,7 @@ test_register:
     MYSQL_ROOT_PASSWORD: root_password
   before_script:
     # Wait for MySQL to be ready
-    - apt-get update && apt-get install -y netcat
+    - apt-get update && apt-get install -y
     - |
       until nc -z -v -w30 mysql 3306; do
         echo "Waiting for MySQL to be ready..."
