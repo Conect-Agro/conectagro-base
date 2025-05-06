@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="register.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <div class="form-container">
+        <h1>Register</h1>
+        <form id="register-form">
+          <label for="first_name_person" class="sr-only">First_Name</label>
+          <input
+            type="text"
+            name="first_name_person"
+            id="first_name_person"
+            placeholder="Enter your first name"
+            required
+          />
+          <label for="last_name_person" class="sr-only">Last_Name</label>
+          <input
+            type="text"
+            name="last_name_person"
+            id="last_name_person"
+            placeholder="Enter your last name"
+            required
+          />
+          <label for="document_number_person" class="sr-only">Document_Number</label>
+          <input
+            type="text"
+            name="document_number_person"
+            id="document_number_person"
+            placeholder="Enter your document number"
+            required pattern="\d+" title="Only numbers are allowed" title="Solo números" maxlength="10"
+          />
+          <label for="user_name" class="sr-only">Username</label>
+          <input
+            type="text"
+            name="user_name"
+            id="user_name"
+            placeholder="Enter your username"
+          />
+          <label for="email_user" class="sr-only">Email</label>
+          <input
+            type="email"
+            name="email_user"
+            id="email_user"
+            placeholder="Enter your email"
+          />
+          <label for="password" class="sr-only">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter your password"
+          />
+          <div class="container-button">
+            <button type="submit">
+              Sign up
+              <div class="arrow-wrapper">
+                <div class="arrow"></div>
+              </div>
+            </button>
+          </div>
+            <p class="error hidden">Error in sign up. Please try again.</p>
+          <p class="account-text">Already have an account? - <a href="/">Log in</a></p>
+        </form>
+      </div>
+    </main>
+  </body>
+</html> 

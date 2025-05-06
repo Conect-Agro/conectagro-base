@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperAdmin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+    <script src="superAdmin.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <div class="menu">
+        <div class="tab-container">
+          <input type="radio" name="tab" id="tab1" class="tab tab--1" />
+          <label
+            class="tab_label"
+            for="tab1"
+            onclick="navigateToRolePage('Productor')"
+            >Productor</label
+          >
+
+          <input type="radio" name="tab" id="tab2" class="tab tab--2" />
+          <label
+            class="tab_label"
+            for="tab2"
+            onclick="navigateToRolePage('Client')"
+            >Client</label
+          >
+
+          <input type="radio" name="tab" id="tab3" class="tab tab--3" checked />
+          <label class="tab_label" for="tab3">SuperAdmin</label>
+          <div class="indicator"></div>
+        </div>
+      </div>
+      <div class="containerP">
+        <button type="submit" class="logout-button">
+          Log Out
+          <div class="arrow-wrapper">
+            <div class="arrow"></div>
+          </div>
+        </button>
+      </div>
+      <h1 class="super-admin-title">¡Hello Super Admin!</h1>
+
+      <table class="poppins-light">
+        <thead>
+          <tr>
+            <th>ID User</th>
+            <th>User Name</th>
+            <th>Document Number</th>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>User Status</th>
+            <th>Roles</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- The rows will be  inserted here by JavaScript -->
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>

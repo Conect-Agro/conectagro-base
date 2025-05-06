@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="login.js" type="module" defer></script>
+  </head>
+  <body>
+    <main>
+      <div class="form-container">
+        <h1>Login</h1>
+        <form id="login-form">
+          <label for="user" class="sr-only">Username</label>
+          <input
+            type="text"
+            name="user"
+            id="user"
+            placeholder="Enter your username"
+          />
+          <label for="password" class="sr-only">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter your password"
+            autocompletee="current-password"
+          />
+          <div class="container-button">
+            <button type="submit">
+              Log in
+              <div class="arrow-wrapper">
+                <div class="arrow"></div>
+              </div>
+            </button>
+          </div>
+          <p class="error hidden">
+            Invalid username or password. Please try again.
+          </p>
+          <p class="account-text">Don't have an account yet? - <a href="/register">Sign up</a></p>
+          <a href="/recoverPassword" class="recover-link">Forgot your password?</a>
+        </form>
+      </div>
+    </main>
+     
+  </body>
+</html>

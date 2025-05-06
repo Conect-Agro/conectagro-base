@@ -1,0 +1,299 @@
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Pedido - ConectAgro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+        }
+        .status-badge {
+            font-size: 0.9rem;
+        }
+        .order-header {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/client">
+                <!-- <img src="/img/logo.png" alt="ConectAgro" height="40"> -->
+                ConectAgro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/client">Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/orders">Mis Pedidos</a>
+                    </li>
+                </ul>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        Mi Cuenta
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Mis Direcciones</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/client">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="/orders">Mis Pedidos</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Detalles del Pedido</li>
+                </ol>
+            </nav>
+            <a href="/orders" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Mis Pedidos
+            </a>
+        </div>
+
+        <div id="loading" class="text-center my-5">
+            <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando detalles del pedido...</p>
+        </div>
+
+        <div id="order-content" class="d-none">
+            <div class="order-header p-4 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="h3 mb-0">Pedido #<span id="order-id"></span></h1>
+                        <p class="mb-0 text-muted">Fecha: <span id="order-date"></span></p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div id="order-status" class="status-badge badge bg-success px-3 py-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">Productos</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="order-items"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">Dirección de Envío</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="order-address"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">Resumen</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Envío:</span>
+                                <span id="shipping">$2.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Total:</span>
+                                <span class="fw-bold text-success" id="total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="error-message" class="alert alert-danger d-none" role="alert">
+            Error al cargar los detalles del pedido. Por favor intenta nuevamente.
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>ConectAgro</h5>
+                    <p class="small">Conectando productores locales con consumidores responsables.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Sobre Nosotros</a></li>
+                        <li><a href="/client" class="text-white-50">Productos</a></li>
+                        <li><a href="#" class="text-white-50">Productores</a></li>
+                        <li><a href="#" class="text-white-50">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Ayuda</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Preguntas Frecuentes</a></li>
+                        <li><a href="#" class="text-white-50">Términos y Condiciones</a></li>
+                        <li><a href="#" class="text-white-50">Políticas de Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contáctanos</h5>
+                    <p class="small text-white-50">
+                        <i class="bi bi-envelope me-2"></i> info@conectagro.com<br>
+                        <i class="bi bi-telephone me-2"></i> +57 320 348 7890
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <p class="text-center small text-white-50 mb-0">&copy; 2025 ConectAgro. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderId = window.location.pathname.split('/').pop();
+            loadOrderDetails(orderId);
+            
+            function loadOrderDetails(orderId) {
+                fetch(`/api/orders/${orderId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar los detalles del pedido');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayOrderDetails(data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('loading').classList.add('d-none');
+                        document.getElementById('error-message').classList.remove('d-none');
+                    });
+            }
+            
+            function displayOrderDetails(data) {
+                // Mostrar información del pedido
+                document.getElementById('order-id').textContent = data.order.order_id;
+                
+                // Formatear la fecha
+                const orderDate = new Date(data.order.order_date);
+                document.getElementById('order-date').textContent = orderDate.toLocaleDateString() + ' ' + 
+                    orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                // Estado del pedido
+                const statusBadge = document.getElementById('order-status');
+                let badgeClass = 'bg-success';
+                let statusText = 'Completado';
+                
+                switch(data.order.status) {
+                    case 'pending':
+                        badgeClass = 'bg-warning text-dark';
+                        statusText = 'Pendiente';
+                        break;
+                    case 'processing':
+                        badgeClass = 'bg-info';
+                        statusText = 'En proceso';
+                        break;
+                    case 'shipped':
+                        badgeClass = 'bg-primary';
+                        statusText = 'Enviado';
+                        break;
+                    case 'delivered':
+                        badgeClass = 'bg-success';
+                        statusText = 'Entregado';
+                        break;
+                    case 'cancelled':
+                        badgeClass = 'bg-danger';
+                        statusText = 'Cancelado';
+                        break;
+                }
+                
+                statusBadge.className = `status-badge badge ${badgeClass} px-3 py-2`;
+                statusBadge.textContent = statusText;
+                
+                // Mostrar dirección de envío
+                document.getElementById('order-address').innerHTML = `
+                    <p class="mb-1"><strong>${data.address.address}</strong></p>
+                    <p class="mb-1">${data.address.city}, ${data.address.postal_code}</p>
+                    <p class="mb-0">${data.address.country}</p>
+                `;
+                
+                // Mostrar items del pedido
+                const itemsContainer = document.getElementById('order-items');
+                itemsContainer.innerHTML = '';
+                
+                if (data.items.length === 0) {
+                    itemsContainer.innerHTML = '<p class="text-center">No hay productos en este pedido.</p>';
+                } else {
+                    let subtotal = 0;
+                    
+                    data.items.forEach(item => {
+                        subtotal += parseFloat(item.subtotal);
+                        
+                        const itemHtml = `
+                            <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <img src="${item.image_url || 'https://via.placeholder.com/60'}" alt="${item.product_name}" class="product-img me-3">
+                                    <div>
+                                        <h6 class="mb-0">${item.product_name}</h6>
+                                        <p class="text-muted small mb-0">Cantidad: ${item.quantity} × $${item.price}</p>
+                                    </div>
+                                </div>
+                                <span class="fw-bold">$${item.subtotal}</span>
+                            </div>
+                        `;
+                        
+                        itemsContainer.innerHTML += itemHtml;
+                    });
+                    
+                    // Actualizar totales
+                    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                    
+                    const shippingCost = 2.00; // Costo fijo de envío
+                    const total = subtotal + shippingCost;
+                    
+                    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+                }
+                
+                // Ocultar spinner y mostrar contenido
+                document.getElementById('loading').classList.add('d-none');
+                document.getElementById('order-content').classList.remove('d-none');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SelectRole</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <select id="roleSelector">
+      <option value="Productor">Productor</option>
+      <option value="Client">Client</option>
+      <option value="SuperAdmin">SuperAdmin</option>
+    </select>
+    <button onclick="setActiveRole()">Set Active Role</button>
+
+    <script>
+      function setActiveRole() {
+        const selectedRole = document.getElementById("roleSelector").value;
+        document.cookie = `activeRole=${selectedRole}; path=/`;
+        alert(`Active role set to ${selectedRole}`);
+      }
+    </script>
+  </body>
+</html>

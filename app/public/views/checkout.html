@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ConectAgro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .address-card {
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #ddd;
+        }
+        .address-card:hover {
+            border-color: #198754;
+        }
+        .address-card.selected {
+            border-color: #198754;
+            background-color: rgba(25, 135, 84, 0.1);
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .step {
+            text-align: center;
+            width: 33%;
+            position: relative;
+        }
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+        }
+        .step.active .step-number {
+            background-color: #198754;
+        }
+        .step.completed .step-number {
+            background-color: #198754;
+        }
+        .step-title {
+            font-size: 14px;
+            color: #666;
+        }
+        .step.active .step-title {
+            color: #198754;
+            font-weight: bold;
+        }
+        .step-connector {
+            position: absolute;
+            top: 15px;
+            height: 2px;
+            background-color: #ddd;
+            width: 100%;
+            left: 50%;
+            z-index: -1;
+        }
+        .step:last-child .step-connector {
+            display: none;
+        }
+        .step.completed .step-connector {
+            background-color: #198754;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/client">
+                <!-- <img src="/img/logo.png" alt="ConectAgro" height="40"> -->
+                ConectAgro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/client">Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders">Mis Pedidos</a>
+                    </li>
+                </ul>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        Mi Cuenta
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Mis Direcciones</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h1 class="mb-4 text-center">Finalizar Compra</h1>
+        
+        <!-- Indicador de pasos -->
+        <div class="step-indicator mb-5">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-title">Dirección de Envío</div>
+                <div class="step-connector"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">Resumen del Pedido</div>
+                <div class="step-connector"></div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">Confirmación</div>
+            </div>
+        </div>
+
+        <!-- Paso 1: Dirección de envío -->
+        <div id="step-1" class="checkout-step">
+            <h2 class="mb-4">Selecciona una dirección de envío</h2>
+            
+            <div id="addresses-container" class="row g-4 mb-4">
+                <!-- Las direcciones se cargarán dinámicamente aquí -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="new-address-btn" class="btn btn-outline-success mb-4">
+                <i class="bi bi-plus-lg"></i> Añadir nueva dirección
+            </button>
+            
+            <!-- Formulario de nueva dirección -->
+            <div id="new-address-form" class="card mb-4 d-none">
+                <div class="card-body">
+                    <h3 class="card-title">Nueva dirección</h3>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Dirección*</label>
+                        <input type="text" class="form-control" id="address" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="city" class="form-label">Ciudad*</label>
+                            <input type="text" class="form-control" id="city" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="postal_code" class="form-label">Código Postal*</label>
+                            <input type="text" class="form-control" id="postal_code" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="country" class="form-label">País*</label>
+                        <input type="text" class="form-control" id="country" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="default_address">
+                        <label class="form-check-label" for="default_address">Establecer como dirección predeterminada</label>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" id="save-address-btn" class="btn btn-success">Guardar dirección</button>
+                        <button type="button" id="cancel-address-btn" class="btn btn-outline-secondary">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button id="continue-to-step-2" class="btn btn-success btn-lg" disabled>Continuar</button>
+            </div>
+        </div>
+
+        <!-- Paso 2: Resumen del pedido -->
+        <div id="step-2" class="checkout-step d-none">
+            <h2 class="mb-4">Resumen del Pedido</h2>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            Productos
+                        </div>
+                        <div class="card-body">
+                            <div id="order-items">
+                                <!-- Los items se cargarán dinámicamente aquí -->
+                                <div class="text-center">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            Dirección de Envío
+                        </div>
+                        <div class="card-body">
+                            <div id="selected-address">
+                                <!-- La dirección seleccionada se mostrará aquí -->
+                            </div>
+                            <button id="change-address-btn" class="btn btn-sm btn-outline-success mt-2">
+                                Cambiar dirección
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            Resumen
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Envío:</span>
+                                <span id="shipping">$0.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Total:</span>
+                                <span class="fw-bold text-success" id="total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <button id="back-to-step-1" class="btn btn-outline-secondary">Volver</button>
+                <button id="continue-to-step-3" class="btn btn-success">Confirmar pedido</button>
+            </div>
+        </div>
+
+        <!-- Paso 3: Confirmación -->
+        <div id="step-3" class="checkout-step d-none text-center">
+            <div class="py-5">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                <h2 class="mt-4 mb-3">¡Pedido Realizado con Éxito!</h2>
+                <p class="lead mb-4">Tu pedido ha sido procesado correctamente.</p>
+                <p>Hemos enviado un correo electrónico de confirmación con los detalles del pedido.</p>
+                <p>Número de pedido: <strong id="order-id">ABC12345</strong></p>
+                
+                <div class="mt-5">
+                    <a href="/orders" class="btn btn-success me-2">Ver mis pedidos</a>
+                    <a href="/client" class="btn btn-outline-success">Seguir comprando</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>ConectAgro</h5>
+                    <p class="small">Conectando productores locales con consumidores responsables.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Sobre Nosotros</a></li>
+                        <li><a href="/client" class="text-white-50">Productos</a></li>
+                        <li><a href="#" class="text-white-50">Productores</a></li>
+                        <li><a href="#" class="text-white-50">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Ayuda</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Preguntas Frecuentes</a></li>
+                        <li><a href="#" class="text-white-50">Términos y Condiciones</a></li>
+                        <li><a href="#" class="text-white-50">Políticas de Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contáctanos</h5>
+                    <p class="small text-white-50">
+                        <i class="bi bi-envelope me-2"></i> info@conectagro.com<br>
+                        <i class="bi bi-telephone me-2"></i> +57 320 348 7890
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <p class="text-center small text-white-50 mb-0">&copy; 2025 ConectAgro. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedAddressId = null;
+            let cartItems = [];
+            let subtotal = 0;
+            const SHIPPING_COST = 2.00;
+            
+            // Cargar direcciones
+            loadAddresses();
+            
+            // Manejo de eventos para nueva dirección
+            document.getElementById('new-address-btn').addEventListener('click', function() {
+                document.getElementById('new-address-form').classList.remove('d-none');
+                this.classList.add('d-none');
+            });
+            
+            document.getElementById('cancel-address-btn').addEventListener('click', function() {
+                document.getElementById('new-address-form').classList.add('d-none');
+                document.getElementById('new-address-btn').classList.remove('d-none');
+                // Limpiar el formulario
+                document.getElementById('address').value = '';
+                document.getElementById('city').value = '';
+                document.getElementById('postal_code').value = '';
+                document.getElementById('country').value = '';
+                document.getElementById('default_address').checked = false;
+            });
+            
+            document.getElementById('save-address-btn').addEventListener('click', function() {
+                const address = document.getElementById('address').value;
+                const city = document.getElementById('city').value;
+                const postal_code = document.getElementById('postal_code').value;
+                const country = document.getElementById('country').value;
+                const is_default = document.getElementById('default_address').checked;
+                
+                if (!address || !city || !postal_code || !country) {
+                    alert('Por favor completa todos los campos obligatorios');
+                    return;
+                }
+                
+                saveNewAddress(address, city, postal_code, country, is_default);
+            });
+            
+            document.getElementById('continue-to-step-2').addEventListener('click', function() {
+                if (!selectedAddressId) {
+                    alert('Por favor selecciona una dirección de envío');
+                    return;
+                }
+                
+                // Cargar items del carrito
+                loadCartItems();
+                
+                // Mostrar la dirección seleccionada
+                displaySelectedAddress();
+                
+                // Cambiar a paso 2
+                document.getElementById('step-1').classList.add('d-none');
+                document.getElementById('step-2').classList.remove('d-none');
+                
+                // Actualizar indicador de pasos
+                document.querySelector('.step:nth-child(1)').classList.remove('active');
+                document.querySelector('.step:nth-child(1)').classList.add('completed');
+                document.querySelector('.step:nth-child(2)').classList.add('active');
+            });
+            
+            document.getElementById('back-to-step-1').addEventListener('click', function() {
+                document.getElementById('step-2').classList.add('d-none');
+                document.getElementById('step-1').classList.remove('d-none');
+                
+                // Actualizar indicador de pasos
+                document.querySelector('.step:nth-child(1)').classList.add('active');
+                document.querySelector('.step:nth-child(1)').classList.remove('completed');
+                document.querySelector('.step:nth-child(2)').classList.remove('active');
+            });
+            
+            document.getElementById('change-address-btn').addEventListener('click', function() {
+                document.getElementById('step-2').classList.add('d-none');
+                document.getElementById('step-1').classList.remove('d-none');
+                
+                // Actualizar indicador de pasos
+                document.querySelector('.step:nth-child(1)').classList.add('active');
+                document.querySelector('.step:nth-child(1)').classList.remove('completed');
+                document.querySelector('.step:nth-child(2)').classList.remove('active');
+            });
+            
+            document.getElementById('continue-to-step-3').addEventListener('click', function() {
+                // Crear el pedido
+                createOrder(selectedAddressId);
+            });
+            
+            // Funciones auxiliares
+            
+            function loadAddresses() {
+                fetch('/api/addresses')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar direcciones');
+                        }
+                        return response.json();
+                    })
+                    .then(addresses => {
+                        const container = document.getElementById('addresses-container');
+                        container.innerHTML = '';
+                        
+                        if (addresses.length === 0) {
+                            container.innerHTML = `
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No tienes direcciones guardadas. Por favor, añade una nueva dirección.
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            addresses.forEach(address => {
+                                const isDefault = address.is_default === 1;
+                                const cardHtml = `
+                                    <div class="col-md-6">
+                                        <div class="card address-card ${isDefault ? 'selected' : ''}" data-id="${address.id_direction}">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    ${address.address}
+                                                    ${isDefault ? '<span class="badge bg-success ms-2">Predeterminada</span>' : ''}
+                                                </h5>
+                                                <p class="card-text">
+                                                    ${address.city}, ${address.postal_code}<br>
+                                                    ${address.country}
+                                                </p>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="selectedAddress" 
+                                                           id="address${address.id_direction}" ${isDefault ? 'checked' : ''}>
+                                                    <label class="form-check-label" for="address${address.id_direction}">
+                                                        Enviar a esta dirección
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                container.innerHTML += cardHtml;
+                                
+                                if (isDefault) {
+                                    selectedAddressId = address.id_direction;
+                                    document.getElementById('continue-to-step-2').disabled = false;
+                                }
+                            });
+                            
+                            // Añadir event listeners a las tarjetas de dirección
+                            document.querySelectorAll('.address-card').forEach(card => {
+                                card.addEventListener('click', function() {
+                                    const addressId = this.dataset.id;
+                                    selectAddress(addressId);
+                                });
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('addresses-container').innerHTML = `
+                            <div class="col-12">
+                                <div class="alert alert-danger">
+                                    Error al cargar las direcciones. Por favor, intenta de nuevo.
+                                </div>
+                            </div>
+                        `;
+                    });
+            }
+            
+            function selectAddress(addressId) {
+                document.querySelectorAll('.address-card').forEach(card => {
+                    card.classList.remove('selected');
+                    const radio = card.querySelector('input[type="radio"]');
+                    radio.checked = false;
+                });
+                
+                const selectedCard = document.querySelector(`.address-card[data-id="${addressId}"]`);
+                selectedCard.classList.add('selected');
+                const radio = selectedCard.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                selectedAddressId = addressId;
+                document.getElementById('continue-to-step-2').disabled = false;
+            }
+            
+            function saveNewAddress(address, city, postal_code, country, is_default) {
+                fetch('/api/addresses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        address,
+                        city,
+                        postal_code,
+                        country,
+                        is_default
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al guardar dirección');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Ocultar el formulario
+                    document.getElementById('new-address-form').classList.add('d-none');
+                    document.getElementById('new-address-btn').classList.remove('d-none');
+                    
+                    // Limpiar el formulario
+                    document.getElementById('address').value = '';
+                    document.getElementById('city').value = '';
+                    document.getElementById('postal_code').value = '';
+                    document.getElementById('country').value = '';
+                    document.getElementById('default_address').checked = false;
+                    
+                    // Recargar direcciones
+                    loadAddresses();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al guardar la dirección. Por favor, intenta de nuevo.');
+                });
+            }
+            
+            function loadCartItems() {
+                fetch('/api/cart')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar carrito');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        cartItems = data.items;
+                        subtotal = data.total;
+                        
+                        const container = document.getElementById('order-items');
+                        container.innerHTML = '';
+                        
+                        if (cartItems.length === 0) {
+                            container.innerHTML = `
+                                <div class="alert alert-info">
+                                    Tu carrito está vacío.
+                                </div>
+                            `;
+                            document.getElementById('continue-to-step-3').disabled = true;
+                        } else {
+                            cartItems.forEach(item => {
+                                const itemHtml = `
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="${item.image_url || 'https://via.placeholder.com/50'}" class="me-3" alt="${item.product_name}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0">${item.product_name}</h6>
+                                                <small class="text-muted">$${item.price} x ${item.quantity}</small>
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">$${item.subtotal}</span>
+                                    </div>
+                                `;
+                                container.innerHTML += itemHtml;
+                            });
+                        }
+                        
+                        // Actualizar resumen
+                        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+                        document.getElementById('shipping').textContent = `$${SHIPPING_COST.toFixed(2)}`;
+                        const total = subtotal + SHIPPING_COST;
+                        document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const container = document.getElementById('order-items');
+                        container.innerHTML = `
+                            <div class="alert alert-danger">
+                                Error al cargar los items del carrito. Por favor, intenta de nuevo.
+                            </div>
+                        `;
+                    });
+            }
+
+            // Mostrar la dirección seleccionada en el resumen
+            function displaySelectedAddress() {
+                fetch(`/api/addresses`)
+                    .then(response => response.json())
+                    .then(addresses => {
+                        const selectedAddress = addresses.find(addr => addr.id_direction == selectedAddressId);
+                        if (selectedAddress) {
+                            document.getElementById('selected-address').innerHTML = `
+                                <strong>${selectedAddress.address}</strong><br>
+                                ${selectedAddress.city}, ${selectedAddress.postal_code}<br>
+                                ${selectedAddress.country}
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener dirección:', error);
+                        document.getElementById('selected-address').innerHTML = 'Error al cargar la dirección';
+                    });
+            }
+
+            // Crear el pedido
+            function createOrder(addressId) {
+                fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        addressId: addressId
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al procesar el pedido');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Mostrar el ID del pedido en la confirmación
+                    document.getElementById('order-id').textContent = data.orderId;
+                    
+                    // Cambiar a paso 3
+                    document.getElementById('step-2').classList.add('d-none');
+                    document.getElementById('step-3').classList.remove('d-none');
+                    
+                    // Actualizar indicador de pasos
+                    document.querySelector('.step:nth-child(2)').classList.remove('active');
+                    document.querySelector('.step:nth-child(2)').classList.add('completed');
+                    document.querySelector('.step:nth-child(3)').classList.add('active');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar el pedido. Por favor, intenta de nuevo.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
