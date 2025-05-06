@@ -54,6 +54,13 @@ build:
       - node_modules/
       - .
 
+debug_db:
+  stage: test
+  script:
+    - echo "Inspeccionando base de datos..."
+    - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SHOW TABLES;"
+    - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SELECT * FROM users LIMIT 10;"
+
 test_register:
   stage: test
   script:
