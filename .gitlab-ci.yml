@@ -58,10 +58,10 @@ test_register:
   stage: test
   script:
     - echo "Ejecutando pruebas de registro..."
-    - npm run test:register --passWithNoTests
+    - npx jest --testPathPattern=tests/auth/register --passWithNoTests
 
 test_login:
   stage: test
   script:
     - echo "Ejecutando pruebas de login..."
-    - npm run test:login --passWithNoTests
+    - npx jest --testPathPattern=tests/auth/login --passWithNoTests
