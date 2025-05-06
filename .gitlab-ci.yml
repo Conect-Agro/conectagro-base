@@ -40,7 +40,7 @@ default:
       else
         echo "ADVERTENCIA: El archivo de esquema no existe en la ruta esperada"
       fi
-    - npm ci
+    - npm install
 
 build:
   stage: build
