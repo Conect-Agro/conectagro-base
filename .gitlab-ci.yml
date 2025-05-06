@@ -55,14 +55,12 @@ build:
   script:
     - echo "Construyendo la aplicación..."
     - npm install
-    # Aseguramos que Jest esté instalado explícitamente
     - npm install --save-dev jest
   artifacts:
     paths:
       - node_modules/
       - .
 
-# Mirar que hay dentro de la base de datos
 debug_db:
   stage: test
   script:
@@ -75,7 +73,6 @@ test_register:
   script:
     - echo "Ejecutando pruebas de registro..."
     - npx jest test/auth/register.js --passWithNoTests
-
 
 test_login:
   stage: test
@@ -92,7 +89,7 @@ test_cart:
 deploy_production:
   stage: deploy
   only:
-    - main  # o la rama que uses para producción
+    - main
   script:
     - echo "🔐 Configurando clave SSH..."
     - mkdir -p ~/.ssh
@@ -104,5 +101,7 @@ deploy_production:
         cd ~/L3_conectagro/conectagro &&
         git pull origin main &&
         echo "✅ Código actualizado." &&
-        ./deploy.sh
+        ./deploy.sh &&
+        docker-compose down &&
+        docker-compose up -d --build
       '
