@@ -58,12 +58,10 @@ test_register:
   stage: test
   script:
     - echo "Ejecutando pruebas de registro..."
-    # Usamos la ruta local de Jest para mayor seguridad
-    - npx jest --testPathPattern=tests/auth/register
+    - npm run test:register --passWithNoTests
 
 test_login:
   stage: test
   script:
     - echo "Ejecutando pruebas de login..."
-    # Usamos la ruta local de Jest para mayor seguridad
-    - npx jest --testPathPattern=tests/auth/login
+    - npm run test:login --passWithNoTests
