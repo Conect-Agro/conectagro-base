@@ -47,6 +47,8 @@ build:
   script:
     - echo "Construyendo la aplicación..."
     - npm install
+    # Aseguramos que Jest esté instalado explícitamente
+    - npm install --save-dev jest
   artifacts:
     paths:
       - node_modules/
@@ -56,10 +58,12 @@ test_register:
   stage: test
   script:
     - echo "Ejecutando pruebas de registro..."
-    - npm run test:register
+    # Usamos la ruta local de Jest para mayor seguridad
+    - npx jest --testPathPattern=tests/auth/register
 
 test_login:
   stage: test
   script:
     - echo "Ejecutando pruebas de login..."
-    - npm run test:login
+    # Usamos la ruta local de Jest para mayor seguridad
+    - npx jest --testPathPattern=tests/auth/login
