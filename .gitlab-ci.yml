@@ -6,7 +6,7 @@ variables:
   DB_HOST: mysql
   DB_USER: test_user
   DB_PASSWORD: test_password
-  DB_NAME: test_db
+  DB_NAME: conectagro
   JWT_SECRET: test_jwt_secret_key
   JWT_EXPIRATION: "1h"
   JWT_COOKIE_EXPIRES: 1
@@ -59,7 +59,7 @@ debug_db:
   script:
     - echo "Inspeccionando base de datos..."
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SHOW TABLES;"
-    - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SELECT * FROM users LIMIT 10;"
+    - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SELECT * FROM users;"
 
 test_register:
   stage: test
