@@ -63,6 +63,8 @@ build:
 
 debug_db:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Inspeccionando base de datos..."
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SHOW TABLES;"
@@ -105,7 +107,7 @@ deploy_production:
     - echo "🚀 Conectando y desplegando en el servidor..."
     - ssh deploy@144.126.216.250 '
         cd ~/L3_conectagro/conectagro &&
-       git pull https://lunna21:ANAespitia23@github.com/usuario/repositorio.git &&
+       git pull https://lunna21:ANAespitia23@gitlab.com/lunnakarensamir/conectagro.git &&
         echo "✅ Código actualizado." &&
         ./deploy.sh &&
         docker-compose down &&
