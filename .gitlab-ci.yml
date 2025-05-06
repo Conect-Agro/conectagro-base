@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - deploy
 
 variables:
   DB_HOST: mysql
@@ -87,3 +88,21 @@ test_cart:
   script:
     - echo "Ejecutando pruebas del carrito..."
     - npx jest test/cart/add-to-cart.js --passWithNoTests
+
+deploy_production:
+  stage: deploy
+  only:
+    - main  # o la rama que uses para producción
+  script:
+    - echo "🔐 Configurando clave SSH..."
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H 144.126.216.250 >> ~/.ssh/known_hosts
+    - echo "🚀 Conectando y desplegando en el servidor..."
+    - ssh deploy@144.126.216.250 '
+        cd ~/L3_conectagro &&
+        git pull origin main &&
+        echo "✅ Código actualizado." &&
+        ./deploy.sh
+      '
