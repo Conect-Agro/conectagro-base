@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"nodemon --exec node app/index.js\" \"nodemon --exec node app/server.js\"",
-    "test:register": "jest --testPathPattern=tests/auth/register",
-    "test:login": "jest --testPathPattern=tests/auth/login"
+    "test:register": "jest --testPathPattern=test/auth/register",
+    "test:login": "jest --testPathPattern=test/auth/login"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +27,17 @@
     "prom-client": "^15.1.3"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0",
     "nodemon": "^3.1.9"
+  },
+  "jest": {
+    "transform": {},
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "testEnvironment": "node",
+    "transformIgnorePatterns": [],
+    "setupFiles": ["dotenv/config"]
   }
 }
