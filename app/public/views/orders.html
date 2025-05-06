@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - ConectAgro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .status-badge {
+            min-width: 100px;
+            text-align: center;
+        }
+        .order-row {
+            transition: all 0.2s;
+        }
+        .order-row:hover {
+            background-color: rgba(25, 135, 84, 0.05);
+            transform: translateY(-2px);
+        }
+        .empty-orders {
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .empty-orders i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/client">
+                <img src="/public/img/logo.png" alt="ConectAgro" height="40">
+                ConectAgro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/client">Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/orders">Mis Pedidos</a>
+                    </li>
+                </ul>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        Mi Cuenta
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Mis Direcciones</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">Mis Pedidos</h1>
+            <a href="/client" class="btn btn-outline-success">
+                <i class="bi bi-arrow-left"></i> Volver a la tienda
+            </a>
+        </div>
+
+        <!-- Filtros de estado -->
+        <div class="mb-4">
+            <div class="btn-group" role="group" aria-label="Filtrar por estado">
+                <button type="button" class="btn btn-outline-secondary active" data-filter="all">Todos</button>
+                <button type="button" class="btn btn-outline-warning" data-filter="pending">Pendientes</button>
+                <button type="button" class="btn btn-outline-info" data-filter="processing">En proceso</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="shipped">Enviados</button>
+                <button type="button" class="btn btn-outline-success" data-filter="delivered">Entregados</button>
+                <button type="button" class="btn btn-outline-danger" data-filter="cancelled">Cancelados</button>
+            </div>
+        </div>
+
+        <!-- Tabla de pedidos -->
+        <div class="card">
+            <div class="card-body p-0">
+                <div id="loading" class="text-center my-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando tus pedidos...</p>
+                </div>
+
+                <div id="orders-table-container" class="d-none">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Pedido #</th>
+                                    <th>Fecha</th>
+                                    <th>Dirección</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body">
+                                <!-- Las órdenes se cargarán aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mensaje cuando no hay pedidos -->
+                <div id="no-orders" class="empty-orders d-none">
+                    <i class="bi bi-bag-x"></i>
+                    <h3>No tienes pedidos todavía</h3>
+                    <p class="text-muted mb-4">¡Explora nuestra tienda y realiza tu primer compra!</p>
+                    <a href="/client" class="btn btn-success">Ir a la tienda</a>
+                </div>
+
+                <!-- Mensaje de error -->
+                <div id="error-message" class="alert alert-danger m-4 d-none" role="alert">
+                    Error al cargar tus pedidos. Por favor intenta nuevamente.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>ConectAgro</h5>
+                    <p class="small">Conectando productores locales con consumidores responsables.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Sobre Nosotros</a></li>
+                        <li><a href="/client" class="text-white-50">Productos</a></li>
+                        <li><a href="#" class="text-white-50">Productores</a></li>
+                        <li><a href="#" class="text-white-50">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Ayuda</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">Preguntas Frecuentes</a></li>
+                        <li><a href="#" class="text-white-50">Términos y Condiciones</a></li>
+                        <li><a href="#" class="text-white-50">Políticas de Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contáctanos</h5>
+                    <p class="small text-white-50">
+                        <i class="bi bi-envelope me-2"></i> info@conectagro.com<br>
+                        <i class="bi bi-telephone me-2"></i> +57 320 348 7890
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-secondary">
+            <p class="text-center small text-white-50 mb-0">&copy; 2025 ConectAgro. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar pedidos al iniciar la página
+            loadOrders();
+            
+            // Configurar filtros
+            document.querySelectorAll('[data-filter]').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Quitar clase active de todos los botones
+                    document.querySelectorAll('[data-filter]').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Añadir clase active a este botón
+                    this.classList.add('active');
+                    
+                    // Filtrar pedidos
+                    const filter = this.getAttribute('data-filter');
+                    filterOrders(filter);
+                });
+            });
+            
+            // Función para cargar los pedidos
+            function loadOrders() {
+                fetch('/api/orders')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar pedidos');
+                        }
+                        return response.json();
+                    })
+                    .then(orders => {
+                        // Ocultar spinner
+                        document.getElementById('loading').classList.add('d-none');
+                        
+                        if (orders.length === 0) {
+                            // Mostrar mensaje de que no hay pedidos
+                            document.getElementById('no-orders').classList.remove('d-none');
+                        } else {
+                            // Mostrar tabla y cargar datos
+                            document.getElementById('orders-table-container').classList.remove('d-none');
+                            renderOrders(orders);
+                            
+                            // Almacenar los pedidos para filtrarlos después
+                            window.allOrders = orders;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('loading').classList.add('d-none');
+                        document.getElementById('error-message').classList.remove('d-none');
+                    });
+            }
+            
+            // Función para renderizar los pedidos en la tabla
+            function renderOrders(orders) {
+                const tableBody = document.getElementById('orders-table-body');
+                tableBody.innerHTML = '';
+                
+                orders.forEach(order => {
+                    // Formatear la fecha
+                    const orderDate = new Date(order.order_date);
+                    const formattedDate = orderDate.toLocaleDateString() + ' ' + 
+                        orderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    // Determinar la clase y texto del badge según el estado
+                    let badgeClass = 'bg-success';
+                    let statusText = 'Completado';
+                    
+                    switch(order.status) {
+                        case 'pending':
+                            badgeClass = 'bg-warning text-dark';
+                            statusText = 'Pendiente';
+                            break;
+                        case 'processing':
+                            badgeClass = 'bg-info';
+                            statusText = 'En proceso';
+                            break;
+                        case 'shipped':
+                            badgeClass = 'bg-primary';
+                            statusText = 'Enviado';
+                            break;
+                        case 'delivered':
+                            badgeClass = 'bg-success';
+                            statusText = 'Entregado';
+                            break;
+                        case 'cancelled':
+                            badgeClass = 'bg-danger';
+                            statusText = 'Cancelado';
+                            break;
+                    }
+                    
+                    const row = `
+                        <tr class="order-row" data-status="${order.status}">
+                            <td>#${order.order_id}</td>
+                            <td>${formattedDate}</td>
+                            <td>${order.address}, ${order.city}</td>
+                            <td>$${parseFloat(order.total).toFixed(2)}</td>
+                            <td><span class="badge ${badgeClass} status-badge">${statusText}</span></td>
+                            <td>
+                                <a href="/order-details/${order.order_id}" class="btn btn-sm btn-outline-success">
+                                    Ver detalles
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    tableBody.innerHTML += row;
+                });
+            }
+            
+            // Función para filtrar pedidos por estado
+            function filterOrders(status) {
+                if (!window.allOrders) return;
+                
+                let filteredOrders;
+                
+                if (status === 'all') {
+                    filteredOrders = window.allOrders;
+                } else {
+                    filteredOrders = window.allOrders.filter(order => order.status === status);
+                }
+                
+                renderOrders(filteredOrders);
+                
+                // Mostrar mensaje si no hay resultados
+                if (filteredOrders.length === 0) {
+                    const tableBody = document.getElementById('orders-table-body');
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                No tienes pedidos con el estado seleccionado.
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
