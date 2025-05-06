@@ -109,7 +109,6 @@ deploy_production:
         cd ~/L3_conectagro/conectagro &&
        git pull https://lunna21:ANAespitia23@gitlab.com/lunnakarensamir/conectagro.git &&
         echo "✅ Código actualizado." &&
-        ./deploy.sh &&
         docker-compose down &&
         docker-compose up -d --build
       '
