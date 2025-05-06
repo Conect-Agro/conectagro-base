@@ -70,18 +70,24 @@ debug_db:
 
 test_register:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Ejecutando pruebas de registro..."
     - npx jest test/auth/register.js --passWithNoTests
 
 test_login:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Ejecutando pruebas de login..."
     - npx jest test/auth/login.js --passWithNoTests
 
 test_cart:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Ejecutando pruebas del carrito..."
     - npx jest test/cart/add-to-cart.js --passWithNoTests
@@ -99,7 +105,7 @@ deploy_production:
     - echo "🚀 Conectando y desplegando en el servidor..."
     - ssh deploy@144.126.216.250 '
         cd ~/L3_conectagro/conectagro &&
-        git pull origin main &&
+       git pull https://lunna21:ANAespitia23@github.com/usuario/repositorio.git &&
         echo "✅ Código actualizado." &&
         ./deploy.sh &&
         docker-compose down &&
