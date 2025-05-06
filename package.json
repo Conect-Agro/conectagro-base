@@ -28,5 +28,15 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
+  },
+  "jest": {
+    "transform": {},
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "testEnvironment": "node",
+    "extensionsToTreatAsEsm": [".js"],
+    "transformIgnorePatterns": [],
+    "setupFiles": ["dotenv/config"]
   }
 }

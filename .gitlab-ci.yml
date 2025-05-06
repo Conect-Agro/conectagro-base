@@ -61,6 +61,7 @@ build:
       - node_modules/
       - .
 
+# Mirar que hay dentro de la base de datos
 debug_db:
   stage: test
   script:
