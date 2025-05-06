@@ -34,8 +34,13 @@ async function getCartItems(req, res) {
     const cartId = await getOrCreateCart(userId);
     
     const query = `
-      SELECT ci.quantity, p.product_id, p.product_name, p.price, p.image_url,
-             (ci.quantity * p.price) as subtotal
+      SELECT 
+        ci.quantity, 
+        p.product_id, 
+        p.product_name, 
+        CAST(p.price AS DECIMAL(10,2)) as price,
+        p.image_url,
+        CAST((ci.quantity * p.price) AS DECIMAL(10,2)) as subtotal
       FROM cart_items ci
       JOIN products p ON ci.product_id = p.product_id
       WHERE ci.cart_id = ?
@@ -47,13 +52,20 @@ async function getCartItems(req, res) {
         return res.status(500).json({ error: "Error getting cart items" });
       }
       
+      // Asegurarse que los valores numéricos sean tratados como números
+      const items = results.map(item => ({
+        ...item,
+        price: parseFloat(item.price),
+        subtotal: parseFloat(item.subtotal)
+      }));
+      
       // Calcular el total
-      const total = results.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
+      const total = items.reduce((sum, item) => sum + item.subtotal, 0);
       
       res.json({
-        items: results,
+        items: items,
         total: total,
-        itemCount: results.reduce((sum, item) => sum + item.quantity, 0)
+        itemCount: items.reduce((sum, item) => sum + item.quantity, 0)
       });
     });
   } catch (error) {

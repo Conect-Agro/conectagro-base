@@ -42,6 +42,7 @@ async function checkRole(req, res) {
 
 async function reviewCookie(req) {
   try {
+    console.log('Cookie recibida:', req.headers.cookie);
     const cookieJWT = req.headers.cookie
       ?.split("; ")
       .find((cookie) => cookie.startsWith("jwt="))
@@ -93,16 +94,16 @@ async function authMiddleware(req, res, next) {
 
     const decoded = jwt.verify(cookieJWT, process.env.JWT_SECRET);
     
-    // Obtener información adicional del usuario
+    // Buscar por username en lugar de id_user
     connectiondb.query(
       `SELECT u.user_id, u.username, u.email, u.first_name, u.last_name, 
               GROUP_CONCAT(r.role_name) AS roles
        FROM users u
        LEFT JOIN user_roles ur ON u.user_id = ur.user_id
        LEFT JOIN roles r ON ur.role_id = r.role_id
-       WHERE u.user_id = ?
+       WHERE u.username = ?
        GROUP BY u.user_id`,
-      [decoded.id_user],
+      [decoded.user], // Usar decoded.user en lugar de decoded.id_user
       (error, results) => {
         if (error) {
           console.error("Error obteniendo información del usuario:", error);

@@ -75,7 +75,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="/public/img/logo.png" alt="ConectAgro" height="40">
+                <!-- <img src="/img/logo.png" alt="ConectAgro" height="40"> -->
                 ConectAgro
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -132,7 +132,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 text-center">
-                    <img src="https://via.placeholder.com/600x300" alt="Productos frescos" class="img-fluid rounded" style="max-height: 200px;">
+                    <!-- <img src="https://via.placeholder.com/600x300" alt="Productos frescos" class="img-fluid rounded" style="max-height: 200px;"> -->
                 </div>
             </div>
         </div>
@@ -162,15 +162,9 @@
         </div>
 
         <!-- Categories -->
-        <div class="mb-4 d-flex flex-wrap gap-2">
-            <span class="badge rounded-pill bg-light text-dark border category-pill active">Todos</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Frutas</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Verduras</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Tubérculos</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Granos</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Lácteos</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Procesados</span>
-            <span class="badge rounded-pill bg-light text-dark border category-pill">Orgánicos</span>
+        <div class="mb-4 d-flex flex-wrap gap-2" id="categories-container">
+            <span class="badge rounded-pill bg-light text-dark border category-pill active" data-category-id="0">Todos</span>
+            <!-- Las demás categorías se cargarán dinámicamente -->
         </div>
 
         <!-- Featured Products Carousel -->
@@ -178,64 +172,11 @@
         <div class="row mb-5">
             <div class="col-12">
                 <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <div class="card product-card h-100 position-relative">
-                                        <span class="badge bg-danger featured-badge">Destacado</span>
-                                        <div class="product-img-container">
-                                            <img src="https://via.placeholder.com/300" class="product-img" alt="Aguacate Hass">
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">Aguacate Hass</h5>
-                                            <p class="card-text text-success fw-bold">$2.50 / unidad</p>
-                                            <p class="card-text small text-muted">Productor: Finca El Paraíso</p>
-                                        </div>
-                                        <div class="card-footer bg-white border-0">
-                                            <button class="btn btn-success w-100 add-to-cart">
-                                                <i class="bi bi-cart-plus"></i> Agregar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="card product-card h-100 position-relative">
-                                        <span class="badge bg-danger featured-badge">Destacado</span>
-                                        <span class="badge organic-badge">Orgánico</span>
-                                        <div class="product-img-container">
-                                            <img src="https://via.placeholder.com/300" class="product-img" alt="Tomates Orgánicos">
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">Tomates Orgánicos</h5>
-                                            <p class="card-text text-success fw-bold">$3.20 / kg</p>
-                                            <p class="card-text small text-muted">Productor: Huerta San José</p>
-                                        </div>
-                                        <div class="card-footer bg-white border-0">
-                                            <button class="btn btn-success w-100 add-to-cart">
-                                                <i class="bi bi-cart-plus"></i> Agregar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="card product-card h-100 position-relative">
-                                        <span class="badge bg-danger featured-badge">Destacado</span>
-                                        <div class="product-img-container">
-                                            <img src="https://via.placeholder.com/300" class="product-img" alt="Miel de Abeja">
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">Miel de Abeja</h5>
-                                            <p class="card-text text-success fw-bold">$8.50 / 500ml</p>
-                                            <p class="card-text small text-muted">Productor: Apiarios Flor</p>
-                                        </div>
-                                        <div class="card-footer bg-white border-0">
-                                            <button class="btn btn-success w-100 add-to-cart">
-                                                <i class="bi bi-cart-plus"></i> Agregar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="carousel-inner" id="featured-products-container">
+                        <!-- Los productos destacados se cargarán aquí dinámicamente -->
+                        <div class="text-center my-4">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Cargando...</span>
                             </div>
                         </div>
                     </div>
@@ -253,160 +194,8 @@
 
         <!-- All Products -->
         <h3 class="mb-3">Todos los productos</h3>
-        <div class="row g-4">
-            <!-- Product 1 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Papa Criolla">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Papa Criolla</h5>
-                        <p class="card-text text-success fw-bold">$1.80 / kg</p>
-                        <p class="card-text small text-muted">Productor: Finca El Retorno</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Cebolla Cabezona">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Cebolla Cabezona</h5>
-                        <p class="card-text text-success fw-bold">$1.20 / kg</p>
-                        <p class="card-text small text-muted">Productor: La Huerta</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <span class="badge organic-badge">Orgánico</span>
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Frijoles Orgánicos">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Frijoles Orgánicos</h5>
-                        <p class="card-text text-success fw-bold">$5.20 / kg</p>
-                        <p class="card-text small text-muted">Productor: Cultivos Verdes</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Plátano Maduro">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Plátano Maduro</h5>
-                        <p class="card-text text-success fw-bold">$2.10 / kg</p>
-                        <p class="card-text small text-muted">Productor: Finca Bananera</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 5 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Maíz Fresco">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Maíz Fresco</h5>
-                        <p class="card-text text-success fw-bold">$0.75 / unidad</p>
-                        <p class="card-text small text-muted">Productor: Hacienda Los Maizales</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 6 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Queso Campesino">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Queso Campesino</h5>
-                        <p class="card-text text-success fw-bold">$7.50 / 500g</p>
-                        <p class="card-text small text-muted">Productor: Lácteos La Vaca Feliz</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 7 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <span class="badge organic-badge">Orgánico</span>
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Zanahorias Orgánicas">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Zanahorias Orgánicas</h5>
-                        <p class="card-text text-success fw-bold">$2.40 / kg</p>
-                        <p class="card-text small text-muted">Productor: Huerta Verde</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 8 -->
-            <div class="col-md-3 col-sm-6">
-                <div class="card product-card h-100">
-                    <div class="product-img-container">
-                        <img src="https://via.placeholder.com/300" class="product-img" alt="Panela Artesanal">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Panela Artesanal</h5>
-                        <p class="card-text text-success fw-bold">$3.80 / kg</p>
-                        <p class="card-text small text-muted">Productor: Trapiche Don José</p>
-                    </div>
-                    <div class="card-footer bg-white border-0">
-                        <button class="btn btn-success w-100 add-to-cart">
-                            <i class="bi bi-cart-plus"></i> Agregar
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="row g-4" id="products-container">
+            <!-- Los productos se cargarán dinámicamente aquí -->
         </div>
 
         <!-- Pagination -->
@@ -434,61 +223,31 @@
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <div class="cart-items mb-3">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <img src="https://via.placeholder.com/50" class="me-2" alt="Aguacate">
-                                <div>
-                                    <h6 class="mb-0">Aguacate Hass</h6>
-                                    <small class="text-muted">$2.50 x 2</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <span class="fw-bold me-3">$5.00</span>
-                                <button class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <img src="https://via.placeholder.com/50" class="me-2" alt="Tomates">
-                                <div>
-                                    <h6 class="mb-0">Tomates Orgánicos</h6>
-                                    <small class="text-muted">$3.20 x 1</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <span class="fw-bold me-3">$3.20</span>
-                                <button class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
+            <div class="cart-items mb-3" id="cart-items-container">
+                <!-- Items del carrito se cargarán aquí dinámicamente -->
+                <div class="text-center my-4">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Cargando...</span>
                     </div>
                 </div>
             </div>
             <div class="cart-summary bg-light p-3 rounded">
                 <div class="d-flex justify-content-between mb-2">
                     <span>Subtotal:</span>
-                    <span class="fw-bold">$8.20</span>
+                    <span class="fw-bold" id="cart-subtotal">$0.00</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Envío:</span>
-                    <span class="fw-bold">$2.00</span>
+                    <span class="fw-bold" id="cart-shipping">$2.00</span>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between mb-3">
                     <span class="fw-bold">Total:</span>
-                    <span class="fw-bold text-success">$10.20</span>
+                    <span class="fw-bold text-success" id="cart-total">$0.00</span>
                 </div>
-                <button class="btn btn-success w-100" onclick="window.location.href='/checkout'">Proceder al Checkout</button>
+                <button class="btn btn-success w-100" id="checkout-btn" onclick="window.location.href='/checkout'" disabled>
+                    Proceder al Checkout
+                </button>
             </div>
         </div>
     </div>
@@ -578,6 +337,362 @@
                 });
             });
         });
+
+        // Función para cargar productos destacados
+        function loadFeaturedProducts() {
+            fetch('/api/products/featured')
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('featured-products-container');
+                    
+                    // Agrupar productos en grupos de 3
+                    const groupedProducts = [];
+                    for (let i = 0; i < products.length; i += 3) {
+                        groupedProducts.push(products.slice(i, i + 3));
+                    }
+                    
+                    container.innerHTML = groupedProducts.map((group, index) => `
+                        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                            <div class="row">
+                                ${group.map(product => `
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card product-card h-100 position-relative">
+                                            ${product.is_featured ? '<span class="badge bg-danger featured-badge">Destacado</span>' : ''}
+                                            ${product.category_name === 'Orgánicos' ? '<span class="badge organic-badge">Orgánico</span>' : ''}
+                                            <div class="product-img-container">
+                                                <img src="${product.image_url || 'https://placehold.co/300x300'}" 
+                                                     class="product-img" alt="${product.product_name}">
+                                            </div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">${product.product_name}</h5>
+                                                <p class="card-text text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
+                                                <p class="card-text small text-muted">Categoría: ${product.category_name}</p>
+                                            </div>
+                                            <div class="card-footer bg-white border-0">
+                                                <button class="btn btn-success w-100 add-to-cart" data-product-id="${product.product_id}">
+                                                    <i class="bi bi-cart-plus"></i> Agregar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    setupAddToCartButtons();
+                })
+                .catch(error => {
+                    console.error('Error loading featured products:', error);
+                    document.getElementById('featured-products-container').innerHTML = `
+                        <div class="alert alert-danger">
+                            Error al cargar los productos destacados.
+                        </div>
+                    `;
+                });
+        }
+
+        // Función para cargar productos
+        function loadProducts() {
+            fetch('/api/products')
+                .then(response => response.json())
+                .then(products => {
+                    const container = document.getElementById('products-container');
+                    container.innerHTML = products.map(product => `
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card product-card h-100">
+                                ${product.is_organic ? '<span class="badge organic-badge">Orgánico</span>' : ''}
+                                ${product.is_featured ? '<span class="badge bg-danger featured-badge">Destacado</span>' : ''}
+                                <div class="product-img-container">
+                                    <img src="${product.image_url || 'https://placehold.co/300x300'}" 
+                                         class="product-img" alt="${product.product_name}">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">${product.product_name}</h5>
+                                    <p class="card-text text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
+                                    <p class="card-text small text-muted">Categoría: ${product.category_name}</p>
+                                </div>
+                                <div class="card-footer bg-white border-0">
+                                    <button class="btn btn-success w-100 add-to-cart" data-product-id="${product.product_id}">
+                                        <i class="bi bi-cart-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    setupAddToCartButtons();
+                })
+                .catch(error => {
+                    console.error('Error loading products:', error);
+                    document.getElementById('products-container').innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Error al cargar los productos. Por favor, intenta nuevamente.
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        // Función para configurar los botones de añadir al carrito
+        function setupAddToCartButtons() {
+            const addToCartButtons = document.querySelectorAll('.add-to-cart');
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    
+                    try {
+                        const response = await fetch('/api/cart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                productId: productId,
+                                quantity: 1
+                            })
+                        });
+
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Obtener el conteo actualizado del carrito
+                            const cartResponse = await fetch('/api/cart');
+                            const cartData = await cartResponse.json();
+                            updateCartCount(cartData.itemCount);
+
+                            // Animation effect
+                            button.innerHTML = '<i class="bi bi-check-lg"></i> Agregado';
+                            button.classList.remove('btn-success');
+                            button.classList.add('btn-outline-success');
+                            
+                            setTimeout(() => {
+                                button.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar';
+                                button.classList.add('btn-success');
+                                button.classList.remove('btn-outline-success');
+                            }, 1500);
+                        } else {
+                            alert(data.error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error al añadir al carrito');
+                    }
+                });
+            });
+        }
+
+        // Función para cargar categorías
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                if (!response.ok) throw new Error('Error loading categories');
+                const categories = await response.json();
+                
+                const container = document.getElementById('categories-container');
+                const categoriesHTML = categories.map(category => `
+                    <span class="badge rounded-pill bg-light text-dark border category-pill" 
+                          data-category-id="${category.category_id}">
+                        ${category.category_name}
+                    </span>
+                `).join('');
+                
+                // Mantener el botón "Todos" y añadir las categorías después
+                container.innerHTML = `
+                    <span class="badge rounded-pill bg-light text-dark border category-pill active" 
+                          data-category-id="0">Todos</span>
+                    ${categoriesHTML}
+                `;
+
+                // Configurar los event listeners para el filtrado
+                setupCategoryFilters();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('categories-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error al cargar las categorías.
+                    </div>
+                `;
+            }
+        }
+
+        // Función para configurar los filtros de categoría
+        function setupCategoryFilters() {
+            const categoryPills = document.querySelectorAll('.category-pill');
+            categoryPills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    // Remover clase active de todas las pills
+                    categoryPills.forEach(p => p.classList.remove('active'));
+                    // Añadir clase active a la pill seleccionada
+                    this.classList.add('active');
+                    
+                    const categoryId = this.dataset.categoryId;
+                    if (categoryId === '0') {
+                        loadProducts(); // Cargar todos los productos
+                    } else {
+                        loadProductsByCategory(categoryId); // Cargar productos por categoría
+                    }
+                });
+            });
+        }
+
+        // Función para cargar productos por categoría
+        async function loadProductsByCategory(categoryId) {
+            try {
+                const response = await fetch(`/api/products/category/${categoryId}`);
+                if (!response.ok) throw new Error('Error loading products');
+                const products = await response.json();
+                
+                // Usar la misma función de renderizado que usamos para todos los productos
+                const container = document.getElementById('products-container');
+                container.innerHTML = products.map(product => `
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card product-card h-100">
+                            ${product.is_organic ? '<span class="badge organic-badge">Orgánico</span>' : ''}
+                            ${product.is_featured ? '<span class="badge bg-danger featured-badge">Destacado</span>' : ''}
+                            <div class="product-img-container">
+                                <img src="${product.image_url || 'https://placehold.co/300x300'}" 
+                                     class="product-img" alt="${product.product_name}">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${product.product_name}</h5>
+                                <p class="card-text text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
+                                <p class="card-text small text-muted">Categoría: ${product.category_name}</p>
+                            </div>
+                            <div class="card-footer bg-white border-0">
+                                <button class="btn btn-success w-100 add-to-cart" data-product-id="${product.product_id}">
+                                    <i class="bi bi-cart-plus"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                setupAddToCartButtons();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('products-container').innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            Error al cargar los productos. Por favor, intenta nuevamente.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        let cartItemsCount = 0;
+
+        async function loadCartItems() {
+            try {
+                const response = await fetch('/api/cart');
+                if (!response.ok) throw new Error('Error loading cart');
+                const data = await response.json();
+                
+                updateCartUI(data.items);
+                updateCartCount(data.itemCount);
+                updateCartTotals(data.total);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('cart-items-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error al cargar el carrito. Intenta nuevamente.
+                    </div>
+                `;
+            }
+        }
+
+        function updateCartUI(items) {
+            const container = document.getElementById('cart-items-container');
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted p-4">
+                        <i class="bi bi-cart-x fs-1"></i>
+                        <p>Tu carrito está vacío</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <img src="${item.image_url || 'https://placehold.co/50'}" 
+                                     class="me-2" alt="${item.product_name}" 
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                <div>
+                                    <h6 class="mb-0">${item.product_name}</h6>
+                                    <small class="text-muted">$${parseFloat(item.price).toFixed(2)} x ${item.quantity}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold me-3">$${parseFloat(item.subtotal || 0).toFixed(2)}</span>
+                                <button class="btn btn-sm btn-outline-danger delete-item" 
+                                        data-product-id="${item.product_id}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            setupDeleteButtons();
+        }
+
+        function updateCartCount(count) {
+            cartItemsCount = count;
+            document.querySelector('.cart-count').textContent = count;
+        }
+
+        function updateCartTotals(subtotal) {
+            const shipping = subtotal > 0 ? 2.00 : 0;
+            const total = subtotal + shipping;
+            
+            document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cart-shipping').textContent = `$${shipping.toFixed(2)}`;
+            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+            
+            // Habilitar/deshabilitar botón de checkout
+            document.getElementById('checkout-btn').disabled = subtotal === 0;
+        }
+
+        function setupDeleteButtons() {
+            document.querySelectorAll('.delete-item').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    
+                    try {
+                        const response = await fetch(`/api/cart/${productId}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (!response.ok) throw new Error('Error removing item');
+                        
+                        // Recargar carrito
+                        loadCartItems();
+                        
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error al eliminar el producto');
+                    }
+                });
+            });
+        }
+
+        // Cargar carrito al iniciar y cuando se abre el offcanvas
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategories(); // Cargar las categorías
+            loadFeaturedProducts();
+            loadProducts();
+            loadCartItems();
+        });
+        document.getElementById('cartOffcanvas').addEventListener('show.bs.offcanvas', loadCartItems);
     </script>
 </body>
 </html>

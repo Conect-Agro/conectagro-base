@@ -81,3 +81,9 @@ test_login:
   script:
     - echo "Ejecutando pruebas de login..."
     - npx jest test/auth/login.js --passWithNoTests
+
+test_cart:
+  stage: test
+  script:
+    - echo "Ejecutando pruebas del carrito..."
+    - npx jest test/cart/add-to-cart.js --passWithNoTests
