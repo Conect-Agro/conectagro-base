@@ -25,6 +25,7 @@ default:
       variables:
         MYSQL_ROOT_PASSWORD: root_password
         MYSQL_DATABASE: test_db
+
   before_script:
     - apt-get update && apt-get install -y default-mysql-client
     - echo "Esperando a que MySQL esté disponible..."
@@ -32,9 +33,10 @@ default:
     - echo "MySQL está disponible, configurando la base de datos..."
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
-    - if [ -f "./conectagro_schema.sql" ]; then
-        echo "Importando esquema de base de datos...";
-        mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./conectagro_schema.sql;
+    - |
+      if [ -f "./conectagro_schema.sql" ]; then
+        echo "Importando esquema de base de datos..."
+        mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./conectagro_schema.sql
       else
         echo "ADVERTENCIA: El archivo de esquema no existe en la ruta esperada"
       fi
