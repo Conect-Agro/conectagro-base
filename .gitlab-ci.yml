@@ -6,7 +6,7 @@ variables:
   DB_HOST: mysql
   DB_USER: test_user
   DB_PASSWORD: test_password
-  DB_NAME: conectagro
+  DB_NAME: test_db
   JWT_SECRET: test_jwt_secret_key
   JWT_EXPIRATION: "1h"
   JWT_COOKIE_EXPIRES: 1
@@ -37,6 +37,13 @@ default:
       if [ -f "./conectagro_schema.sql" ]; then
         echo "Importando esquema de base de datos..."
         mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./conectagro_schema.sql
+      else
+        echo "ADVERTENCIA: El archivo de esquema no existe en la ruta esperada"
+      fi
+    - |
+      if [ -f "./test_db_schema.sql" ]; then
+        echo "Importando esquema de base de datos..."
+        mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD ${DB_NAME} < ./test_db_schema.sql
       else
         echo "ADVERTENCIA: El archivo de esquema no existe en la ruta esperada"
       fi
