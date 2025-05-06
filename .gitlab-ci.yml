@@ -73,7 +73,7 @@ test_register:
   stage: test
   script:
     - echo "Ejecutando pruebas de registro..."
-    - - npx jest test/auth/register.js --passWithNoTests
+    - npx jest test/auth/register.js --passWithNoTests
 
 
 test_login:
