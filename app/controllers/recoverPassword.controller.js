@@ -9,7 +9,7 @@ async function sendEmail(req, res) {
     if (!isExist) {
       return res.status(404).send({ status: "Error", message: "Incorrect username or password" });
     } else {
-      const resetLink = "http://localhost:3000/changePassword";
+      const resetLink = "/changePassword";
     const message = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
         <h1 style="text-align: center; color: #645bff;  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 42px; font-weight: bold; margin-bottom: 20px;">Recuperación de Contraseña</h1>

@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fetch all roles
   let allRoles = [];
-  fetch("http://localhost:3001/api/roles")
+  fetch("/api/roles")
     .then((response) => response.json())
     .then((roles) => {
       allRoles = roles;
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // Fetch users and their roles
-  fetch("http://localhost:3001/api/users")
+  fetch("/api/users")
     .then((response) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -83,7 +83,7 @@ function saveRoles(userId) {
   );
   const roles = Array.from(checkboxes).map((checkbox) => checkbox.value);
 
-  fetch(`http://localhost:3001/api/users/${userId}/roles`, {
+  fetch(`/api/users/${userId}/roles`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

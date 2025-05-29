@@ -1,12 +1,9 @@
 const errorMessage = document.getElementsByClassName("error")[0];
-const config = {
-  API_URL: "http://localhost:3000"
-};
 
 document.getElementById("register-form").addEventListener("submit",async(e)=>{
   e.preventDefault();
 
-  const res = await fetch("http://localhost:3000/api/register", {
+  const res = await fetch("/api/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
