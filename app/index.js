@@ -89,7 +89,7 @@ app.get("/checkout", authorization.onlyClient, (req, res) =>
 app.get("/orders", authorization.onlyClient, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "views", "orders.html"))
 );
-app.get("/order-details/:orderId", authorization.onlyClient, authorization.verifyOrderOwnership, (req, res) =>
+app.get("/order-details/:orderId", authMiddleware, authorization.onlyClient, authorization.verifyOrderOwnership, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "views", "order-details.html"))
 );
 

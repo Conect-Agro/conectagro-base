@@ -92,46 +92,31 @@ async function addToCart(req, res) {
     
     const cartId = await getOrCreateCart(userId);
     
-    // Verificar si el producto ya está en el carrito
+    // Usar INSERT ... ON DUPLICATE KEY UPDATE para manejar casos concurrentes
+    const insertQuery = `
+      INSERT INTO cart_items (cart_id, product_id, quantity) 
+      VALUES (?, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+      quantity = quantity + VALUES(quantity)
+    `;
+    
     connectiondb.query(
-      "SELECT quantity FROM cart_items WHERE cart_id = ? AND product_id = ?",
-      [cartId, productId],
-      (error, results) => {
+      insertQuery,
+      [cartId, productId, parseInt(quantity)],
+      (error, result) => {
         if (error) {
-          console.error("Error checking cart item:", error);
+          console.error("Error adding/updating cart item:", error);
           return res.status(500).json({ error: "Server error" });
         }
         
-        if (results.length > 0) {
-          // Actualizar cantidad
-          const newQuantity = results[0].quantity + parseInt(quantity);
-          connectiondb.query(
-            "UPDATE cart_items SET quantity = ? WHERE cart_id = ? AND product_id = ?",
-            [newQuantity, cartId, productId],
-            (error) => {
-              if (error) {
-                console.error("Error updating cart item:", error);
-                return res.status(500).json({ error: "Server error" });
-              }
-              res.json({ success: true, message: "Product quantity updated in cart" });
-            }
-          );
-        } else {
-          // Insertar nuevo item
-          connectiondb.query(
-            "INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)",
-            [cartId, productId, quantity],
-            (error) => {
-              if (error) {
-                console.error("Error adding item to cart:", error);
-                return res.status(500).json({ error: "Server error" });
-              }
-              res.json({ success: true, message: "Product added to cart" });
-            }
-          );
-        }
+        const message = result.affectedRows === 1 ? 
+          "Product added to cart" : 
+          "Product quantity updated in cart";
+          
+        res.json({ success: true, message });
       }
     );
+    
   } catch (error) {
     console.error("Error in addToCart:", error);
     res.status(500).json({ error: "Server error" });

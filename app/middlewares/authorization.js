@@ -135,12 +135,19 @@ async function authMiddleware(req, res, next) {
 
 async function verifyOrderOwnership(req, res, next) {
   try {
-    const userId = req.user.id_user;
+    if (!req.user) {
+      return res.status(401).json({ error: "Usuario no autenticado" });
+    }
+    
+    const username = req.user.user; // Usar el username del token
     const orderId = req.params.orderId;
     
     connectiondb.query(
-      "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
-      [orderId, userId],
+      `SELECT o.* 
+       FROM orders o
+       JOIN users u ON o.user_id = u.user_id
+       WHERE o.order_id = ? AND u.username = ?`,
+      [orderId, username], // Usar username en la consulta
       (error, results) => {
         if (error) {
           console.error("Error verificando propiedad de orden:", error);
