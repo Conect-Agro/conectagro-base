@@ -98,16 +98,17 @@ deploy_production:
   only:
     - main
   script:
-    - echo "🔐 Configurando clave SSH..."
+ - echo "🔐 Configurando clave SSH..."
     - mkdir -p ~/.ssh
+    - echo "Valor de SSH_PRIVATE_KEY_SERVER_1_FILE: $SSH_PRIVATE_KEY_SERVER_1_FILE"
     - cp "$SSH_PRIVATE_KEY_SERVER_1_FILE" ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H 68.183.119.29 >> ~/.ssh/known_hosts
     - echo "🚀Conectando y desplegando en el servidor..."
-    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy@68.183.119.29 '
-        cd ~/conectagro/conectagro &&
-        git pull origin main &&
-        echo "✅ Código actualizado." &&
-        docker compose down &&
-        docker compose up -d --build
-      '
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy@68.183.119.29 " \
+        cd ~/conectagro/conectagro && \
+        git pull origin main && \
+        echo \"✅ Código actualizado.\" && \
+        docker compose down && \
+        docker compose up -d --build \
+      "
