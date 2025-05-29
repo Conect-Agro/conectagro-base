@@ -106,7 +106,7 @@ deploy_production:
     - ssh-keyscan -H 68.183.119.29 >> ~/.ssh/known_hosts
     - echo "🚀 Conectando y desplegando en el servidor..."
     - ssh deploy@68.183.119.29 '
-        cd ~/L3_conectagro/conectagro &&
+        cd ~/conectagro &&
         git pull origin main &&
         echo "✅ Código actualizado." &&
         docker compose down &&
