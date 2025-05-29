@@ -54,17 +54,16 @@ build:
   stage: build
   script:
     - echo "Construyendo la aplicación..."
-    - npm install
-    # Aseguramos que Jest esté instalado explícitamente
     - npm install --save-dev jest
   artifacts:
     paths:
       - node_modules/
       - .
 
-# Mirar que hay dentro de la base de datos
 debug_db:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Inspeccionando base de datos..."
     - mysql -h mysql -u root -p$MYSQL_ROOT_PASSWORD -e "USE ${DB_NAME}; SHOW TABLES;"
@@ -72,19 +71,24 @@ debug_db:
 
 test_register:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Ejecutando pruebas de registro..."
     - npx jest test/auth/register.js --passWithNoTests
 
-
 test_login:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Ejecutando pruebas de login..."
     - npx jest test/auth/login.js --passWithNoTests
 
 test_cart:
   stage: test
+  only:
+    - devSamir
   script:
     - echo "Ejecutando pruebas del carrito..."
     - npx jest test/cart/add-to-cart.js --passWithNoTests
@@ -101,6 +105,8 @@ deploy_production:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
+    # Validar la clave antes de usarla
+    - ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub || (echo "❌ Clave SSH inválida" && exit 1)
     - ssh-keyscan -H 68.183.119.29 >> ~/.ssh/known_hosts
     - echo "🚀 Conectando y desplegando en el servidor..."
     - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no deploy@68.183.119.29 "
