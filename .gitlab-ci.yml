@@ -54,7 +54,6 @@ build:
   stage: build
   script:
     - echo "Construyendo la aplicación..."
-    - npm install
     - npm install --save-dev jest
   artifacts:
     paths:
@@ -101,7 +100,7 @@ deploy_production:
   script:
     - echo "🔐 Configurando clave SSH..."
     - mkdir -p ~/.ssh
-    - printf "%s" "$SSH_PRIVATE_KEY_SERVER_1" > ~/.ssh/id_rsa
+    - cp "$SSH_PRIVATE_KEY_SERVER_1_FILE" ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H 68.183.119.29 >> ~/.ssh/known_hosts
     - echo "🚀Conectando y desplegando en el servidor..."
