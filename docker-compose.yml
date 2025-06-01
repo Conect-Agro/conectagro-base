@@ -35,6 +35,23 @@ services:
     volumes:
       - ./app:/app/app
 
+  # RabbitMQ (Event Broker)
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"     # Puerto AMQP
+      - "15672:15672"   # Interfaz Web de RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Prometheus for monitoring
   prometheus:
     image: prom/prometheus:latest
@@ -80,6 +97,14 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--path.rootfs=/rootfs'
+  
+  notification-service:
+    build: ./notification-service
+    restart: always
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ./notification-service/.env
 
 volumes:
   mysql_data:
