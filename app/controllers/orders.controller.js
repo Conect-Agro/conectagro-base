@@ -1,4 +1,5 @@
 import connectiondb from "../database/database.js";
+import { publishLowStock } from "./product-checker.js";
 
 // Crear un nuevo pedido a partir del carrito
 async function createOrder(req, res) {
@@ -165,9 +166,28 @@ function updateProductStock(productId, newStock) {
     connectiondb.query(
       "UPDATE products SET stock = ? WHERE product_id = ?",
       [newStock, productId],
-      (error) => {
+      (error, result) => {
         if (error) return reject(error);
-        resolve();
+        
+        // Después de actualizar, verificar si el stock está bajo
+        connectiondb.query(
+          "SELECT product_id, product_name, stock FROM products WHERE product_id = ?",
+          [productId],
+          async (err, products) => {
+            if (!err && products.length > 0) {
+              const product = products[0];
+              // Si el stock está por debajo del umbral, publicar alerta
+              if (product.stock <= 40) {
+                await publishLowStock({
+                  id: product.product_id,
+                  name: product.product_name,
+                  stock: product.stock
+                });
+              }
+            }
+            resolve(result);
+          }
+        );
       }
     );
   });
