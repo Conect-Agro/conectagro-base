@@ -1,6 +1,119 @@
 import connectiondb from "../database/database.js";
 import { publishLowStock } from "./product-checker.js";
 
+// Función para enviar el resumen del pedido al microservicio de email
+async function sendOrderSummary(userId, orderId) {
+  try {
+    console.log(`🔄 Iniciando envío de resumen de pedido - ID: ${orderId} para usuario ID: ${userId}`);
+    
+    // 1. Obtener datos del usuario
+    const userQuery = "SELECT username, email, document_number FROM users WHERE user_id = ?";
+    console.log(`📝 Ejecutando consulta de usuario: ${userQuery} con ID: ${userId}`);
+    const userData = await queryAsync(userQuery, [userId]);
+    
+    if (!userData || userData.length === 0) {
+      console.error("❌ Usuario no encontrado para enviar el resumen del pedido");
+      return;
+    }
+    const user = userData[0];
+    console.log(`✅ Usuario encontrado: ${user.name}, Email: ${user.email}`);
+    
+    // 2. Obtener datos del pedido
+    const orderQuery = "SELECT order_id, order_date, status FROM orders WHERE order_id = ?";
+    console.log(`📝 Ejecutando consulta de pedido: ${orderQuery} con ID: ${orderId}`);
+    const orderData = await queryAsync(orderQuery, [orderId]);
+    
+    if (!orderData || orderData.length === 0) {
+      console.error("❌ Pedido no encontrado para enviar resumen");
+      return;
+    }
+    const order = orderData[0];
+    console.log(`✅ Pedido encontrado: #${order.order_id}, Fecha: ${order.order_date}`);
+    
+    // 3. Obtener productos del pedido
+    const productsQuery = `
+      SELECT p.product_name as nombre, oi.quantity as cantidad, oi.price as precio
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.product_id
+      WHERE oi.order_id = ?
+    `;
+    console.log(`📝 Ejecutando consulta de productos del pedido con ID: ${orderId}`);
+    const products = await queryAsync(productsQuery, [orderId]);
+    // Convertir los precios a números
+    products.forEach(product => {
+      product.precio = parseFloat(product.precio);
+    });
+    console.log(`✅ Productos encontrados: ${products.length} items`);
+    
+    // 4. Crear el objeto de datos para la solicitud
+    const orderSummaryData = {
+      usuario: {
+        nombre: user.username,
+        email: user.email,
+        telefono: user.phone || "3212827709"
+      },
+      pedido: {
+        id: `ORD-${order.order_id}`,
+        fecha: order.order_date,
+        estado: getStatusInSpanish(order.status),
+        productos: products
+      }
+    };
+    
+    console.log(`📧 Preparando envío de email a: ${user.email} para el pedido: ORD-${order.order_id}`);
+    console.log(`🔍 Datos a enviar al microservicio:`, JSON.stringify(orderSummaryData, null, 2));
+    
+    // 5. Enviar la solicitud al microservicio
+    console.log(`🌐 Enviando solicitud a: ${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`);
+    const response = await fetch(`${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(orderSummaryData)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`❌ Error al enviar el resumen de pedido (${response.status}):`, errorData);
+      console.error(`⚠️ Verifica que el microservicio de email esté ejecutándose en ${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`);
+      return;
+    }
+    
+    const result = await response.json();
+    console.log(`✅ Resumen de pedido enviado exitosamente:`);
+    console.log(`   📨 Email enviado a: ${user.email}`);
+    console.log(`   📃 Pedido: ORD-${order.order_id}`);
+    console.log(`   🆔 ID del mensaje: ${result.messageId || 'No disponible'}`);
+    
+  } catch (error) {
+    console.error("❌ Error en sendOrderSummary:", error);
+    console.error("⚠️ Verifica la conexión con el microservicio y los datos enviados");
+  }
+}
+
+// Función auxiliar para convertir el estado del pedido al español
+function getStatusInSpanish(status) {
+  const statusMap = {
+    'pending': 'Pendiente',
+    'processing': 'En proceso',
+    'completed': 'Completado',
+    'cancelled': 'Cancelado'
+  };
+  
+  return statusMap[status] || status;
+}
+
+// Función auxiliar para hacer consultas asíncronas
+function queryAsync(query, params) {
+  return new Promise((resolve, reject) => {
+    connectiondb.query(query, params, (error, results) => {
+      if (error) return reject(error);
+      resolve(results);
+    });
+  });
+}
+
 // Crear un nuevo pedido a partir del carrito
 async function createOrder(req, res) {
   const userId = req.user.id_user;
@@ -74,6 +187,11 @@ async function createOrder(req, res) {
           connectiondb.rollback();
           return res.status(500).json({ error: "Server error" });
         }
+        
+        // 8. Enviar el resumen del pedido al microservicio de email (asíncrono)
+        sendOrderSummary(userId, orderId).catch(error => {
+          console.error("Error al enviar el resumen del pedido por email:", error);
+        });
         
         res.status(201).json({ 
           success: true, 

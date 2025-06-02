@@ -12,6 +12,9 @@ import { authMiddleware } from "./middlewares/authorization.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import prometheus from 'prom-client';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
