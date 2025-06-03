@@ -117,8 +117,8 @@ services:
       - ./microservice-email/.env
     depends_on:
       - app
-    volumes:
-      - ./microservice-email:/app
+    # volumes:
+    #   - ./microservice-email:/app
 
 volumes:
   mysql_data:
