@@ -106,19 +106,31 @@ services:
     env_file:
       - ./notification-service/.env
 
-  microservice-email:
+  # microservice-email:
+  #   build: 
+  #     context: ./microservice-email
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "3003:3003"
+  #   env_file:
+  #     - ./microservice-email/.env
+  #   depends_on:
+  #     - app
+  #   volumes:
+  #     - ./microservice-email:/app
+
+  microservice-sendgrid:
     build: 
-      context: ./microservice-email
+      context: ./microservice-sendGrip
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3003:3003"
+      - "3003:3003"  
     env_file:
-      - ./microservice-email/.env
+      - ./microservice-sendGrip/.env
     depends_on:
       - app
-    volumes:
-      - ./microservice-email:/app
 
 volumes:
   mysql_data:

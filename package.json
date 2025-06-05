@@ -16,6 +16,7 @@
     "amqplib": "^0.10.8",
     "bcryptjs": "^3.0.2",
     "concurrently": "^7.0.0",
+    "conectagro": "file:",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
