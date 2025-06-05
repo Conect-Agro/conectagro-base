@@ -104,10 +104,18 @@ test_change_password:
 test_address:
   stage: test
   only:
-    - devKaren
+    - devSamir
   script:
     - echo "Ejecutando pruebas de direcciones..."
     - npx jest test/addresses/add-address.js --passWithNoTests
+
+test_email_service:
+  stage: test
+  only:
+    - devKaren
+  script:
+    - echo "Ejecutando pruebas del servicio de correo..."
+    - npx jest test/microservices/email-service.js --passWithNoTests
 
 deploy_production:
   stage: deploy
