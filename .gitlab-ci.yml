@@ -112,10 +112,18 @@ test_address:
 test_email_service:
   stage: test
   only:
-    - devKaren
+    - devSamir
   script:
     - echo "Ejecutando pruebas del servicio de correo..."
     - npx jest test/microservices/email-service.js --passWithNoTests
+
+test_view_orders:
+  stage: test
+  only:
+    - devKaren
+  script:
+    - echo "Ejecutando pruebas de visualización de pedidos..."
+    - npx jest test/orders/view-orders.js --passWithNoTests
 
 deploy_production:
   stage: deploy
