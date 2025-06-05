@@ -96,10 +96,18 @@ test_cart:
 test_change_password:
   stage: test
   only:
-    - devKaren
+    - devSamir
   script:
     - echo "Ejecutando pruebas de cambio de contraseña..."
     - npx jest test/auth/change-password.js --passWithNoTests
+
+test_address:
+  stage: test
+  only:
+    - devKaren
+  script:
+    - echo "Ejecutando pruebas de direcciones..."
+    - npx jest test/addresses/add-address.js --passWithNoTests
 
 deploy_production:
   stage: deploy
