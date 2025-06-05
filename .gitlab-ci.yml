@@ -93,6 +93,14 @@ test_cart:
     - echo "Ejecutando pruebas del carrito..."
     - npx jest test/cart/add-to-cart.js --passWithNoTests
 
+test_change_password:
+  stage: test
+  only:
+    - devKaren
+  script:
+    - echo "Ejecutando pruebas de cambio de contraseña..."
+    - npx jest test/auth/change-password.js --passWithNoTests
+
 deploy_production:
   stage: deploy
   image: alpine:latest
