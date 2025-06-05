@@ -120,10 +120,18 @@ test_email_service:
 test_view_orders:
   stage: test
   only:
-    - devKaren
+    - devSamir
   script:
     - echo "Ejecutando pruebas de visualización de pedidos..."
     - npx jest test/orders/view-orders.js --passWithNoTests
+
+test_products_by_category:
+  stage: test
+  only:
+    - devKaren
+  script:
+    - echo "Ejecutando pruebas de productos por categoría..."
+    - NODE_OPTIONS=--experimental-vm-modules npx jest test/products/products-by-category.js --passWithNoTests
 
 deploy_production:
   stage: deploy
