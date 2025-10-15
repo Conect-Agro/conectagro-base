@@ -2,3 +2,4 @@ node_modules
 package-lock.json
 gitlab_deploy_key
 gitlab_deploy_key.pub
+.env
