@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `conectagro` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `conectagro`;
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
--- Host: localhost    Database: conectagro
+-- Host: 68.183.119.29    Database: conectagro
 -- ------------------------------------------------------
--- Server version	8.0.32
+-- Server version	8.0.42
 
 -- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
