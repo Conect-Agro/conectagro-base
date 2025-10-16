@@ -1,0 +1,8 @@
+[mysqld]
+server-id=1
+log-bin=mysql-bin
+binlog-format=ROW
+gtid-mode=ON
+enforce-gtid-consistency=ON
+# Asegúrate que bind-address permita conexiones desde otros contenedores (0.0.0.0)
+bind-address=0.0.0.0 

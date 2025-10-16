@@ -6,6 +6,12 @@ USE `conectagro`;
 -- ------------------------------------------------------
 -- Server version	8.0.32
 
+-- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: conectagro
+-- ------------------------------------------------------
+-- Server version	9.3.0
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -71,6 +77,7 @@ CREATE TABLE `cart_items` (
 
 LOCK TABLES `cart_items` WRITE;
 /*!40000 ALTER TABLE `cart_items` DISABLE KEYS */;
+INSERT INTO `cart_items` VALUES (1,4,1),(1,6,1),(1,8,1),(1,9,6),(1,10,8),(1,11,4),(3,2,1),(3,6,1),(3,11,9);
 /*!40000 ALTER TABLE `cart_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,7 +94,7 @@ CREATE TABLE `carts` (
   PRIMARY KEY (`cart_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,6 +103,7 @@ CREATE TABLE `carts` (
 
 LOCK TABLES `carts` WRITE;
 /*!40000 ALTER TABLE `carts` DISABLE KEYS */;
+INSERT INTO `carts` VALUES (1,17),(2,18),(3,19);
 /*!40000 ALTER TABLE `carts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -110,7 +118,7 @@ CREATE TABLE `categories` (
   `category_id` int NOT NULL AUTO_INCREMENT,
   `category_name` varchar(100) NOT NULL,
   PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,6 +127,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES (1,'Frutas'),(2,'Verduras'),(3,'Tubérculos'),(4,'Granos'),(5,'Lácteos'),(6,'Procesados'),(7,'Orgánicos');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +149,7 @@ CREATE TABLE `directions` (
   PRIMARY KEY (`id_direction`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `directions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,6 +158,7 @@ CREATE TABLE `directions` (
 
 LOCK TABLES `directions` WRITE;
 /*!40000 ALTER TABLE `directions` DISABLE KEYS */;
+INSERT INTO `directions` VALUES (1,17,'calle12','Tunja','00010','Colombia',1),(2,18,'Cll12','TUNJA','098765','COLOMBIA',1),(3,19,'Call12','Tunja','111','Colombia',1);
 /*!40000 ALTER TABLE `directions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,6 +187,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
+INSERT INTO `order_items` VALUES (1,1,1,2.50),(1,2,1,3.20),(1,3,1,8.50),(1,4,1,1.80),(1,5,1,1.20),(1,6,1,5.20),(1,7,2,2.10),(1,8,2,0.75),(1,9,1,7.50),(1,10,1,2.40),(1,11,2,3.80),(2,9,9,7.50),(3,1,1,2.50),(3,2,1,3.20),(3,3,1,8.50),(3,4,1,1.80),(3,5,1,1.20),(3,6,1,5.20),(3,7,1,2.10),(3,8,1,0.75),(3,9,4,7.50),(3,10,2,2.40),(3,11,3,3.80),(4,4,1,1.80),(4,5,1,1.20),(4,6,1,5.20),(4,9,1,7.50),(4,11,1,3.80),(5,6,1,5.20),(5,7,1,2.10),(5,9,4,7.50),(5,10,4,2.40),(5,11,2,3.80),(6,6,1,5.20),(6,9,1,7.50),(6,11,4,3.80),(7,2,1,3.20),(7,8,6,0.75),(7,9,1,7.50),(7,10,2,2.40),(8,4,1,1.80),(8,5,2,1.20),(8,8,2,0.75),(8,9,2,7.50),(8,10,2,2.40),(8,11,2,3.80),(9,2,1,3.20),(9,4,1,1.80),(9,7,1,2.10),(9,9,1,7.50),(9,10,2,2.40),(10,10,5,2.40);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -199,7 +210,7 @@ CREATE TABLE `orders` (
   KEY `address_id` (`address_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `directions` (`id_direction`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -208,6 +219,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,17,1,'2025-05-24 03:45:53',45.60,'pending'),(2,17,1,'2025-05-24 03:59:19',67.50,'pending'),(3,17,1,'2025-05-24 04:21:27',71.45,'pending'),(4,17,1,'2025-05-24 04:45:51',19.50,'pending'),(5,17,1,'2025-05-27 14:54:52',54.50,'pending'),(6,17,1,'2025-05-27 14:57:47',27.90,'pending'),(7,18,2,'2025-05-27 16:36:33',20.00,'pending'),(8,18,2,'2025-05-30 17:23:05',33.10,'pending'),(9,18,2,'2025-06-02 02:05:43',19.40,'pending'),(10,18,2,'2025-09-10 18:58:34',12.00,'pending');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +242,7 @@ CREATE TABLE `products` (
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,6 +251,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,'Aguacate Hass','Aguacate fresco de primera calidad',2.50,98,'https://acortar.link/xRtpIZ',1,1),(2,'Tomates Orgánicos','Tomates cultivados sin pesticidas',3.20,146,'https://acortar.link/auBmf7',7,1),(3,'Miel de Abeja','Miel pura artesanal',8.50,48,'https://unimarc.vtexassets.com/arquivos/ids/220823/000000000000652163-UN-01.jpg?v=637696604943870000',6,1),(4,'Papa Criolla','Papa criolla fresca cultivada localmente',1.80,195,'https://acortar.link/Ksn3Zc',3,1),(5,'Cebolla Cabezona','Cebolla fresca y jugosa',1.20,175,'https://acortar.link/9Jm7Ru',2,1),(6,'Frijoles Orgánicos','Frijoles cultivados naturalmente',5.20,95,'https://acortar.link/tYx1HZ',7,1),(7,'Plátano Maduro','Plátano maduro dulce',2.10,145,'https://acortar.link/2gTaYN',1,1),(8,'Maíz Fresco','Mazorcas de maíz fresco',0.75,289,'https://acortar.link/Mde3zL',4,1),(9,'Queso Campesino','Queso artesanal fresco',7.50,56,'https://acortar.link/i5Z0bS',5,1),(10,'Zanahorias Orgánicas','Zanahorias cultivadas orgánicamente',2.40,102,'https://acortar.link/buYLeH',7,1),(11,'Panela Artesanal','Panela 100% natural',3.80,19,'https://acortar.link/0FBwwz',6,1);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -290,7 +303,7 @@ CREATE TABLE `user_roles` (
 
 LOCK TABLES `user_roles` WRITE;
 /*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
-INSERT INTO `user_roles` VALUES ('adm',1),('pro',16),('cli',17);
+INSERT INTO `user_roles` VALUES ('adm',1),('pro',16),('cli',17),('cli',18),('cli',19);
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -316,7 +329,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `document_number` (`document_number`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -325,9 +338,17 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'adm','$2b$08$JDjwQrjeeYs4YzBNeL6dfOH1BCf0LhPY9uOfTCb6FUNx1C/qrL4Ii','123','adm@gmail.com','admin','admin','2025-05-05 21:44:44',1,0),(16,'lau','$2b$08$JDjwQrjeeYs4YzBNeL6dfOH1BCf0LhPY9uOfTCb6FUNx1C/qrL4Ii','9875','LAU@GM.COM','laura','molinares','2025-05-03 20:52:12',1,0),(17,'sam','$2b$08$6wrAuUjFwGF40U6iplcRnOaxHr79jwqxiCjjkaD0HY6/9TDDn6vLy','5624','sam@sam.com','sam','mol','2025-05-03 21:44:44',1,0);
+INSERT INTO `users` VALUES (1,'adm','$2b$08$JDjwQrjeeYs4YzBNeL6dfOH1BCf0LhPY9uOfTCb6FUNx1C/qrL4Ii','123','adm@gmail.com','admin','admin','2025-05-05 21:44:44',1,0),(16,'lau','$2b$08$JDjwQrjeeYs4YzBNeL6dfOH1BCf0LhPY9uOfTCb6FUNx1C/qrL4Ii','9875','LAU@GM.COM','laura','molinares','2025-05-03 20:52:12',1,0),(17,'sam','$2b$08$6wrAuUjFwGF40U6iplcRnOaxHr79jwqxiCjjkaD0HY6/9TDDn6vLy','5624','sam@sam.com','sam','mol','2025-05-03 21:44:44',1,0),(18,'lunnis','$2b$08$N0M9xBR9Es884wwk1wRKFeooE/L2/tI8vsdgSx4y8RQ4MbrOVbe2i','1050090607','sosalunna2@gmail.com','Lunna','Sosa','2025-05-27 15:47:10',1,0),(19,'juli_pena','$2b$08$t1Ufzj0VQiKHC7aERgz9/el0GUDcFAeK66OQ3EqP8bAnnrnoYHfYi','10700906','mayex84279@lorkex.com','Lunna','Sosa','2025-10-15 12:58:51',1,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'conectagro'
+--
+
+--
+-- Dumping routines for database 'conectagro'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -338,4 +359,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-05 16:34:34
+-- Dump completed on 2025-10-16 10:10:22
