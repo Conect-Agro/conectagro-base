@@ -1,0 +1,11 @@
+[mysqld]
+server-id=2
+log-bin=mysql-bin # Opcional pero bueno para encadenar esclavos o si el esclavo se convierte en master
+binlog-format=ROW
+gtid-mode=ON
+enforce-gtid-consistency=ON
+relay-log=slave-relay-bin
+log-slave-updates=ON
+read-only=ON # Importante para que las escrituras no vayan al esclavo directamente
+# Asegúrate que bind-address permita conexiones
+bind-address=0.0.0.0

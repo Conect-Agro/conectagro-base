@@ -93,6 +93,46 @@ test_cart:
     - echo "Ejecutando pruebas del carrito..."
     - npx jest test/cart/add-to-cart.js --passWithNoTests
 
+test_change_password:
+  stage: test
+  only:
+    - devSamir
+  script:
+    - echo "Ejecutando pruebas de cambio de contraseña..."
+    - npx jest test/auth/change-password.js --passWithNoTests
+
+test_address:
+  stage: test
+  only:
+    - devSamir
+  script:
+    - echo "Ejecutando pruebas de direcciones..."
+    - npx jest test/addresses/add-address.js --passWithNoTests
+
+test_email_service:
+  stage: test
+  only:
+    - devSamir
+  script:
+    - echo "Ejecutando pruebas del servicio de correo..."
+    - npx jest test/microservices/email-service.js --passWithNoTests
+
+test_view_orders:
+  stage: test
+  only:
+    - devSamir
+  script:
+    - echo "Ejecutando pruebas de visualización de pedidos..."
+    - npx jest test/orders/view-orders.js --passWithNoTests
+
+test_products_by_category:
+  stage: test
+  only:
+    - devKaren
+  script:
+    - echo "Ejecutando pruebas de productos por categoría..."
+    - NODE_OPTIONS=--experimental-vm-modules npx jest test/products/products-by-category.js --passWithNoTests
+
 deploy_production:
   stage: deploy
   image: alpine:latest

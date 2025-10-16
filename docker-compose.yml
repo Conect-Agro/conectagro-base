@@ -1,24 +1,66 @@
-version: '3.8'
-
 services:
-  # MySQL Database
-  mysql:
+  # MySQL Database - Master
+  mysql-master: # Renombrar el servicio mysql existente a mysql-master
     image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: conectagro
     ports:
-      - "3308:3306"
+      - "3006:3306" # Puerto del master
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_master_data:/var/lib/mysql
       - ./conectagro_schema.sql:/docker-entrypoint-initdb.d/conectagro_schema.sql
+      - ./config/mysql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./config/mysql/master.cnf:/etc/mysql/conf.d/master.cnf # Archivo de configuración del master
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: --server-id=1 --log-bin=mysql-bin --binlog-format=ROW --gtid-mode=ON --enforce-gtid-consistency=ON
+
+  mysql-slave1:
+    image: mysql:8.0
+    restart: always
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      # No MYSQL_DATABASE aquí, se replicará desde el master
+    ports:
+      - "3307:3306" # Puerto diferente para el esclavo si se expone al host
+    volumes:
+      - mysql_slave1_data:/var/lib/mysql
+      - ./config/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf # Archivo de configuración del esclavo
+    command: --server-id=2 --log-bin=mysql-bin --binlog-format=ROW --gtid-mode=ON --enforce-gtid-consistency=ON --relay-log=slave-relay-bin --log-slave-updates=ON --read-only=ON
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  mysql-slave2:
+    image: mysql:8.0
+    restart: always
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      # No MYSQL_DATABASE aquí, se replicará desde el master
+    ports:
+      - "3308:3306" # Puerto diferente para el segundo esclavo
+    volumes:
+      - mysql_slave2_data:/var/lib/mysql
+      - ./config/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf # Archivo de configuración del esclavo
+    command: --server-id=3 --log-bin=mysql-bin --binlog-format=ROW --gtid-mode=ON --enforce-gtid-consistency=ON --relay-log=slave-relay-bin --log-slave-updates=ON --read-only=ON
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   # Node.js Application
   app:
     build:
@@ -26,14 +68,60 @@ services:
       dockerfile: Dockerfile
     restart: always
     depends_on:
-      mysql:
-        condition: service_healthy
+      proxysql: # La aplicación ahora se conecta a ProxySQL
+        condition: service_started # O service_healthy si ProxySQL tiene healthcheck
     ports:
       - "3000:3000"
       - "3001:3001"
-    env_file: .env
+    env_file: .env # Asegúrate que DB_HOST en .env apunte a proxysql y el puerto correcto
     volumes:
       - ./app:/app/app
+
+  proxysql:
+    image: proxysql/proxysql:2.6.2 # Using a specific recent version
+    restart: always
+    ports:
+      - "6032:6032" # Puerto administrativo de ProxySQL
+      - "6033:6033" # Puerto SQL de ProxySQL (al que se conectará tu app)
+    volumes:
+      - ./config/proxysql/proxysql.cnf:/etc/proxysql.cnf
+      # Podrías montar un script de inicialización para configurar ProxySQL al inicio
+      - ./config/proxysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -P 6033 -umonitor -pmonitor -e 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  orchestrator:
+    image: openarkcode/orchestrator:latest
+    restart: always
+    ports:
+      - "3005:3000" # Puerto web de Orchestrator (diferente al de tu app)
+    environment:
+      ORCHESTRATOR_MYSQL_USER: orchestrator_user # Usuario que Orchestrator usará para conectarse a MySQL
+      ORCHESTRATOR_MYSQL_PASSWORD: orchestrator_password
+      # ORCHESTRATOR_TOPOLOGY_USER: orchestrator_user # Usuario para descubrir la topología
+      # ORCHESTRATOR_TOPOLOGY_PASSWORD: orchestrator_password
+      ORCHESTRATOR_DISCOVER_INTERVAL_SECONDS: 5
+      ORCHESTRATOR_RAFT_ENABLED: "false" # Para un setup simple sin Raft
+      # ORCHESTRATOR_HTTP_API_USER: # Opcional, para proteger la API de Orchestrator
+      # ORCHESTRATOR_HTTP_API_PASSWORD:
+    volumes:
+      - ./config/orchestrator/orchestrator.conf.json:/etc/orchestrator.conf.json
+      # O puedes configurar vía variables de entorno como se muestra arriba
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+      mysql-slave1:
+        condition: service_healthy
+      proxysql: # Orchestrator podría necesitar llamar a la API de ProxySQL
+        condition: service_started
 
   # RabbitMQ (Event Broker)
   rabbitmq:
@@ -106,21 +194,35 @@ services:
     env_file:
       - ./notification-service/.env
 
-  microservice-email:
+  # microservice-email:
+  #   build: 
+  #     context: ./microservice-email
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "3003:3003"
+  #   env_file:
+  #     - ./microservice-email/.env
+  #   depends_on:
+  #     - app
+  #   volumes:
+  #     - ./microservice-email:/app
+
+  microservice-sendgrid:
     build: 
-      context: ./microservice-email
+      context: ./microservice-sendGrip
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3003:3003"
+      - "3003:3003"  
     env_file:
-      - ./microservice-email/.env
+      - ./microservice-sendGrip/.env
     depends_on:
       - app
-    # volumes:
-    #   - ./microservice-email:/app
 
 volumes:
-  mysql_data:
+  mysql_master_data: {} # Nuevo volumen para el master
+  mysql_slave1_data: {} # Nuevo volumen para el esclavo
+  mysql_slave2_data: {} # Nuevo volumen para el segundo esclavo
   prometheus_data:
   grafana_data:

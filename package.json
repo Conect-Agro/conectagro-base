@@ -16,6 +16,7 @@
     "amqplib": "^0.10.8",
     "bcryptjs": "^3.0.2",
     "concurrently": "^7.0.0",
+    "conectagro": "file:",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -24,7 +25,7 @@
     "l1---sistema-login": "file:",
     "mysql": "^2.18.1",
     "mysql2": "^3.12.0",
-    "nodemailer": "^6.10.0",
+    "nodemailer": "^7.0.9",
     "prom-client": "^15.1.3"
   },
   "devDependencies": {
