@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install -g pm2 && npm install
 
 # Copy application files
 COPY . .
@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 3000 3001
 
 # Start the application
-CMD ["npm", "run", "dev"]
+CMD ["pm2-runtime", "start", "npm", "--", "run", "dev"]
