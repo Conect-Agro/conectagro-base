@@ -469,3 +469,23 @@ td {
         width: 100%;
     }
 }
+
+/* Específico para vistas tipo dashboard: no centrar verticalmente el body */
+.page-dashboard {
+  display: block !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  min-height: auto !important;
+  background: none; /* o mantener el gradiente si lo deseas */
+}
+
+/* Ajustes visuales para usar .logo del style.css */
+.page-dashboard .logo {
+  width: 120px; /* ajusta tamaño */
+  height: auto;
+}
+
+/* Si necesitas aplicar estilos adicionales específicos para el dashboard: */
+.page-dashboard .product-card { /* ejemplo */
+  border-radius: 12px;
+}
