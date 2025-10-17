@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 3000 3001
 
 # Start the application
-CMD ["pm2-runtime", "start", "npm", "--", "run", "dev"]
+CMD ["start", "npm", "--", "run", "dev"]
