@@ -1,3 +1,8 @@
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
 .poppins-light {
     font-family: "Poppins", serif;
     font-weight: 300;
@@ -5,18 +10,14 @@
 }
 
 body {
-    background-color: #171717;
-    margin: 0;
-    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100svh;
-    font-size: larger;
-    padding-top: 70px; 
-    
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 
 .form-container {
     text-align: center;
@@ -25,7 +26,59 @@ body {
     transition: .4s ease-in-out;
     background-color: white;
     border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
 }
+
+.form-container:hover {
+    transform: translateY(-3px);
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 1em;
+    animation: fadeIn 1s ease;
+}
+
+.input-error {
+  border: 2px solid #ff4d4d;
+  background-color: #fff6f6;
+  margin-bottom: 0;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.input-error-message {
+  color: #ff4d4d;
+  font-size: 1rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: left;
+  line-height: 1.1;
+  opacity: 0;
+  animation: fadeIn 0.25s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 form {
     display: flex;
@@ -37,13 +90,13 @@ input {
     border-radius: 20px;
     padding: 15px 30px;
     font-size: large;
-    border: 2px solid #645bff;
+    border: 1px solid #ccc;
 }
 
 button {
-    --primary-color: #645bff;
-    --secondary-color: #fff;
-    --hover-color: #111;
+    --primary-color: #4caf50;
+    --secondary-color: #ffffff;
+    --hover-color: #2e7d32;
     --arrow-width: 10px;
     --arrow-stroke: 2px;
     box-sizing: border-box;

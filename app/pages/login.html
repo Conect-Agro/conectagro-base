@@ -1,48 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>ConectAgro - Iniciar sesión</title>
+    <link rel="icon" type="image/png" href="assets/logo.png" />
     <link rel="stylesheet" href="style.css" />
     <script src="login.js" type="module" defer></script>
   </head>
   <body>
     <main>
       <div class="form-container">
-        <h1>Login</h1>
+        <div class="logo-container">
+          <img src="assets/logo.png" alt="Logo de ConectAgro" class="logo" />
+        </div>
+
+        <h1>Iniciar sesión</h1>
+
         <form id="login-form">
-          <label for="user" class="sr-only">Username</label>
+          <label for="user" class="sr-only">Usuario</label>
           <input
             type="text"
             name="user"
             id="user"
-            placeholder="Enter your username"
+            placeholder="Nombre de usuario"
+            required
           />
-          <label for="password" class="sr-only">Password</label>
+
+          <label for="password" class="sr-only">Contraseña</label>
           <input
             type="password"
             name="password"
             id="password"
-            placeholder="Enter your password"
-            autocompletee="current-password"
+            placeholder="Contraseña"
+            autocomplete="current-password"
+            required
           />
+
           <div class="container-button">
             <button type="submit">
-              Log in
+              Iniciar sesión
               <div class="arrow-wrapper">
                 <div class="arrow"></div>
               </div>
             </button>
           </div>
+
           <p class="error hidden">
-            Invalid username or password. Please try again.
+            Usuario o contraseña incorrectos. Inténtalo de nuevo.
           </p>
-          <p class="account-text">Don't have an account yet? - <a href="/register">Sign up</a></p>
-          <a href="/recoverPassword" class="recover-link">Forgot your password?</a>
+
+          <p class="account-text">
+            ¿No tienes cuenta?
+            <a href="/register">Regístrate aquí</a>
+          </p>
+
+          <a href="/recoverPassword" class="recover-link">¿Olvidaste tu contraseña?</a>
         </form>
       </div>
     </main>
-     
   </body>
 </html>
