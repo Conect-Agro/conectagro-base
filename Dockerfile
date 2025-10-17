@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package*.json ./
-RUN npm install -g pm2 && npm install
+RUN  npm install
 
 # Copy application files
 COPY . .
