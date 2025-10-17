@@ -1,9 +1,11 @@
-import amqp from 'amqplib';
+import amqp from "amqplib";
+import dotenv from "dotenv";
+dotenv.config();
 
 async function publishLowStock(product) {
-  const connection = await amqp.connect('amqp://user:password@rabbitmq:5672');
+  const connection = await amqp.connect(process.env.RABBITMQ_URL);
   const channel = await connection.createChannel();
-  const queue = 'low_stock_alerts';
+  const queue = "low_stock_alerts";
 
   await channel.assertQueue(queue, { durable: true });
 
