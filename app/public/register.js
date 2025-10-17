@@ -19,7 +19,12 @@ document.getElementById("register-form").addEventListener("submit",async(e)=>{
   });
   if (!res.ok) return errorMessage.classList.toggle("hidden", false);
   const resJson = await res.json();
+  
+  // Ocultar mensaje de error si está visible
+  errorMessage.classList.toggle("hidden", true);
+  
   if (resJson.redirect) {
+
     window.location.href = resJson.redirect;
   }
 })

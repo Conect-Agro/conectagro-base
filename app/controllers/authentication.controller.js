@@ -36,7 +36,15 @@ async function login(req, res) {
     setTokenCookie(res, token);
     await resetFailedAttempts(user);
 
-    res.send({ status: "ok", message: "User logged in", redirect: "/productor" });
+    // Obtener el rol del usuario para redirigir correctamente
+    const userRole = await getUserRole(userToReview.user_id);
+    let redirectPath = "/client"; // Por defecto a cliente
+    
+    if (userRole && userRole.role_name === 'productor') {
+      redirectPath = "/productor";
+    }
+
+    res.send({ status: "ok", message: "User logged in", redirect: redirectPath });
   } catch (error) {
     console.error("Error during login process:", error);
     res.status(500).send({ status: "Error", message: "Server error" });
@@ -154,15 +162,31 @@ async function saveRegister(req, res) {
 
         return res.status(201).json({
           status: "ok",
-          message: "User registered successfully with role 'cliente'",
-          redirect: "/",
+          message: "Registro exitoso. Ahora inicia sesión con tus credenciales",
+          redirect: "/login",
         });
       });
     });
   });
 }
 
-
+function getUserRole(userId) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT r.role_name 
+      FROM roles r 
+      JOIN user_roles ur ON r.role_id = ur.role_id 
+      WHERE ur.user_id = ?
+    `;
+    connectiondb.query(query, [userId], (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result[0] || null);
+      }
+    });
+  });
+}
 
 export const methods = {
   login,
