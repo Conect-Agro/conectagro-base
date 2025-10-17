@@ -1,6 +1,7 @@
 import connectiondb from "../database/database.js";
 import { publishLowStock } from "./product-checker.js";
 
+
 // Función para enviar el resumen del pedido al microservicio de email
 async function sendOrderSummary(userId, orderId) {
   try {
