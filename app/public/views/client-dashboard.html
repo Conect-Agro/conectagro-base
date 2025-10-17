@@ -1,698 +1,1333 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ConectAgro - Tienda Online</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="/style.css" />
+
     <style>
-        .product-card {
-            transition: transform 0.3s;
-            height: 100%;
+      :root {
+        --primary-color: #4caf50; /* Verde Principal */
+        --secondary-color: #388e3c; /* Verde Oscuro */
+        --light-bg: #e8f5e9; /* Fondo muy claro */
+        --white: #ffffff;
+        --dark: #333;
+        --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .page-dashboard {
+        background-color: var(--light-bg);
+        font-family: "Poppins", sans-serif;
+        color: var(--dark);
+      }
+
+      /* --- NAVBAR --- */
+      .navbar {
+        background-color: var(--white) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border-radius: 0 0 20px 20px;
+        padding: 1em 0;
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        color: var(--secondary-color) !important;
+      }
+
+      .nav-link {
+        color: var(--dark) !important;
+        font-weight: 500;
+        transition: color 0.2s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--primary-color) !important;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+
+      .btn-outline-success {
+        border-radius: 20px;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transition: all 0.2s ease;
+      }
+
+      .btn-outline-success:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+      }
+
+      /* --- HERO --- */
+      .bg-success {
+        background-color: var(--primary-color) !important;
+        border-radius: 0 0 30px 30px;
+      }
+
+      .bg-success .btn-light {
+        color: var(--primary-color);
+        border-radius: 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .bg-success .btn-light:hover {
+        background-color: var(--light-bg);
+      }
+
+      /* --- SEARCH BAR --- */
+      .search-bar {
+        border-radius: 20px 0 0 20px;
+        border: 1.5px solid var(--primary-color);
+        box-shadow: 0 2px 4px rgba(76, 175, 80, 0.15);
+        font-size: 1rem;
+      }
+
+      .search-btn {
+        border-radius: 0 20px 20px 0;
+        background-color: var(--primary-color);
+        border: none;
+        transition: background 0.2s ease;
+      }
+
+      .search-btn:hover {
+        background-color: var(--secondary-color);
+      }
+
+      /* --- CATEGORY PILLS --- */
+      .category-pill {
+        background-color: var(--white) !important;
+        border: 1px solid var(--primary-color) !important;
+        color: var(--primary-color) !important;
+        border-radius: 20px;
+        font-weight: 500;
+        padding: 0.4em 1em;
+        cursor: pointer; /* Añadir cursor para indicar que es interactivo */
+        transition: all 0.2s ease;
+      }
+
+      .category-pill:hover,
+      .category-pill.active {
+        background-color: var(--primary-color) !important;
+        color: var(--white) !important;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.2);
+      }
+
+      /* --- PRODUCTOS --- */
+      .product-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        background-color: var(--white);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        box-shadow: var(--shadow-light);
+        display: flex; /* Para asegurar que el card footer se alinee abajo */
+        flex-direction: column;
+      }
+
+      .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Contenedor de imagen general */
+      .product-img-container {
+        border-bottom: 1px solid #e0e0e0;
+        background-color: #fafafa;
+        /* Estilo para que todas las imágenes de la rejilla principal tengan la misma altura */
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .product-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Recorta la imagen para cubrir el contenedor */
+      }
+
+      /* *** SOLUCIÓN PARA IMÁGENES DEL CARRUSEL DE DESTACADOS *** */
+      .featured-product-img-container {
+        /* Color de fondo para diferenciar del blanco de las cards */
+        background-color: var(--primary-color);
+        /* Altura fija para el carrusel, para que las imágenes se vean completas. */
+        height: 300px;
+        overflow: hidden;
+        /* Gradiente para el efecto verde superpuesto en el carrusel */
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .featured-product-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      /* Añadir un sutil overlay verde para el estilo de la imagen destacada */
+      .featured-product-img-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* Tonalidad verde semitransparente. Ajusta el valor rgba si lo deseas. */
+        background: rgba(76, 175, 80, 0.3);
+        z-index: 1;
+      }
+      /* Fin Solución Carrusel */
+
+      .card-body {
+        flex-grow: 1; /* Permite que el cuerpo ocupe el espacio disponible */
+      }
+
+      .card-title {
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .card-text.text-success {
+        color: var(--secondary-color) !important;
+        font-weight: 700; /* Más peso para el precio */
+        font-size: 1.25rem;
+      }
+
+      .card-footer {
+        margin-top: auto; /* Empuja el footer a la parte inferior de la tarjeta */
+      }
+
+      /* --- BADGES --- */
+      /* Ajustar la posición de los badges para que no se superpongan y estén dentro de la card */
+      .product-card .badge {
+        position: absolute;
+        z-index: 10;
+        margin: 10px;
+      }
+
+      .featured-badge {
+        background-color: #e53935 !important;
+        border-radius: 12px;
+        padding: 0.4em 0.6em;
+        font-size: 0.8rem;
+        top: 0;
+        left: 0;
+      }
+
+      .organic-badge {
+        background-color: #81c784 !important;
+        border-radius: 12px;
+        padding: 0.4em 0.6em;
+        font-size: 0.8rem;
+        color: var(--white);
+        top: 0;
+        right: 0;
+      }
+
+      /* Ajustar la posición de los badges en el carrusel ya que las cards no usan la clase product-card directamente */
+      .carousel-item .badge {
+        position: absolute;
+        z-index: 10;
+        margin: 10px;
+      }
+
+      .carousel-item .featured-badge {
+        top: 10px;
+        left: 10px;
+      }
+
+      .carousel-item .organic-badge {
+        top: 10px;
+        right: 10px;
+      }
+
+      /* --- CARRUSEL CONTROLERS --- */
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        width: 3rem;
+        height: 3rem;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        opacity: 0.9;
+        transition: all 0.3s ease;
+      }
+
+      .carousel-control-prev-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3e%3c/svg%3e");
+      }
+
+      .carousel-control-next-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+      }
+
+      .carousel-control-prev:hover .carousel-control-prev-icon,
+      .carousel-control-next:hover .carousel-control-next-icon {
+        background-color: var(--secondary-color);
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      .carousel-control-prev,
+      .carousel-control-next {
+        width: 5%;
+        opacity: 1;
+      }
+
+      /* --- BOTONES PRODUCTOS --- */
+      .add-to-cart {
+        border-radius: 20px !important;
+        font-weight: 600;
+        padding: 10px 0;
+        transition: all 0.2s ease;
+      }
+
+      .add-to-cart:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+      }
+
+      /* --- PAGINATION --- */
+      .pagination .page-link {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+        transition: background-color 0.2s;
+      }
+
+      .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--white);
+      }
+
+      .pagination .page-link:hover {
+        background-color: var(--light-bg);
+        color: var(--secondary-color);
+      }
+
+      /* --- FOOTER --- */
+      footer {
+        background-color: #212529 !important; /* Un poco más oscuro que el dark por defecto de Bootstrap */
+        border-radius: 30px 30px 0 0;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      footer h5 {
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      footer a {
+        color: #adb5bd;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      footer a:hover {
+        color: #81c784 !important; /* Verde claro al pasar el ratón */
+      }
+
+      /* --- CARRITO OFFCANVAS --- */
+      .offcanvas-header {
+        border-radius: 0 0 15px 15px;
+      }
+
+      /* --- RESPONSIVE --- */
+      @media (max-width: 768px) {
+        .navbar-brand {
+          font-size: 1.2rem;
         }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
+
         .product-img-container {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+          height: 160px;
         }
-        .product-img {
-            max-height: 180px;
-            object-fit: cover;
+
+        .featured-product-img-container {
+          height: 200px; /* Altura más pequeña en móvil */
         }
-        .category-pill {
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .product-card {
+          border-radius: 15px;
         }
-        .category-pill:hover, .category-pill.active {
-            background-color: #198754 !important;
-            color: white !important;
-        }
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #198754;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .search-bar {
-            border-radius: 20px;
-            border: 1px solid #198754;
-        }
-        .search-btn {
-            border-radius: 0 20px 20px 0;
-        }
-        .featured-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-        }
-        .organic-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
-            background-color: #84b96e;
-        }
+      }
     </style>
-</head>
-<body>
-    <!-- Navbar -->
+  </head>
+  <body class="page-dashboard">
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <!-- <img src="/img/logo.png" alt="ConectAgro" height="40"> -->
-                ConectAgro
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Tienda</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/orders">Mis Pedidos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Productores</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contacto</a>
-                    </li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <div class="position-relative me-3">
-                        <button class="btn btn-outline-success position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
-                            <i class="bi bi-cart3"></i>
-                            <span class="cart-count">0</span>
-                        </button>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i>
-                            Mi Cuenta
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
-                            <li><a class="dropdown-item" href="#">Mis Direcciones</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="/logout">Cerrar Sesión</a></li>
-                        </ul>
-                    </div>
-                </div>
+      <div class="container">
+        <img
+          src="assets/logo.png"
+          alt="Logo de ConectAgro"
+          class="logo"
+          style="width: 100px; height: auto"
+        />
+        <a class="navbar-brand" href="#"> ConectAgro </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Tienda</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/orders">Mis Pedidos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Productores</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contacto</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center">
+            <div class="position-relative me-3">
+              <button
+                class="btn btn-success position-relative"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#cartOffcanvas"
+                aria-controls="cartOffcanvas"
+              >
+                <i class="bi bi-cart3 me-1"></i>
+                <span
+                  class="badge rounded-pill bg-danger cart-count position-absolute top-0 start-100 translate-middle"
+                  >0</span
+                >
+              </button>
             </div>
+            <div class="dropdown">
+              <button
+                class="btn btn-outline-secondary dropdown-toggle"
+                type="button"
+                id="userMenu"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle"></i>
+                Mi Cuenta
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="userMenu"
+              >
+                <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                <li><a class="dropdown-item" href="#">Mis Direcciones</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item text-danger" href="/logout"
+                    >Cerrar Sesión</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
     </nav>
 
-    <!-- Banner Hero -->
-    <div class="bg-success text-white p-4 mb-4">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h1>Productos Frescos del Campo</h1>
-                    <p class="lead">Directo de nuestros productores locales a tu mesa</p>
-                    <div class="mt-3">
-                        <button class="btn btn-light">Conoce más</button>
-                    </div>
-                </div>
-                <div class="col-md-6 text-center">
-                    <!-- <img src="https://via.placeholder.com/600x300" alt="Productos frescos" class="img-fluid rounded" style="max-height: 200px;"> -->
-                </div>
+    <div class="bg-success text-white p-4 mb-5">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-5">
+            <h1>Productos Frescos del Campo</h1>
+            <p class="lead">
+              Directo de nuestros <strong>productores locales</strong> a tu
+              mesa, con la calidad que mereces.
+            </p>
+            <div class="mt-4">
+              <button class="btn btn-light btn-lg">
+                Explora la Tienda <i class="bi bi-arrow-right"></i>
+              </button>
             </div>
+          </div>
+          <!-- <div class="col-md-2 text-center d-none d-md-block">
+            <img
+              src="assets/iconFarm.png"
+              alt="Ilustración de campo"
+              class="img-fluid"
+            />
+          </div> -->
         </div>
+      </div>
     </div>
 
-    <!-- Main Content -->
     <div class="container mb-5">
-        <!-- Search and Filter Bar -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <div class="input-group">
-                    <input type="text" class="form-control search-bar" placeholder="Buscar productos...">
-                    <button class="btn btn-success search-btn" type="button">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <select class="form-select">
-                    <option selected>Ordenar por...</option>
-                    <option>Precio: De menor a mayor</option>
-                    <option>Precio: De mayor a menor</option>
-                    <option>Más populares</option>
-                    <option>Novedades</option>
-                </select>
-            </div>
+      <div class="row mb-5 gy-3">
+        <div class="col-md-8">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control search-bar"
+              placeholder="Buscar frutas, lácteos, tubérculos, etc."
+              aria-label="Buscar productos"
+            />
+            <button class="btn btn-success search-btn" type="button">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </div>
         </div>
-
-        <!-- Categories -->
-        <div class="mb-4 d-flex flex-wrap gap-2" id="categories-container">
-            <span class="badge rounded-pill bg-light text-dark border category-pill active" data-category-id="0">Todos</span>
-            <!-- Las demás categorías se cargarán dinámicamente -->
+        <div class="col-md-4">
+          <select class="form-select border-success rounded-pill p-2">
+            <option selected>Ordenar por...</option>
+            <option>Precio: De menor a mayor</option>
+            <option>Precio: De mayor a menor</option>
+            <option>Más populares</option>
+            <option>Novedades</option>
+          </select>
         </div>
+      </div>
 
-        <!-- Featured Products Carousel -->
-        <h3 class="mb-3">Productos Destacados</h3>
-        <div class="row mb-5">
-            <div class="col-12">
-                <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner" id="featured-products-container">
-                        <!-- Los productos destacados se cargarán aquí dinámicamente -->
-                        <div class="text-center my-4">
-                            <div class="spinner-border text-success" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
-                        </div>
+      <h3 class="mb-3 border-bottom pb-2">Categorías</h3>
+      <div class="mb-5 d-flex flex-wrap gap-2" id="categories-container">
+        <span
+          class="badge rounded-pill bg-light text-dark border category-pill active"
+          data-category-id="0"
+          >Todos</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="1"
+          >Frutas</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="2"
+          >Verduras</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="3"
+          >Tubérculos</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="4"
+          >Granos</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="5"
+          >Lácteos</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="6"
+          >Procesados</span
+        >
+        <span class="badge rounded-pill category-pill" data-category-id="7"
+          >Orgánicos</span
+        >
+      </div>
+
+      <h2 class="mb-3">
+        <i class=" text-warning me-2"></i> Productos Destacados
+      </h2>
+      <div class="row mb-5">
+        <div class="col-12">
+          <div
+            id="featuredCarousel"
+            class="carousel slide"
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner" id="featured-products-container">
+              <div class="carousel-item active">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <div class="card product-card h-100 position-relative">
+                      <span class="badge bg-danger featured-badge"
+                        >Destacado</span
+                      >
+                      <div class="featured-product-img-container">
+                        <img
+                          src="https://i.imgur.com/k9b6XzT.jpg"
+                          class="img-fluid"
+                          alt="Panela Artesanal"
+                        />
+                      </div>
+                      <div class="card-body">
+                        <h5 class="card-title">Panela Artesanal</h5>
+                        <p class="card-text text-success">$3.80</p>
+                        <p class="card-text small text-muted">
+                          Categoría: Procesados
+                        </p>
+                      </div>
+                      <div class="card-footer bg-white border-0">
+                        <button
+                          class="btn btn-success w-100 add-to-cart"
+                          data-product-id="1"
+                        >
+                          <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                      </div>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon bg-success rounded-circle" aria-hidden="true"></span>
-                        <span class="visually-hidden">Anterior</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon bg-success rounded-circle" aria-hidden="true"></span>
-                        <span class="visually-hidden">Siguiente</span>
-                    </button>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <div class="card product-card h-100 position-relative">
+                      <span class="badge organic-badge">Orgánico</span>
+                      <div class="featured-product-img-container">
+                        <img
+                          src="https://i.imgur.com/lM8m5Qh.jpg"
+                          class="img-fluid"
+                          alt="Zanahorias Orgánicas"
+                        />
+                      </div>
+                      <div class="card-body">
+                        <h5 class="card-title">Zanahorias Orgánicas</h5>
+                        <p class="card-text text-success">$5.50</p>
+                        <p class="card-text small text-muted">
+                          Categoría: Verduras
+                        </p>
+                      </div>
+                      <div class="card-footer bg-white border-0">
+                        <button
+                          class="btn btn-success w-100 add-to-cart"
+                          data-product-id="2"
+                        >
+                          <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <div class="card product-card h-100 position-relative">
+                      <div class="featured-product-img-container">
+                        <img
+                          src="https://i.imgur.com/QhW1l0i.jpg"
+                          class="img-fluid"
+                          alt="Queso Fresco Campesino"
+                        />
+                      </div>
+                      <div class="card-body">
+                        <h5 class="card-title">Queso Fresco Campesino</h5>
+                        <p class="card-text text-success">$12.00</p>
+                        <p class="card-text small text-muted">
+                          Categoría: Lácteos
+                        </p>
+                      </div>
+                      <div class="card-footer bg-white border-0">
+                        <button
+                          class="btn btn-success w-100 add-to-cart"
+                          data-product-id="3"
+                        >
+                          <i class="bi bi-cart-plus"></i> Agregar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <div class="text-center my-4 d-none">
+                <div class="spinner-border text-success" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
             </div>
-        </div>
 
-        <!-- All Products -->
-        <h3 class="mb-3">Todos los productos</h3>
-        <div class="row g-4" id="products-container">
-            <!-- Los productos se cargarán dinámicamente aquí -->
+            <button
+              class="carousel-control-prev"
+              type="button"
+              data-bs-target="#featuredCarousel"
+              data-bs-slide="prev"
+            >
+              <span class="visually-hidden">Anterior</span>
+            </button>
+            <button
+              class="carousel-control-next"
+              type="button"
+              data-bs-target="#featuredCarousel"
+              data-bs-slide="next"
+            >
+              <span class="visually-hidden">Siguiente</span>
+            </button>
+          </div>
         </div>
+      </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-5">
-            <nav>
-                <ul class="pagination">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Siguiente</a>
-                    </li>
-                </ul>
-            </nav>
+      <h2 class="mb-4">
+        <i class="bi bi-grid-fill me-2"></i> Todos los Productos
+      </h2>
+      <div class="row g-4" id="products-container">
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="card product-card h-100 position-relative">
+            <span class="badge organic-badge">Orgánico</span>
+            <div class="product-img-container">
+              <img
+                src="https://via.placeholder.com/300x200/a5d6a7/2e7d32?text=Tomates+Organicos"
+                class="product-img"
+                alt="Tomates Orgánicos"
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Tomates Orgánicos</h5>
+              <p class="card-text text-success">$4.50</p>
+              <p class="card-text small text-muted">Categoría: Verduras</p>
+            </div>
+            <div class="card-footer bg-white border-0">
+              <button
+                class="btn btn-success w-100 add-to-cart"
+                data-product-id="4"
+              >
+                <i class="bi bi-cart-plus"></i> Agregar
+              </button>
+            </div>
+          </div>
         </div>
+        <div class="col-lg-3 col-md-4 col-sm-6">
+          <div class="card product-card h-100 position-relative">
+            <div class="product-img-container">
+              <img
+                src="https://via.placeholder.com/300x200/ffcc80/b35e00?text=Huevos+Campesinos"
+                class="product-img"
+                alt="Huevos Campesinos"
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Huevos Campesinos (Docena)</h5>
+              <p class="card-text text-success">$6.20</p>
+              <p class="card-text small text-muted">Categoría: Lácteos</p>
+            </div>
+            <div class="card-footer bg-white border-0">
+              <button
+                class="btn btn-success w-100 add-to-cart"
+                data-product-id="5"
+              >
+                <i class="bi bi-cart-plus"></i> Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center mt-5">
+        <nav aria-label="Navegación de productos">
+          <ul class="pagination rounded-pill">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1" aria-disabled="true"
+                >Anterior</a
+              >
+            </li>
+            <li class="page-item active" aria-current="page">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">Siguiente</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
 
-    <!-- Shopping Cart Offcanvas -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
-        <div class="offcanvas-header bg-success text-white">
-            <h5 class="offcanvas-title" id="cartOffcanvasLabel">Tu Carrito</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="cart-items mb-3" id="cart-items-container">
-                <!-- Items del carrito se cargarán aquí dinámicamente -->
-                <div class="text-center my-4">
-                    <div class="spinner-border text-success" role="status">
-                        <span class="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
+    <div
+      class="offcanvas offcanvas-end"
+      tabindex="-1"
+      id="cartOffcanvas"
+      aria-labelledby="cartOffcanvasLabel"
+    >
+      <div class="offcanvas-header bg-success text-white">
+        <h5 class="offcanvas-title" id="cartOffcanvasLabel">
+          Tu Carrito <i class="bi bi-cart-fill"></i>
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column">
+        <div class="cart-items mb-3 flex-grow-1" id="cart-items-container">
+          <p class="text-center text-muted my-5">Tu carrito está vacío.</p>
+          <div class="text-center my-4 d-none">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Cargando...</span>
             </div>
-            <div class="cart-summary bg-light p-3 rounded">
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Subtotal:</span>
-                    <span class="fw-bold" id="cart-subtotal">$0.00</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Envío:</span>
-                    <span class="fw-bold" id="cart-shipping">$2.00</span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="fw-bold">Total:</span>
-                    <span class="fw-bold text-success" id="cart-total">$0.00</span>
-                </div>
-                <button class="btn btn-success w-100" id="checkout-btn" onclick="window.location.href='/checkout'" disabled>
-                    Proceder al Checkout
-                </button>
-            </div>
+          </div>
         </div>
+        <div class="cart-summary bg-light p-3 rounded mt-auto">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span class="fw-bold" id="cart-subtotal">$0.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Envío:</span>
+            <span class="fw-bold" id="cart-shipping">$2.00</span>
+          </div>
+          <hr />
+          <div class="d-flex justify-content-between mb-3">
+            <span class="fw-bold fs-5">Total:</span>
+            <span class="fw-bold text-success fs-5" id="cart-total">$0.00</span>
+          </div>
+          <button
+            class="btn btn-success w-100 btn-lg"
+            id="checkout-btn"
+            onclick="window.location.href='/checkout'"
+            disabled
+          >
+            Proceder al Checkout <i class="bi bi-arrow-right-circle-fill"></i>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h5>ConectAgro</h5>
-                    <p class="small">Conectando productores locales con consumidores responsables.</p>
-                </div>
-                <div class="col-md-3">
-                    <h5>Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50">Sobre Nosotros</a></li>
-                        <li><a href="#" class="text-white-50">Productos</a></li>
-                        <li><a href="#" class="text-white-50">Productores</a></li>
-                        <li><a href="#" class="text-white-50">Contacto</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5>Ayuda</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white-50">Preguntas Frecuentes</a></li>
-                        <li><a href="#" class="text-white-50">Términos y Condiciones</a></li>
-                        <li><a href="#" class="text-white-50">Políticas de Privacidad</a></li>
-                        <li><a href="#" class="text-white-50">Envíos y Devoluciones</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5>Contáctanos</h5>
-                    <p class="small text-white-50">
-                        <i class="bi bi-envelope me-2"></i> info@conectagro.com<br>
-                        <i class="bi bi-telephone me-2"></i> +57 320 348 7890<br>
-                        <i class="bi bi-geo-alt me-2"></i> Duitama, Colombia
-                    </p>
-                    <div class="mt-3">
-                        <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-white me-2"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
-                    </div>
-                </div>
+    <footer class="bg-dark text-white py-5 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3 mb-4">
+            <h5>ConectAgro</h5>
+            <p class="small text-white-50">
+              Conectando productores locales con consumidores responsables.
+            </p>
+          </div>
+          <div class="col-md-3 mb-4">
+            <h5>Enlaces Rápidos</h5>
+            <ul class="list-unstyled">
+              <li><a href="#">Sobre Nosotros</a></li>
+              <li><a href="#">Productos</a></li>
+              <li><a href="#">Productores</a></li>
+              <li><a href="#">Contacto</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3 mb-4">
+            <h5>Ayuda</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="#">Preguntas Frecuentes</a>
+              </li>
+              <li>
+                <a href="#">Términos y Condiciones</a>
+              </li>
+              <li>
+                <a href="#">Políticas de Privacidad</a>
+              </li>
+              <li>
+                <a href="#">Envíos y Devoluciones</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3 mb-4">
+            <h5>Contáctanos</h5>
+            <p class="small text-white-50">
+              <i class="bi bi-envelope me-2"></i> info@conectagro.com<br />
+              <i class="bi bi-telephone me-2"></i> +57 320 348 7890<br />
+              <i class="bi bi-geo-alt me-2"></i> Duitama, Colombia
+            </p>
+            <div class="mt-3 fs-4">
+              <a href="#" class="text-white me-3"
+                ><i class="bi bi-facebook"></i
+              ></a>
+              <a href="#" class="text-white me-3"
+                ><i class="bi bi-instagram"></i
+              ></a>
+              <a href="#" class="text-white me-3"
+                ><i class="bi bi-twitter"></i
+              ></a>
+              <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
             </div>
-            <hr class="bg-secondary">
-            <div class="text-center">
-                <p class="small text-white-50 mb-0">&copy; 2025 ConectAgro. Todos los derechos reservados.</p>
-            </div>
+          </div>
         </div>
+        <hr class="border-secondary" />
+        <div class="text-center">
+          <p class="small text-white-50 mb-0">
+            &copy; 2025 ConectAgro. Todos los derechos reservados.
+          </p>
+        </div>
+      </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Simple cart functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const addToCartButtons = document.querySelectorAll('.add-to-cart');
-            const cartCount = document.querySelector('.cart-count');
-            let count = 0;
-
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    count++;
-                    cartCount.textContent = count;
-                    
-                    // Animation effect
-                    button.innerHTML = '<i class="bi bi-check-lg"></i> Agregado';
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-outline-success');
-                    
-                    setTimeout(() => {
-                        button.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar';
-                        button.classList.add('btn-success');
-                        button.classList.remove('btn-outline-success');
-                    }, 1500);
-                });
-            });
-
-            // Category filter
-            const categoryPills = document.querySelectorAll('.category-pill');
-            categoryPills.forEach(pill => {
-                pill.addEventListener('click', function() {
-                    // Remove active class from all pills
-                    categoryPills.forEach(p => p.classList.remove('active'));
-                    // Add active class to clicked pill
-                    this.classList.add('active');
-                });
-            });
+      // Category filter
+      const categoryPills = document.querySelectorAll(".category-pill");
+      categoryPills.forEach((pill) => {
+        pill.addEventListener("click", function () {
+          // Remove active class from all pills
+          categoryPills.forEach((p) => p.classList.remove("active"));
+          // Add active class to clicked pill
+          this.classList.add("active");
         });
+      });
 
-        // Función para cargar productos destacados
-        function loadFeaturedProducts() {
-            fetch('/api/products/featured')
-                .then(response => response.json())
-                .then(products => {
-                    const container = document.getElementById('featured-products-container');
-                    
-                    // Agrupar productos en grupos de 3
-                    const groupedProducts = [];
-                    for (let i = 0; i < products.length; i += 3) {
-                        groupedProducts.push(products.slice(i, i + 3));
-                    }
-                    
-                    container.innerHTML = groupedProducts.map((group, index) => `
-                        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+      // Función para cargar productos destacados
+      function loadFeaturedProducts() {
+        fetch("/api/products/featured")
+          .then((response) => response.json())
+          .then((products) => {
+            const container = document.getElementById(
+              "featured-products-container"
+            );
+
+            // Agrupar productos en grupos de 3
+            const groupedProducts = [];
+            for (let i = 0; i < products.length; i += 3) {
+              groupedProducts.push(products.slice(i, i + 3));
+            }
+
+            // Generar el HTML para los ítems del carrusel
+            container.innerHTML = groupedProducts
+              .map(
+                (group, index) => `
+                        <div class="carousel-item ${
+                          index === 0 ? "active" : ""
+                        }">
                             <div class="row">
-                                ${group.map(product => `
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card product-card h-100 position-relative">
-                                            ${product.is_featured ? '<span class="badge bg-danger featured-badge">Destacado</span>' : ''}
-                                            ${product.category_name === 'Orgánicos' ? '<span class="badge organic-badge">Orgánico</span>' : ''}
-                                            <div class="product-img-container">
-                                                <img src="${product.image_url || 'https://placehold.co/300x300'}" 
-                                                     class="product-img" alt="${product.product_name}">
-                                            </div>
-                                            <div class="card-body">
-                                                <h5 class="card-title">${product.product_name}</h5>
-                                                <p class="card-text text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
-                                                <p class="card-text small text-muted">Categoría: ${product.category_name}</p>
-                                            </div>
-                                            <div class="card-footer bg-white border-0">
-                                                <button class="btn btn-success w-100 add-to-cart" data-product-id="${product.product_id}">
-                                                    <i class="bi bi-cart-plus"></i> Agregar
-                                                </button>
+                                ${group
+                                  .map(
+                                    (product) => `
+                                        <div class="col-md-4 mb-3">
+                                            <div class="card product-card h-100 position-relative">
+                                                ${
+                                                  product.is_featured
+                                                    ? '<span class="badge bg-danger featured-badge">Destacado</span>'
+                                                    : ""
+                                                }
+                                                ${
+                                                  product.is_organic
+                                                    ? '<span class="badge organic-badge">Orgánico</span>'
+                                                    : ""
+                                                }
+                                                <div class="featured-product-img-container">
+                                                    <img src="${
+                                                      product.image_url ||
+                                                      "https://placehold.co/300x300"
+                                                    }"
+                                                        class="product-img" alt="${
+                                                          product.product_name
+                                                        }">
+                                                </div>
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${
+                                                      product.product_name
+                                                    }</h5>
+                                                    <p class="card-text text-success fw-bold">$${parseFloat(
+                                                      product.price
+                                                    ).toFixed(2)}</p>
+                                                    <p class="card-text small text-muted">Categoría: ${
+                                                      product.category_name
+                                                    }</p>
+                                                </div>
+                                                <div class="card-footer bg-white border-0">
+                                                    <button class="btn btn-success w-100 add-to-cart" data-product-id="${
+                                                      product.product_id
+                                                    }">
+                                                        <i class="bi bi-cart-plus"></i> Agregar
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                `).join('')}
+                                    `
+                                  )
+                                  .join("")}
                             </div>
                         </div>
-                    `).join('');
+                    `
+              )
+              .join("");
 
-                    setupAddToCartButtons();
-                })
-                .catch(error => {
-                    console.error('Error loading featured products:', error);
-                    document.getElementById('featured-products-container').innerHTML = `
-                        <div class="alert alert-danger">
-                            Error al cargar los productos destacados.
-                        </div>
-                    `;
-                });
-        }
+            // (Opcional) Inicializar el carrusel de Bootstrap
+            // Si Bootstrap ya lo inicializa automáticamente con data-bs-ride="carousel" en el HTML,
+            // esta línea podría no ser estrictamente necesaria, pero es una buena práctica
+            // si se carga el contenido de forma dinámica.
+            // new bootstrap.Carousel(document.querySelector('#featured-carousel')); // Asegúrate de usar el ID correcto
 
-        // Función para cargar productos
-        function loadProducts() {
-            fetch('/api/products')
-                .then(response => response.json())
-                .then(products => {
-                    const container = document.getElementById('products-container');
-                    container.innerHTML = products.map(product => `
-                        <div class="col-md-3 col-sm-6">
-                            <div class="card product-card h-100">
-                                ${product.is_organic ? '<span class="badge organic-badge">Orgánico</span>' : ''}
-                                ${product.is_featured ? '<span class="badge bg-danger featured-badge">Destacado</span>' : ''}
-                                <div class="product-img-container">
-                                    <img src="${product.image_url || 'https://placehold.co/300x300'}" 
-                                         class="product-img" alt="${product.product_name}">
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">${product.product_name}</h5>
-                                    <p class="card-text text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
-                                    <p class="card-text small text-muted">Categoría: ${product.category_name}</p>
-                                </div>
-                                <div class="card-footer bg-white border-0">
-                                    <button class="btn btn-success w-100 add-to-cart" data-product-id="${product.product_id}">
-                                        <i class="bi bi-cart-plus"></i> Agregar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    setupAddToCartButtons();
-                })
-                .catch(error => {
-                    console.error('Error loading products:', error);
-                    document.getElementById('products-container').innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-danger">
-                                Error al cargar los productos. Por favor, intenta nuevamente.
-                            </div>
-                        </div>
-                    `;
-                });
-        }
-
-        // Función para configurar los botones de añadir al carrito
-        function setupAddToCartButtons() {
-            const addToCartButtons = document.querySelectorAll('.add-to-cart');
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', async function() {
-                    const productId = this.dataset.productId;
-                    
-                    try {
-                        const response = await fetch('/api/cart', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                productId: productId,
-                                quantity: 1
-                            })
-                        });
-
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Obtener el conteo actualizado del carrito
-                            const cartResponse = await fetch('/api/cart');
-                            const cartData = await cartResponse.json();
-                            updateCartCount(cartData.itemCount);
-
-                            // Animation effect
-                            button.innerHTML = '<i class="bi bi-check-lg"></i> Agregado';
-                            button.classList.remove('btn-success');
-                            button.classList.add('btn-outline-success');
-                            
-                            setTimeout(() => {
-                                button.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar';
-                                button.classList.add('btn-success');
-                                button.classList.remove('btn-outline-success');
-                            }, 1500);
-                        } else {
-                            alert(data.error);
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error al añadir al carrito');
-                    }
-                });
-            });
-        }
-
-        // Función para cargar categorías
-        async function loadCategories() {
-            try {
-                const response = await fetch('/api/categories');
-                if (!response.ok) throw new Error('Error loading categories');
-                const categories = await response.json();
-                
-                const container = document.getElementById('categories-container');
-                const categoriesHTML = categories.map(category => `
-                    <span class="badge rounded-pill bg-light text-dark border category-pill" 
-                          data-category-id="${category.category_id}">
-                        ${category.category_name}
-                    </span>
-                `).join('');
-                
-                // Mantener el botón "Todos" y añadir las categorías después
-                container.innerHTML = `
-                    <span class="badge rounded-pill bg-light text-dark border category-pill active" 
-                          data-category-id="0">Todos</span>
-                    ${categoriesHTML}
-                `;
-
-                // Configurar los event listeners para el filtrado
-                setupCategoryFilters();
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('categories-container').innerHTML = `
-                    <div class="alert alert-danger">
-                        Error al cargar las categorías.
-                    </div>
-                `;
-            }
-        }
-
-        // Función para configurar los filtros de categoría
-        function setupCategoryFilters() {
-            const categoryPills = document.querySelectorAll('.category-pill');
-            categoryPills.forEach(pill => {
-                pill.addEventListener('click', function() {
-                    // Remover clase active de todas las pills
-                    categoryPills.forEach(p => p.classList.remove('active'));
-                    // Añadir clase active a la pill seleccionada
-                    this.classList.add('active');
-                    
-                    const categoryId = this.dataset.categoryId;
-                    if (categoryId === '0') {
-                        loadProducts(); // Cargar todos los productos
-                    } else {
-                        loadProductsByCategory(categoryId); // Cargar productos por categoría
-                    }
-                });
-            });
-        }
-
-        // Función para cargar productos por categoría
-        async function loadProductsByCategory(categoryId) {
-            try {
-                const response = await fetch(`/api/products/category/${categoryId}`);
-                if (!response.ok) throw new Error('Error loading products');
-                const products = await response.json();
-                
-                // Usar la misma función de renderizado que usamos para todos los productos
-                const container = document.getElementById('products-container');
-                container.innerHTML = products.map(product => `
-                    <div class="col-md-3 col-sm-6">
-                        <div class="card product-card h-100">
-                            ${product.is_organic ? '<span class="badge organic-badge">Orgánico</span>' : ''}
-                            ${product.is_featured ? '<span class="badge bg-danger featured-badge">Destacado</span>' : ''}
-                            <div class="product-img-container">
-                                <img src="${product.image_url || 'https://placehold.co/300x300'}" 
-                                     class="product-img" alt="${product.product_name}">
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title">${product.product_name}</h5>
-                                <p class="card-text text-success fw-bold">$${parseFloat(product.price).toFixed(2)}</p>
-                                <p class="card-text small text-muted">Categoría: ${product.category_name}</p>
-                            </div>
-                            <div class="card-footer bg-white border-0">
-                                <button class="btn btn-success w-100 add-to-cart" data-product-id="${product.product_id}">
-                                    <i class="bi bi-cart-plus"></i> Agregar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                setupAddToCartButtons();
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('products-container').innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-danger">
-                            Error al cargar los productos. Por favor, intenta nuevamente.
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        let cartItemsCount = 0;
-
-        async function loadCartItems() {
-            try {
-                const response = await fetch('/api/cart');
-                if (!response.ok) throw new Error('Error loading cart');
-                const data = await response.json();
-                
-                updateCartUI(data.items);
-                updateCartCount(data.itemCount);
-                updateCartTotals(data.total);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('cart-items-container').innerHTML = `
-                    <div class="alert alert-danger">
-                        Error al cargar el carrito. Intenta nuevamente.
-                    </div>
-                `;
-            }
-        }
-
-        function updateCartUI(items) {
-            const container = document.getElementById('cart-items-container');
-            
-            if (!items || items.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-muted p-4">
-                        <i class="bi bi-cart-x fs-1"></i>
-                        <p>Tu carrito está vacío</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = items.map(item => `
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <img src="${item.image_url || 'https://placehold.co/50'}" 
-                                     class="me-2" alt="${item.product_name}" 
-                                     style="width: 50px; height: 50px; object-fit: cover;">
-                                <div>
-                                    <h6 class="mb-0">${item.product_name}</h6>
-                                    <small class="text-muted">$${parseFloat(item.price).toFixed(2)} x ${item.quantity}</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <span class="fw-bold me-3">$${parseFloat(item.subtotal || 0).toFixed(2)}</span>
-                                <button class="btn btn-sm btn-outline-danger delete-item" 
-                                        data-product-id="${item.product_id}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            setupAddToCartButtons();
+          })
+          .catch((error) => {
+            console.error("Error loading featured products:", error);
+            document.getElementById("featured-products-container").innerHTML = `
+                <div class="alert alert-danger">
+                    Error al cargar los productos destacados.
                 </div>
-            `).join('');
-            
-            setupDeleteButtons();
-        }
+            `;
+          });
+      }
 
-        function updateCartCount(count) {
-            cartItemsCount = count;
-            document.querySelector('.cart-count').textContent = count;
-        }
+      // Función para cargar productos
+      function loadProducts() {
+        fetch("/api/products")
+          .then((response) => response.json())
+          .then((products) => {
+            const container = document.getElementById("products-container");
+            container.innerHTML = products
+              .map(
+                (product) => `
+                          <div class="col-md-3 col-sm-6">
+                              <div class="card product-card h-100">
+                                  ${
+                                    product.is_organic
+                                      ? '<span class="badge organic-badge">Orgánico</span>'
+                                      : ""
+                                  }
+                                  ${
+                                    product.is_featured
+                                      ? '<span class="badge bg-danger featured-badge">Destacado</span>'
+                                      : ""
+                                  }
+                                  <div class="product-img-container">
+                                      <img src="${
+                                        product.image_url ||
+                                        "https://placehold.co/300x300"
+                                      }"
+                                           class="product-img" alt="${
+                                             product.product_name
+                                           }">
+                                  </div>
+                                  <div class="card-body">
+                                      <h5 class="card-title">${
+                                        product.product_name
+                                      }</h5>
+                                      <p class="card-text text-success fw-bold">$${parseFloat(
+                                        product.price
+                                      ).toFixed(2)}</p>
+                                      <p class="card-text small text-muted">Categoría: ${
+                                        product.category_name
+                                      }</p>
+                                  </div>
+                                  <div class="card-footer bg-white border-0">
+                                      <button class="btn btn-success w-100 add-to-cart" data-product-id="${
+                                        product.product_id
+                                      }">
+                                          <i class="bi bi-cart-plus"></i> Agregar
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
+                      `
+              )
+              .join("");
 
-        function updateCartTotals(subtotal) {
-            const shipping = subtotal > 0 ? 2.00 : 0;
-            const total = subtotal + shipping;
-            
-            document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('cart-shipping').textContent = `$${shipping.toFixed(2)}`;
-            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
-            
-            // Habilitar/deshabilitar botón de checkout
-            document.getElementById('checkout-btn').disabled = subtotal === 0;
-        }
+            setupAddToCartButtons();
+          })
+          .catch((error) => {
+            console.error("Error loading products:", error);
+            document.getElementById("products-container").innerHTML = `
+                          <div class="col-12">
+                              <div class="alert alert-danger">
+                                  Error al cargar los productos. Por favor, intenta nuevamente.
+                              </div>
+                          </div>
+                      `;
+          });
+      }
 
-        function setupDeleteButtons() {
-            document.querySelectorAll('.delete-item').forEach(button => {
-                button.addEventListener('click', async function() {
-                    const productId = this.dataset.productId;
-                    
-                    try {
-                        const response = await fetch(`/api/cart/${productId}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (!response.ok) throw new Error('Error removing item');
-                        
-                        // Recargar carrito
-                        loadCartItems();
-                        
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error al eliminar el producto');
-                    }
-                });
-            });
-        }
+      // Función para configurar los botones de añadir al carrito
+      function setupAddToCartButtons() {
+        const addToCartButtons = document.querySelectorAll(".add-to-cart");
+        addToCartButtons.forEach((button) => {
+          // *** CAMBIO AÑADIDO: Clonar y reemplazar el botón para eliminar listeners antiguos ***
+          const newButton = button.cloneNode(true);
+          button.parentNode.replaceChild(newButton, button);
 
-        // Cargar carrito al iniciar y cuando se abre el offcanvas
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCategories(); // Cargar las categorías
-            loadFeaturedProducts();
-            loadProducts();
-            loadCartItems();
+          newButton.addEventListener("click", async function () {
+            const productId = this.dataset.productId;
+
+            // ... el resto de la lógica de fetch y animación USANDO newButton
+            try {
+              const response = await fetch("/api/cart", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  productId: productId,
+                  quantity: 1,
+                }),
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                // Obtener el conteo actualizado del carrito
+                const cartResponse = await fetch("/api/cart");
+                const cartData = await cartResponse.json();
+                updateCartCount(cartData.itemCount);
+
+                // Animation effect
+                newButton.innerHTML = '<i class="bi bi-check-lg"></i> Agregado'; // Usar newButton
+                newButton.classList.remove("btn-success"); // Usar newButton
+                newButton.classList.add("btn-outline-success"); // Usar newButton
+
+                setTimeout(() => {
+                  newButton.innerHTML =
+                    '<i class="bi bi-cart-plus"></i> Agregar'; // Usar newButton
+                  newButton.classList.add("btn-success"); // Usar newButton
+                  newButton.classList.remove("btn-outline-success"); // Usar newButton
+                }, 1500);
+              } else {
+                alert(data.error);
+              }
+            } catch (error) {
+              console.error("Error:", error);
+              alert("Error al añadir al carrito");
+            }
+          });
         });
-        document.getElementById('cartOffcanvas').addEventListener('show.bs.offcanvas', loadCartItems);
+      }
+
+      // Función para cargar categorías
+      async function loadCategories() {
+        try {
+          const response = await fetch("/api/categories");
+          if (!response.ok) throw new Error("Error loading categories");
+          const categories = await response.json();
+
+          const container = document.getElementById("categories-container");
+          const categoriesHTML = categories
+            .map(
+              (category) => `
+                      <span class="badge rounded-pill bg-light text-dark border category-pill"
+                            data-category-id="${category.category_id}">
+                          ${category.category_name}
+                      </span>
+                  `
+            )
+            .join("");
+
+          // Mantener el botón "Todos" y añadir las categorías después
+          container.innerHTML = `
+                      <span class="badge rounded-pill bg-light text-dark border category-pill active"
+                            data-category-id="0">Todos</span>
+                      ${categoriesHTML}
+                  `;
+
+          // Configurar los event listeners para el filtrado
+          setupCategoryFilters();
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("categories-container").innerHTML = `
+                      <div class="alert alert-danger">
+                          Error al cargar las categorías.
+                      </div>
+                  `;
+        }
+      }
+
+      // Función para configurar los filtros de categoría
+      function setupCategoryFilters() {
+        const categoryPills = document.querySelectorAll(".category-pill");
+        categoryPills.forEach((pill) => {
+          pill.addEventListener("click", function () {
+            // Remover clase active de todas las pills
+            categoryPills.forEach((p) => p.classList.remove("active"));
+            // Añadir clase active a la pill seleccionada
+            this.classList.add("active");
+
+            const categoryId = this.dataset.categoryId;
+            if (categoryId === "0") {
+              loadProducts(); // Cargar todos los productos
+            } else {
+              loadProductsByCategory(categoryId); // Cargar productos por categoría
+            }
+          });
+        });
+      }
+
+      // Función para cargar productos por categoría
+      async function loadProductsByCategory(categoryId) {
+        try {
+          const response = await fetch(`/api/products/category/${categoryId}`);
+          if (!response.ok) throw new Error("Error loading products");
+          const products = await response.json();
+
+          // Usar la misma función de renderizado que usamos para todos los productos
+          const container = document.getElementById("products-container");
+          container.innerHTML = products
+            .map(
+              (product) => `
+                      <div class="col-md-3 col-sm-6">
+                          <div class="card product-card h-100">
+                              ${
+                                product.is_organic
+                                  ? '<span class="badge organic-badge">Orgánico</span>'
+                                  : ""
+                              }
+                              ${
+                                product.is_featured
+                                  ? '<span class="badge bg-danger featured-badge">Destacado</span>'
+                                  : ""
+                              }
+                              <div class="product-img-container">
+                                  <img src="${
+                                    product.image_url ||
+                                    "https://placehold.co/300x300"
+                                  }"
+                                       class="product-img" alt="${
+                                         product.product_name
+                                       }">
+                              </div>
+                              <div class="card-body">
+                                  <h5 class="card-title">${
+                                    product.product_name
+                                  }</h5>
+                                  <p class="card-text text-success fw-bold">$${parseFloat(
+                                    product.price
+                                  ).toFixed(2)}</p>
+                                  <p class="card-text small text-muted">Categoría: ${
+                                    product.category_name
+                                  }</p>
+                              </div>
+                              <div class="card-footer bg-white border-0">
+                                  <button class="btn btn-success w-100 add-to-cart" data-product-id="${
+                                    product.product_id
+                                  }">
+                                      <i class="bi bi-cart-plus"></i> Agregar
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  `
+            )
+            .join("");
+
+          setupAddToCartButtons();
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("products-container").innerHTML = `
+                      <div class="col-12">
+                          <div class="alert alert-danger">
+                              Error al cargar los productos. Por favor, intenta nuevamente.
+                          </div>
+                      </div>
+                  `;
+        }
+      }
+
+      let cartItemsCount = 0;
+
+      async function loadCartItems() {
+        try {
+          const response = await fetch("/api/cart");
+          if (!response.ok) throw new Error("Error loading cart");
+          const data = await response.json();
+
+          updateCartUI(data.items);
+          updateCartCount(data.itemCount);
+          updateCartTotals(data.total);
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("cart-items-container").innerHTML = `
+                      <div class="alert alert-danger">
+                          Error al cargar el carrito. Intenta nuevamente.
+                      </div>
+                  `;
+        }
+      }
+
+      function updateCartUI(items) {
+        const container = document.getElementById("cart-items-container");
+
+        if (!items || items.length === 0) {
+          container.innerHTML = `
+                      <div class="text-center text-muted p-4">
+                          <i class="bi bi-cart-x fs-1"></i>
+                          <p>Tu carrito está vacío</p>
+                      </div>
+                  `;
+          return;
+        }
+
+        container.innerHTML = items
+          .map(
+            (item) => `
+                  <div class="card mb-3">
+                      <div class="card-body">
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div class="d-flex align-items-center">
+                                  <img src="${
+                                    item.image_url || "https://placehold.co/50"
+                                  }"
+                                       class="me-2" alt="${item.product_name}"
+                                       style="width: 50px; height: 50px; object-fit: cover;">
+                                  <div>
+                                      <h6 class="mb-0">${item.product_name}</h6>
+                                      <small class="text-muted">$${parseFloat(
+                                        item.price
+                                      ).toFixed(2)} x ${item.quantity}</small>
+                                  </div>
+                              </div>
+                              <div class="d-flex align-items-center">
+                                  <span class="fw-bold me-3">$${parseFloat(
+                                    item.subtotal || 0
+                                  ).toFixed(2)}</span>
+                                  <button class="btn btn-sm btn-outline-danger delete-item"
+                                          data-product-id="${item.product_id}">
+                                      <i class="bi bi-trash"></i>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              `
+          )
+          .join("");
+
+        setupDeleteButtons();
+      }
+
+      function updateCartCount(count) {
+        cartItemsCount = count;
+        document.querySelector(".cart-count").textContent = count;
+      }
+
+      function updateCartTotals(subtotal) {
+        const shipping = subtotal > 0 ? 2.0 : 0;
+        const total = subtotal + shipping;
+
+        document.getElementById(
+          "cart-subtotal"
+        ).textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById(
+          "cart-shipping"
+        ).textContent = `$${shipping.toFixed(2)}`;
+        document.getElementById("cart-total").textContent = `$${total.toFixed(
+          2
+        )}`;
+
+        // Habilitar/deshabilitar botón de checkout
+        document.getElementById("checkout-btn").disabled = subtotal === 0;
+      }
+
+      function setupDeleteButtons() {
+        document.querySelectorAll(".delete-item").forEach((button) => {
+          button.addEventListener("click", async function () {
+            const productId = this.dataset.productId;
+
+            try {
+              const response = await fetch(`/api/cart/${productId}`, {
+                method: "DELETE",
+              });
+
+              if (!response.ok) throw new Error("Error removing item");
+
+              // Recargar carrito
+              loadCartItems();
+            } catch (error) {
+              console.error("Error:", error);
+              alert("Error al eliminar el producto");
+            }
+          });
+        });
+      }
+
+      // Cargar carrito al iniciar y cuando se abre el offcanvas
+      document.addEventListener("DOMContentLoaded", function () {
+        loadCategories(); // Cargar las categorías
+        loadFeaturedProducts();
+        loadProducts();
+        loadCartItems();
+      });
+      document
+        .getElementById("cartOffcanvas")
+        .addEventListener("show.bs.offcanvas", loadCartItems);
     </script>
-</body>
+  </body>
 </html>
