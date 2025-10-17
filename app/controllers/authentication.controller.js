@@ -114,27 +114,43 @@ async function saveRegister(req, res) {
   const passwordhash = await bcryptjs.hash(password, 8);
 
   const queryUser = "INSERT INTO users SET ?";
-  const valuesUser = {
-    first_name: first_name_person,      
-    last_name: last_name_person,        
-    document_number: document_number_person,   
-    username: user_name,                
-    email: email_user,                  
-    password_hash: passwordhash,
-  };
+    const valuesUser = {
+      first_name: first_name_person,
+      last_name: last_name_person,
+      document_number: document_number_person,
+      username: user_name,
+      email: email_user,
+      password_hash: passwordhash,
+    };
 
-  connectiondb.query(queryUser, valuesUser, (error, result) => {
-    if (error) {
-      console.error("Error in user registration:", error);
-      return res.status(400).json({ status: "Error", message: "Error during registration" });
-    }
+    connectiondb.query(queryUser, valuesUser, (error, result) => {
+      if (error) {
+        console.error("Error in user registration:", error);
 
-    if (!result || !result.insertId) {
-      console.error("User insertion failed, no insertId returned");
-      return res.status(400).json({ status: "Error", message: "User could not be registered" });
-    }
+        if (error.code === "ER_DUP_ENTRY") {
+          let field = "campo";
+          if (error.sqlMessage.includes("username")) field = "nombre de usuario";
+          if (error.sqlMessage.includes("email")) field = "correo electrónico";
+          if (error.sqlMessage.includes("document_number")) field = "documento";
 
-    const userId = result.insertId;
+          return res
+            .status(400)
+            .json({ status: "Error", message: `El ${field} ya está en uso.` });
+        }
+
+        return res
+          .status(500)
+          .json({ status: "Error", message: "Error durante el registro." });
+      }
+
+      if (!result || !result.insertId) {
+        console.error("User insertion failed, no insertId returned");
+        return res
+          .status(400)
+          .json({ status: "Error", message: "No se pudo registrar el usuario." });
+      }
+
+      const userId = result.insertId;
 
     const queryRole = "SELECT role_id FROM roles WHERE role_name = 'cliente'";
     connectiondb.query(queryRole, (error, roleResult) => {
