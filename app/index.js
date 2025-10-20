@@ -65,9 +65,14 @@ app.use((req, res, next) => {
 
 // Routes
 
-app.get("/", authorization.onlyPublic, (req, res) =>
-  res.sendFile(path.join(__dirname, "pages", "login.html"))
-);
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/landing.html'));
+});
+
+app.get('/login', authorization.onlyPublic, (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages/login.html'));
+});
+
 app.get("/register", authorization.onlyPublic, (req, res) =>
   res.sendFile(path.join(__dirname, "pages", "register.html"))
 );

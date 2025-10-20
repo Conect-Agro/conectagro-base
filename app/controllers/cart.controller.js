@@ -8,7 +8,7 @@ async function getOrCreateCart(userId) {
       [userId],
       (error, results) => {
         if (error) return reject(error);
-        
+
         if (results.length > 0) {
           resolve(results[0].cart_id);
         } else {
@@ -32,7 +32,7 @@ async function getCartItems(req, res) {
   try {
     const userId = req.user.id_user;
     const cartId = await getOrCreateCart(userId);
-    
+
     const query = `
       SELECT 
         ci.quantity, 
@@ -45,27 +45,27 @@ async function getCartItems(req, res) {
       JOIN products p ON ci.product_id = p.product_id
       WHERE ci.cart_id = ?
     `;
-    
+
     connectiondb.query(query, [cartId], (error, results) => {
       if (error) {
         console.error("Error getting cart items:", error);
         return res.status(500).json({ error: "Error getting cart items" });
       }
-      
+
       // Asegurarse que los valores numéricos sean tratados como números
-      const items = results.map(item => ({
+      const items = results.map((item) => ({
         ...item,
         price: parseFloat(item.price),
-        subtotal: parseFloat(item.subtotal)
+        subtotal: parseFloat(item.subtotal),
       }));
-      
+
       // Calcular el total
       const total = items.reduce((sum, item) => sum + item.subtotal, 0);
-      
+
       res.json({
         items: items,
         total: total,
-        itemCount: items.reduce((sum, item) => sum + item.quantity, 0)
+        itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
       });
     });
   } catch (error) {
@@ -79,19 +79,21 @@ async function addToCart(req, res) {
   try {
     const userId = req.user.id_user;
     const { productId, quantity } = req.body;
-    
+
     if (!productId || !quantity) {
-      return res.status(400).json({ error: "Product ID and quantity are required" });
+      return res
+        .status(400)
+        .json({ error: "Product ID and quantity are required" });
     }
-    
+
     // Verificar stock
     const stockCheck = await checkProductStock(productId, quantity);
     if (!stockCheck.success) {
       return res.status(400).json({ error: stockCheck.message });
     }
-    
+
     const cartId = await getOrCreateCart(userId);
-    
+
     // Usar INSERT ... ON DUPLICATE KEY UPDATE para manejar casos concurrentes
     const insertQuery = `
       INSERT INTO cart_items (cart_id, product_id, quantity) 
@@ -99,7 +101,7 @@ async function addToCart(req, res) {
       ON DUPLICATE KEY UPDATE 
       quantity = quantity + VALUES(quantity)
     `;
-    
+
     connectiondb.query(
       insertQuery,
       [cartId, productId, parseInt(quantity)],
@@ -108,15 +110,15 @@ async function addToCart(req, res) {
           console.error("Error adding/updating cart item:", error);
           return res.status(500).json({ error: "Server error" });
         }
-        
-        const message = result.affectedRows === 1 ? 
-          "Product added to cart" : 
-          "Product quantity updated in cart";
-          
+
+        const message =
+          result.affectedRows === 1
+            ? "Product added to cart"
+            : "Product quantity updated in cart";
+
         res.json({ success: true, message });
       }
     );
-    
   } catch (error) {
     console.error("Error in addToCart:", error);
     res.status(500).json({ error: "Server error" });
@@ -131,13 +133,13 @@ function checkProductStock(productId, requestedQuantity) {
       [productId],
       (error, results) => {
         if (error) return reject(error);
-        
+
         if (results.length === 0) {
           resolve({ success: false, message: "Product not found" });
         } else if (results[0].stock < requestedQuantity) {
-          resolve({ 
-            success: false, 
-            message: `Only ${results[0].stock} items available` 
+          resolve({
+            success: false,
+            message: `Only ${results[0].stock} items available`,
           });
         } else {
           resolve({ success: true });
@@ -152,24 +154,26 @@ async function updateCartItem(req, res) {
   try {
     const userId = req.user.id_user;
     const { productId, quantity } = req.body;
-    
+
     if (!productId || !quantity) {
-      return res.status(400).json({ error: "Product ID and quantity are required" });
+      return res
+        .status(400)
+        .json({ error: "Product ID and quantity are required" });
     }
-    
+
     // Si la cantidad es 0, eliminar el producto
     if (parseInt(quantity) === 0) {
       return removeFromCart(req, res);
     }
-    
+
     // Verificar stock
     const stockCheck = await checkProductStock(productId, quantity);
     if (!stockCheck.success) {
       return res.status(400).json({ error: stockCheck.message });
     }
-    
+
     const cartId = await getOrCreateCart(userId);
-    
+
     connectiondb.query(
       "UPDATE cart_items SET quantity = ? WHERE cart_id = ? AND product_id = ?",
       [quantity, cartId, productId],
@@ -178,11 +182,11 @@ async function updateCartItem(req, res) {
           console.error("Error updating cart item:", error);
           return res.status(500).json({ error: "Server error" });
         }
-        
+
         if (result.affectedRows === 0) {
           return res.status(404).json({ error: "Item not found in cart" });
         }
-        
+
         res.json({ success: true, message: "Cart updated" });
       }
     );
@@ -197,13 +201,13 @@ async function removeFromCart(req, res) {
   try {
     const userId = req.user.id_user;
     const productId = req.body.productId || req.params.productId;
-    
+
     if (!productId) {
       return res.status(400).json({ error: "Product ID is required" });
     }
-    
+
     const cartId = await getOrCreateCart(userId);
-    
+
     connectiondb.query(
       "DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?",
       [cartId, productId],
@@ -212,11 +216,11 @@ async function removeFromCart(req, res) {
           console.error("Error removing cart item:", error);
           return res.status(500).json({ error: "Server error" });
         }
-        
+
         if (result.affectedRows === 0) {
           return res.status(404).json({ error: "Item not found in cart" });
         }
-        
+
         res.json({ success: true, message: "Item removed from cart" });
       }
     );
@@ -231,7 +235,7 @@ async function clearCart(req, res) {
   try {
     const userId = req.user.id_user;
     const cartId = await getOrCreateCart(userId);
-    
+
     connectiondb.query(
       "DELETE FROM cart_items WHERE cart_id = ?",
       [cartId],
@@ -240,7 +244,7 @@ async function clearCart(req, res) {
           console.error("Error clearing cart:", error);
           return res.status(500).json({ error: "Server error" });
         }
-        
+
         res.json({ success: true, message: "Cart cleared" });
       }
     );
@@ -255,5 +259,5 @@ export const methods = {
   addToCart,
   updateCartItem,
   removeFromCart,
-  clearCart
+  clearCart,
 };
