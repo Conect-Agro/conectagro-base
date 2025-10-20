@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"nodemon --exec node app/index.js\" \"nodemon --exec node app/server.js\"",
-    "start": "concurrently \"node app/server.js\" \"node app/index.js\"",
+    "start": "node app/index.js\"",
     "test:register": "jest --testPathPattern=test/auth/register",
     "test:login": "jest --testPathPattern=test/auth/login"
   },
