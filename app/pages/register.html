@@ -6,6 +6,7 @@
     <title>Registrarse</title>
     <link rel="icon" type="image/png" href="assets/logo.png" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <script src="register.js" defer></script>
   </head>
   <body>
@@ -57,7 +58,106 @@
             name="password"
             id="password"
             placeholder="Ingresa tu contraseña"
+            required
           />
+          
+          <!-- Campos adicionales para productores -->
+          <div id="producer-fields" class="hidden">
+            <h3 class="section-title">
+              <i class="fas fa-seedling"></i> Información del Productor
+            </h3>
+            
+            <div class="input-group">
+              <label for="farm_name" class="sr-only">Nombre de la Finca</label>
+              <div class="input-wrapper">
+                <i class="fas fa-tractor input-icon"></i>
+                <input
+                  type="text"
+                  name="farm_name"
+                  id="farm_name"
+                  placeholder="Nombre de tu finca"
+                />
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="nit" class="sr-only">NIT</label>
+              <div class="input-wrapper">
+                <i class="fas fa-id-card input-icon"></i>
+                <input
+                  type="text"
+                  name="nit"
+                  id="nit"
+                  placeholder="NIT (Opcional)"
+                />
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="location" class="sr-only">Ubicación</label>
+              <div class="input-wrapper">
+                <i class="fas fa-map-marker-alt input-icon"></i>
+                <input
+                  type="text"
+                  name="location"
+                  id="location"
+                  placeholder="Ubicación de la finca (Ciudad, Vereda)"
+                />
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="farm_size" class="sr-only">Tamaño de la Finca</label>
+              <div class="input-wrapper">
+                <i class="fas fa-ruler-combined input-icon"></i>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="farm_size"
+                  id="farm_size"
+                  placeholder="Tamaño de la finca (m²)"
+                />
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="production_type_id" class="sr-only">Tipo de Producción</label>
+              <div class="input-wrapper">
+                <i class="fas fa-leaf input-icon"></i>
+                <select name="production_type_id" id="production_type_id">
+                  <option value="">Selecciona tipo de producción</option>
+                  <!-- Las opciones se cargarán dinámicamente desde la API -->
+                </select>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="contact_phone" class="sr-only">Teléfono de Contacto</label>
+              <div class="input-wrapper">
+                <i class="fas fa-phone input-icon"></i>
+                <input
+                  type="tel"
+                  name="contact_phone"
+                  id="contact_phone"
+                  placeholder="Teléfono de contacto"
+                />
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label for="contact_email" class="sr-only">Email de Contacto</label>
+              <div class="input-wrapper">
+                <i class="fas fa-envelope input-icon"></i>
+                <input
+                  type="email"
+                  name="contact_email"
+                  id="contact_email"
+                  placeholder="Email de contacto (puede ser el mismo)"
+                />
+              </div>
+            </div>
+          </div>
+          
           <div class="container-button">
             <button type="submit">
               Registrarse

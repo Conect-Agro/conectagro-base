@@ -79,6 +79,27 @@ body {
   }
 }
 
+h1 {
+    color: #2d5a27;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    border-radius: 2px;
+    opacity: 0.7;
+}
 
 form {
     display: flex;
@@ -87,10 +108,27 @@ form {
 }
 
 input {
-    border-radius: 20px;
+    border-radius: 12px;
     padding: 15px 30px;
-    font-size: large;
-    border: 1px solid #ccc;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+input:hover {
+    border-color: #c8e6c9;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+    background-color: #fafffe;
+}
+
+input::placeholder {
+    color: #9e9e9e;
 }
 
 button {
@@ -101,20 +139,22 @@ button {
     --arrow-stroke: 2px;
     box-sizing: border-box;
     border: 0;
-    border-radius: 20px;
+    border-radius: 12px;
     color: var(--secondary-color);
-    padding: 15px 40px;
-    background: var(--primary-color);
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: 0.2s background;
-    font-weight: bold;
-    font-size: large;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1.1rem;
     cursor: pointer;
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    letter-spacing: 0.5px;
 }
 
 button .arrow-wrapper {
@@ -196,7 +236,224 @@ button:hover .arrow:before {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
+}
+
+#producer-fields.hidden {
+    display: none !important;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos para campos de productor */
+#producer-fields {
+    margin-top: 2rem;
+    padding: 2rem;
+    border-top: none;
+    background: linear-gradient(135deg, #f8fdf8 0%, #e8f5e9 100%);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Contenedor de input con icono */
+.input-group {
+    width: 100%;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 20px;
+    color: #4caf50;
+    font-size: 18px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+    width: 100%;
+    padding-left: 50px !important;
+    border-radius: 20px;
+    padding: 15px 30px 15px 50px;
+    font-size: large;
+    border: 1px solid #ccc;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.input-wrapper input:hover,
+.input-wrapper select:hover {
+    border-color: #66bb6a;
+}
+
+#producer-fields .section-title {
+    color: #2d5a27;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+#producer-fields .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    border-radius: 2px;
+}
+
+#producer-fields .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#producer-fields .form-field {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#producer-fields .form-field.full-width {
+    grid-column: 1 / -1;
+}
+
+#producer-fields input,
+#producer-fields select {
+    width: 100%;
+    padding: 15px 30px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+#producer-fields input:hover,
+#producer-fields select:hover {
+    border-color: #c8e6c9;
+}
+
+#producer-fields input:focus,
+#producer-fields select:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+    background-color: #fafffe;
+}
+
+#producer-fields select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%234caf50' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    padding-right: 55px;
+    font-weight: 500;
+}
+
+#producer-fields input::placeholder,
+#producer-fields select::placeholder {
+    color: #9e9e9e;
+    font-weight: 400;
+}
+
+#producer-fields input[type="number"]::-webkit-inner-spin-button,
+#producer-fields input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+}
+
+/* Iconos visuales para mejorar UX */
+#producer-fields .form-field::before {
+    content: attr(data-icon);
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #4caf50;
+    pointer-events: none;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+#producer-fields .form-field:focus-within::before {
+    opacity: 1;
+}
+
+/* Animación de entrada */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#producer-fields:not(.hidden) {
+    animation: slideInUp 0.4s ease-out;
+}
+
+/* Responsivo para tablets */
+@media (max-width: 992px) {
+    #producer-fields {
+        padding: 1.5rem;
+    }
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+    #producer-fields .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    #producer-fields {
+        gap: 15px;
+        padding: 1.5rem 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    #producer-fields .section-title {
+        font-size: 1.2rem;
+    }
+    
+    #producer-fields input,
+    #producer-fields select {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
 }
 
 .sr-only {

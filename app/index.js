@@ -13,6 +13,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import prometheus from 'prom-client';
 import dotenv from 'dotenv';
+import connectiondb from './database/database.js';
 
 dotenv.config();
 
@@ -120,6 +121,19 @@ app.post("/api/register", authentication.saveRegister);
 app.post("/api/login", authentication.login);
 app.post("/api/recoverPassword", emailHelper.sendEmail);
 app.post("/api/changePassword", emailHelper.changePassword);
+
+// API de tipos de producción
+app.get("/api/production-types", (req, res) => {
+  const query = "SELECT id, name, category, description FROM production_types WHERE is_active = 1 ORDER BY category, name";
+  
+  connectiondb.query(query, (error, results) => {
+    if (error) {
+      console.error("Error fetching production types:", error);
+      return res.status(500).json({ status: "Error", message: "Error al obtener tipos de producción" });
+    }
+    res.json(results);
+  });
+});
 
 // API de productos
 app.get("/api/categories", productsController.getAllCategories);
