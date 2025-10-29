@@ -4,12 +4,12 @@
   "description": "Aplicación backend ConectAgro para gestión agrícola con microservicios.",
   "main": "app/server.js",
   "type": "module",
-  "scripts": {
-    "dev": "nodemon app/server.js",
-    "start": "node app/server.js",
-    "test:register": "jest --testPathPattern=test/auth/register",
-    "test:login": "jest --testPathPattern=test/auth/login"
-  },
+"scripts": {
+  "dev": "concurrently \"nodemon app/index.js\" \"nodemon app/server.js\"",
+  "start": "node app/index.js",
+  "test:register": "jest --testPathPattern=test/auth/register",
+  "test:login": "jest --testPathPattern=test/auth/login"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

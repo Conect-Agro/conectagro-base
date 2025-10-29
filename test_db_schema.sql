@@ -190,3 +190,27 @@ LOCK TABLES `user_roles` WRITE;
 INSERT INTO `user_roles` VALUES ('adm',1),('pro',16),('cli',17);
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
+
+CREATE TABLE production_types (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL,           -- Nombre del tipo de producción
+  category VARCHAR(50),                       -- Categoría general (ej. "Agrícola", "Pecuaria", etc.)
+  description TEXT,                           -- Descripción detallada del tipo de producción
+  is_active BOOLEAN DEFAULT TRUE,             -- Permite desactivar un tipo sin borrarlo
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE producers (
+  producer_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  farm_name VARCHAR(100) NOT NULL,
+  nit VARCHAR(45),
+  location VARCHAR(150),
+  farm_size DECIMAL(10,2),                          -- Tamaño de la finca (en hectáreas o m²)
+  production_type_id INT,                           -- Relación con la tabla production_types
+  contact_phone VARCHAR(20),
+  contact_email VARCHAR(100),
+  registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (production_type_id) REFERENCES production_types(id)
+);
