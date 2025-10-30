@@ -8,6 +8,7 @@ import { methods as productsController } from "./controllers/products.controller
 import { methods as cartController } from "./controllers/cart.controller.js";
 import { methods as addressesController } from "./controllers/addresses.controller.js";
 import { methods as ordersController } from "./controllers/orders.controller.js";
+import { methods as producersController } from "./controllers/producers.controller.js";
 import { authMiddleware } from "./middlewares/authorization.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -30,7 +31,8 @@ app.listen(app.get("port"), () => {
 
 // Configuration
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Aumentar límite para imágenes Base64
+app.use(express.urlencoded({ limit: '50mb', extended: true })); // También para urlencoded
 app.use(cookieParser());
 app.use(cors());
 
@@ -159,6 +161,27 @@ app.delete("/api/addresses/:addressId", authMiddleware, addressesController.dele
 app.post("/api/orders", authMiddleware, ordersController.createOrder);
 app.get("/api/orders", authMiddleware, ordersController.getUserOrders);
 app.get("/api/orders/:orderId", authMiddleware, authorization.verifyOrderOwnership, ordersController.getOrderDetails);
+
+// API de productores (requieren autenticación y rol de productor)
+app.get("/api/producer/profile", authMiddleware, authorization.onlyProductor, producersController.getProducerProfile);
+app.put("/api/producer/profile", authMiddleware, authorization.onlyProductor, producersController.updateProducerProfile);
+app.get("/api/producer/metrics", authMiddleware, authorization.onlyProductor, producersController.getDashboardMetrics);
+
+// Gestión de productos del productor
+app.get("/api/producer/products", authMiddleware, authorization.onlyProductor, producersController.getProducerProducts);
+app.get("/api/producer/products/:productId", authMiddleware, authorization.onlyProductor, producersController.getProductById);
+app.post("/api/producer/products", authMiddleware, authorization.onlyProductor, producersController.createProduct);
+app.put("/api/producer/products/:productId", authMiddleware, authorization.onlyProductor, producersController.updateProduct);
+app.delete("/api/producer/products/:productId", authMiddleware, authorization.onlyProductor, producersController.deleteProduct);
+
+// Gestión de pedidos del productor
+app.get("/api/producer/orders", authMiddleware, authorization.onlyProductor, producersController.getProducerOrders);
+app.get("/api/producer/orders/:orderId", authMiddleware, authorization.onlyProductor, producersController.getOrderDetails);
+app.put("/api/producer/orders/:orderId/status", authMiddleware, authorization.onlyProductor, producersController.updateOrderStatus);
+
+// Notificaciones del productor
+app.get("/api/producer/notifications", authMiddleware, authorization.onlyProductor, producersController.getNotifications);
+app.put("/api/producer/notifications/read", authMiddleware, authorization.onlyProductor, producersController.markNotificationsAsRead);
 
 // Endpoint para métricas
 app.get('/metrics', async (req, res) => {
