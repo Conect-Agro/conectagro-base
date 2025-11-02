@@ -2,3 +2,4 @@ node_modules
 gitlab_deploy_key
 gitlab_deploy_key.pub
 .env
+NOTIFICATIONS_SETUP.md
