@@ -22,12 +22,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Server
 const app = express();
-const port = process.env.PORT || 3000;
+// const port = process.env.PORT || 3000;
 
-app.set("port", port);
-app.listen(app.get("port"), () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.set("port", port);
+// app.listen(app.get("port"), () => {
+//   console.log(`Server is running on port ${port}`);
+// });
 
 // Configuration
 app.use(express.static(path.join(__dirname, "public")));
@@ -46,20 +46,20 @@ collectDefaultMetrics({ register });
 
 // Contador personalizado para peticiones HTTP
 const httpRequestsTotal = new prometheus.Counter({
-  name: 'http_requests_total',
-  help: 'Total de peticiones HTTP',
-  labelNames: ['method', 'path', 'status'],
-  registers: [register]
+  name: "http_requests_total",
+  help: "Total de peticiones HTTP",
+  labelNames: ["method", "path", "status"],
+  registers: [register],
 });
 
 // Middleware para contar peticiones
 app.use((req, res, next) => {
   const end = res.end;
-  res.end = function() {
+  res.end = function () {
     httpRequestsTotal.inc({
-      method: req.method, 
+      method: req.method,
       path: req.path,
-      status: res.statusCode
+      status: res.statusCode,
     });
     return end.apply(res, arguments);
   };
@@ -68,12 +68,12 @@ app.use((req, res, next) => {
 
 // Routes
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'pages/landing.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "pages/landing.html"));
 });
 
-app.get('/login', authorization.onlyPublic, (req, res) => {
-    res.sendFile(path.join(__dirname, 'pages/login.html'));
+app.get("/login", authorization.onlyPublic, (req, res) => {
+  res.sendFile(path.join(__dirname, "pages/login.html"));
 });
 
 app.get("/register", authorization.onlyPublic, (req, res) =>
@@ -100,8 +100,13 @@ app.get("/checkout", authorization.onlyClient, (req, res) =>
 app.get("/orders", authorization.onlyClient, (req, res) =>
   res.sendFile(path.join(__dirname, "public", "views", "orders.html"))
 );
-app.get("/order-details/:orderId", authMiddleware, authorization.onlyClient, authorization.verifyOrderOwnership, (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "views", "order-details.html"))
+app.get(
+  "/order-details/:orderId",
+  authMiddleware,
+  authorization.onlyClient,
+  authorization.verifyOrderOwnership,
+  (req, res) =>
+    res.sendFile(path.join(__dirname, "public", "views", "order-details.html"))
 );
 
 // Ruta para cerrar sesión
@@ -140,7 +145,10 @@ app.get("/api/production-types", (req, res) => {
 // API de productos
 app.get("/api/categories", productsController.getAllCategories);
 app.get("/api/products", productsController.getAllProducts);
-app.get("/api/products/category/:categoryId", productsController.getProductsByCategory);
+app.get(
+  "/api/products/category/:categoryId",
+  productsController.getProductsByCategory
+);
 app.get("/api/products/featured", productsController.getFeaturedProducts);
 app.get("/api/products/search", productsController.searchProducts);
 
@@ -148,19 +156,36 @@ app.get("/api/products/search", productsController.searchProducts);
 app.get("/api/cart", authMiddleware, cartController.getCartItems);
 app.post("/api/cart", authMiddleware, cartController.addToCart);
 app.put("/api/cart", authMiddleware, cartController.updateCartItem);
-app.delete("/api/cart/:productId", authMiddleware, cartController.removeFromCart);
+app.delete(
+  "/api/cart/:productId",
+  authMiddleware,
+  cartController.removeFromCart
+);
 app.delete("/api/cart", authMiddleware, cartController.clearCart);
 
 // API de direcciones (requieren autenticación)
 app.get("/api/addresses", authMiddleware, addressesController.getUserAddresses);
 app.post("/api/addresses", authMiddleware, addressesController.addAddress);
-app.put("/api/addresses/:addressId/default", authMiddleware, addressesController.setDefaultAddress);
-app.delete("/api/addresses/:addressId", authMiddleware, addressesController.deleteAddress);
+app.put(
+  "/api/addresses/:addressId/default",
+  authMiddleware,
+  addressesController.setDefaultAddress
+);
+app.delete(
+  "/api/addresses/:addressId",
+  authMiddleware,
+  addressesController.deleteAddress
+);
 
 // API de pedidos (requieren autenticación)
 app.post("/api/orders", authMiddleware, ordersController.createOrder);
 app.get("/api/orders", authMiddleware, ordersController.getUserOrders);
-app.get("/api/orders/:orderId", authMiddleware, authorization.verifyOrderOwnership, ordersController.getOrderDetails);
+app.get(
+  "/api/orders/:orderId",
+  authMiddleware,
+  authorization.verifyOrderOwnership,
+  ordersController.getOrderDetails
+);
 
 // API de productores (requieren autenticación y rol de productor)
 app.get("/api/producer/profile", authMiddleware, authorization.onlyProductor, producersController.getProducerProfile);
@@ -184,7 +209,14 @@ app.get("/api/producer/notifications", authMiddleware, authorization.onlyProduct
 app.put("/api/producer/notifications/read", authMiddleware, authorization.onlyProductor, producersController.markNotificationsAsRead);
 
 // Endpoint para métricas
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', register.contentType);
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
+});
+
+const PORT = process.env.PORT || 3000;
+app.set("port", PORT);
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });
