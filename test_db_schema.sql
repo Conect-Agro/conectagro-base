@@ -65,16 +65,23 @@ DROP TABLE IF EXISTS `products`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `products` (
   `product_id` int NOT NULL AUTO_INCREMENT,
+  `producer_id` int DEFAULT NULL,
   `product_name` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `stock` int NOT NULL,
+  `unit` varchar(20) DEFAULT 'kg',
   `image_url` varchar(255) NOT NULL,
   `category_id` int NOT NULL,
+  `origin` varchar(150) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`product_id`),
   KEY `category_id` (`category_id`),
-  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`)
+  KEY `producer_id` (`producer_id`),
+  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`),
+  CONSTRAINT `products_ibfk_2` FOREIGN KEY (`producer_id`) REFERENCES `producers` (`producer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Table structure for table `directions`
@@ -190,3 +197,27 @@ LOCK TABLES `user_roles` WRITE;
 INSERT INTO `user_roles` VALUES ('adm',1),('pro',16),('cli',17);
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
+
+CREATE TABLE production_types (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) UNIQUE NOT NULL,           -- Nombre del tipo de producción
+  category VARCHAR(50),                       -- Categoría general (ej. "Agrícola", "Pecuaria", etc.)
+  description TEXT,                           -- Descripción detallada del tipo de producción
+  is_active BOOLEAN DEFAULT TRUE,             -- Permite desactivar un tipo sin borrarlo
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE producers (
+  producer_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  farm_name VARCHAR(100) NOT NULL,
+  nit VARCHAR(45),
+  location VARCHAR(150),
+  farm_size DECIMAL(10,2),                          -- Tamaño de la finca (en hectáreas o m²)
+  production_type_id INT,                           -- Relación con la tabla production_types
+  contact_phone VARCHAR(20),
+  contact_email VARCHAR(100),
+  registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (production_type_id) REFERENCES production_types(id)
+);

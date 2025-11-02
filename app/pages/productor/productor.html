@@ -1,83 +1,491 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Productor</title>
+    <title>Panel Productor - ConectAgro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/style.css" />
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="/productor-dashboard.css" />
+    <link rel="icon" href="/assets/logo.png" type="image/png" />
     <script src="/productor.js" defer></script>
   </head>
   <body>
-    <main>
-      <div class="menu">
-        <div class="tab-container">
-          <input type="radio" name="tab" id="tab1" class="tab tab--1" />
-          <label
-            class="tab_label"
-            for="tab1"
-            onclick="navigateToRolePage('Productor')"
-            >Productor</label
-          >
-
-          <input type="radio" name="tab" id="tab2" class="tab tab--2" />
-          <label
-            class="tab_label"
-            for="tab2"
-            onclick="navigateToRolePage('Client')"
-            >Client</label
-          >
-
-          <input type="radio" name="tab" id="tab3" class="tab tab--3" />
-          <label
-            class="tab_label"
-            for="tab3"
-            onclick="navigateToRolePage('SuperAdmin')"
-            >SuperAdmin</label
-          >
-          <div class="indicator"></div>
-        </div>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="/img/ConectAgro.png" alt="ConectAgro" class="sidebar-logo">
+        <h2>ConectAgro</h2>
       </div>
-      <h1
-        style="
-          color: #fff;
-          font-size: 4em;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        "
-      >
-        ¡Hello Productor!
-      <div class="svg-container">
-        <a href="/views/music-dashboard.html" class="nav-link">
-          <i class="bi bi-music-note"></i> Reproductor de Música
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 448 512"
-            width="100"
-            height="100"
-          >
-            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-            <path
-              fill="#866df1"
-              d="M96 128a128 128 0 1 0 256 0A128 128 0 1 0 96 128zm94.5 200.2l18.6 31L175.8 483.1l-36-146.9c-2-8.1-9.8-13.4-17.9-11.3C51.9 342.4 0 405.8 0 481.3c0 17 13.8 30.7 30.7 30.7l131.7 0c0 0 0 0 .1 0l5.5 0 112 0 5.5 0c0 0 0 0 .1 0l131.7 0c17 0 30.7-13.8 30.7-30.7c0-75.5-51.9-138.9-121.9-156.4c-8.1-2-15.9 3.3-17.9 11.3l-36 146.9L238.9 359.2l18.6-31c6.4-10.7-1.3-24.2-13.7-24.2L224 304l-19.7 0c-12.4 0-20.1 13.6-13.7 24.2z"
-            />
-          </svg>
+      
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" data-section="dashboard">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#productos" class="nav-item" data-section="productos">
+          <i class="fas fa-box"></i>
+          <span>Mis Productos</span>
+        </a>
+        <a href="#pedidos" class="nav-item" data-section="pedidos">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Pedidos</span>
+          <span class="badge" style="display: none;">0</span>
+        </a>
+        <a href="#perfil" class="nav-item" data-section="perfil">
+          <i class="fas fa-user"></i>
+          <span>Mi Perfil</span>
+        </a>
+        <a href="#notificaciones" class="nav-item" data-section="notificaciones">
+          <i class="fas fa-bell"></i>
+          <span>Notificaciones</span>
+          <span class="badge" style="display: none;">0</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="/logout" class="nav-item logout">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Cerrar Sesión</span>
         </a>
       </div>
-      <link rel="icon" href="favicon.ico" type="image/x-icon" />
-      <div class="containerP">
-        <button type="submit" id="logout-button">
-          Log Out
-          <div class="arrow-wrapper">
-            <div class="arrow"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="page-title">Dashboard del Productor</h1>
+        </div>
+        <div class="header-right">
+          <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" style="display: none;">0</span>
           </div>
-        </button>
+          <div class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name" id="userName"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="content-section active">
+        <!-- Farm Info Header -->
+        <div class="farm-header">
+          <div class="farm-info">
+            <h2 id="farmName"></h2>
+            <p class="farm-type"><i class="fas fa-leaf"></i> <span id="productionType"></span></p>
+          </div>
+          <button class="btn btn-primary" id="addProductBtn">
+            <i class="fas fa-plus"></i> Agregar Producto
+          </button>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon" style="background: #4caf50;">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="metric-info">
+              <h3 id="activeProducts">0</h3>
+              <p>Productos Activos</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon" style="background: #2196f3;">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="metric-info">
+              <h3 id="totalSales">$0</h3>
+              <p>Ventas Totales</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon" style="background: #ff9800;">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="metric-info">
+              <h3 id="pendingOrders">0</h3>
+              <p>Pedidos Pendientes</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon" style="background: #ffc107;">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="metric-info">
+              <h3 id="avgRating">0.0</h3>
+              <p>Calificación Promedio</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Products Preview -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Productos Recientes</h3>
+            <a href="#productos" class="link-button" data-section="productos">Ver todos</a>
+          </div>
+          <div id="recentProducts" class="products-preview">
+            <!-- Products will be loaded here -->
+            <p class="empty-state">No hay productos registrados aún</p>
+          </div>
+        </div>
+
+        <!-- Recent Orders Preview -->
+        <div class="section-card">
+          <div class="section-header">
+            <h3>Pedidos Recientes</h3>
+            <a href="#pedidos" class="link-button" data-section="pedidos">Ver todos</a>
+          </div>
+          <div id="recentOrders" class="orders-preview">
+            <!-- Orders will be loaded here -->
+            <p class="empty-state">No hay pedidos recientes</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Section -->
+      <section id="productos" class="content-section">
+        <div class="section-header-bar">
+          <h2>Mis Productos</h2>
+          <button class="btn btn-primary" id="addProductBtn2">
+            <i class="fas fa-plus"></i> Agregar Producto
+          </button>
+        </div>
+
+        <!-- Products Filter -->
+        <div class="filters-bar">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Buscar productos..." id="searchProducts">
+          </div>
+          <select id="categoryFilter" class="filter-select">
+            <option value="">Todas las categorías</option>
+            <!-- Categories loaded dynamically from database -->
+          </select>
+          <select id="statusFilter" class="filter-select">
+            <option value="">Todos los estados</option>
+            <option value="disponible">Disponible</option>
+            <option value="agotado">Agotado</option>
+          </select>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="products-grid">
+          <!-- Products will be loaded here dynamically -->
+        </div>
+      </section>
+
+      <!-- Orders Section -->
+      <section id="pedidos" class="content-section">
+        <div class="section-header-bar">
+          <h2>Gestión de Pedidos</h2>
+        </div>
+
+        <!-- Orders Filter -->
+        <div class="filters-bar">
+          <select id="orderStatusFilter" class="filter-select">
+            <option value="">Todos los estados</option>
+            <option value="pending">Pendiente</option>
+            <option value="shipped">Enviado</option>
+            <option value="delivered">Entregado</option>
+            <option value="cancelled">Cancelado</option>
+          </select>
+          <input type="date" id="orderDateFilter" class="filter-select">
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-container">
+          <table class="orders-table" id="ordersTable">
+            <thead>
+              <tr>
+                <th>N° Pedido</th>
+                <th>Cliente</th>
+                <th>Productos</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Orders will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Profile Section -->
+      <section id="perfil" class="content-section">
+        <div class="section-header-bar">
+          <h2>Mi Perfil</h2>
+        </div>
+
+        <div class="profile-container">
+          <!-- Farm Information Card -->
+          <div class="section-card">
+            <div class="section-header">
+              <h3><i class="fas fa-tractor"></i> Información de la Finca</h3>
+              <button class="btn btn-secondary" id="editFarmBtn">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+            </div>
+            <div class="profile-info">
+              <div class="info-row">
+                <label>Nombre de la Finca:</label>
+                <span id="profileFarmName"></span>
+              </div>
+              <div class="info-row">
+                <label>NIT:</label>
+                <span id="profileNit"></span>
+              </div>
+              <div class="info-row">
+                <label>Ubicación:</label>
+                <span id="profileLocation"></span>
+              </div>
+              <div class="info-row">
+                <label>Tamaño:</label>
+                <span id="profileSize"></span>
+              </div>
+              <div class="info-row">
+                <label>Tipo de Producción:</label>
+                <span id="profileProductionType"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information Card -->
+          <div class="section-card">
+            <div class="section-header">
+              <h3><i class="fas fa-address-book"></i> Información de Contacto</h3>
+              <button class="btn btn-secondary" id="editContactBtn">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+            </div>
+            <div class="profile-info">
+              <div class="info-row">
+                <label>Teléfono:</label>
+                <span id="profilePhone"></span>
+              </div>
+              <div class="info-row">
+                <label>Correo Electrónico:</label>
+                <span id="profileEmail"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reputation Card -->
+          <div class="section-card">
+            <div class="section-header">
+              <h3><i class="fas fa-star"></i> Reputación</h3>
+            </div>
+            <div class="reputation-info">
+              <div class="rating-display">
+                <div class="rating-number" id="reputationRating">0.0</div>
+                <div class="rating-stars" id="reputationStars">
+                  <!-- Stars will be generated dynamically -->
+                </div>
+                <p id="reputationCount">Sin calificaciones aún</p>
+              </div>
+              <div class="rating-bars" id="ratingBars">
+                <!-- Rating bars will be generated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notifications Section -->
+      <section id="notificaciones" class="content-section">
+        <div class="section-header-bar">
+          <h2>Notificaciones</h2>
+          <button class="btn btn-secondary" id="markAllReadBtn">
+            <i class="fas fa-check-double"></i> Marcar todas como leídas
+          </button>
+        </div>
+
+        <div class="notifications-list" id="notificationsList">
+          <!-- Notifications will be loaded here -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Modal: Add/Edit Product -->
+    <div id="productModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Agregar Producto</h2>
+          <button class="close-modal" id="closeProductModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="productForm" class="product-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="productName">Nombre del Producto *</label>
+              <input type="text" id="productName" required>
+            </div>
+
+            <div class="form-group">
+              <label for="productCategory">Categoría *</label>
+              <select id="productCategory" required>
+                <option value="">Seleccionar categoría</option>
+                <!-- Categories loaded dynamically from database -->
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="productDescription">Descripción</label>
+              <textarea id="productDescription" rows="3" placeholder="Describe tu producto..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="productUnit">Unidad de Venta *</label>
+              <select id="productUnit" required>
+                <option value="">Seleccionar unidad</option>
+                <option value="kg">Kilogramo (kg)</option>
+                <option value="arroba">Arroba</option>
+                <option value="litro">Litro</option>
+                <option value="caja">Caja</option>
+                <option value="unidad">Unidad</option>
+                <option value="docena">Docena</option>
+                <option value="bulto">Bulto</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="productPrice">Precio por Unidad *</label>
+              <input type="number" id="productPrice" step="0.01" min="0" required placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+              <label for="productQuantity">Cantidad Disponible *</label>
+              <input type="number" id="productQuantity" min="0" required placeholder="0">
+            </div>
+
+            <div class="form-group">
+              <label for="productOrigin">Origen / Ubicación</label>
+              <input type="text" id="productOrigin" placeholder="Autocompletado desde perfil">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="productImages">Imágenes del Producto</label>
+              <div class="image-upload-area" id="imageUploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Haz clic o arrastra imágenes aquí</p>
+                <input type="file" id="productImages" multiple accept="image/*" hidden>
+              </div>
+              <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="productStatus">Estado *</label>
+              <select id="productStatus" required>
+                <option value="disponible">Disponible</option>
+                <option value="agotado">Agotado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelProductBtn">Cancelar</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Guardar Producto
+            </button>
+          </div>
+        </form>
       </div>
-    </main>
+    </div>
+
+    <!-- Modal: Order Details -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Detalles del Pedido</h2>
+          <button class="close-modal" id="closeOrderModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="orderDetails" class="order-details">
+          <!-- Order details will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Edit Profile -->
+    <div id="profileModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="profileModalTitle">Editar Perfil</h2>
+          <button class="close-modal" id="closeProfileModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="profileForm">
+          <!-- Farm Information Section -->
+          <div class="form-section" id="farmSection">
+            <h3><i class="fas fa-tractor"></i> Información de la Finca</h3>
+            
+            <div class="form-group">
+              <label for="editFarmName">Nombre de la Finca *</label>
+              <input type="text" id="editFarmName">
+            </div>
+
+            <div class="form-group">
+              <label for="editNit">NIT</label>
+              <input type="text" id="editNit">
+            </div>
+
+            <div class="form-group">
+              <label for="editLocation">Ubicación</label>
+              <input type="text" id="editLocation" placeholder="Ciudad, Departamento">
+            </div>
+
+            <div class="form-group">
+              <label for="editFarmSize">Tamaño de la Finca (m²)</label>
+              <input type="number" id="editFarmSize" step="0.01" min="0">
+            </div>
+          </div>
+
+          <!-- Contact Information Section -->
+          <div class="form-section" id="contactSection" style="display: none;">
+            <h3><i class="fas fa-address-book"></i> Información de Contacto</h3>
+            
+            <div class="form-group">
+              <label for="editPhone">Teléfono *</label>
+              <input type="tel" id="editPhone">
+            </div>
+
+            <div class="form-group">
+              <label for="editEmail">Correo Electrónico *</label>
+              <input type="email" id="editEmail">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelProfileBtn">Cancelar</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </body>
 </html>
