@@ -343,6 +343,65 @@ INSERT INTO `users` VALUES (1,'adm','$2b$08$JDjwQrjeeYs4YzBNeL6dfOH1BCf0LhPY9uOf
 UNLOCK TABLES;
 
 --
+-- Table structure for table `subscriptions`
+--
+
+DROP TABLE IF EXISTS `subscriptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscriptions` (
+  `subscription_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `delivery_day` int NOT NULL,
+  `subscription_type` enum('monthly','biannual','annual') NOT NULL,
+  PRIMARY KEY (`subscription_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `subscriptions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subscriptions`
+--
+
+LOCK TABLES `subscriptions` WRITE;
+/*!40000 ALTER TABLE `subscriptions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subscriptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `subscription_products`
+--
+
+DROP TABLE IF EXISTS `subscription_products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscription_products` (
+  `subscription_product_id` int NOT NULL AUTO_INCREMENT,
+  `subscription_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL,
+  PRIMARY KEY (`subscription_product_id`),
+  KEY `subscription_id` (`subscription_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `subscription_products_ibfk_1` FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions` (`subscription_id`),
+  CONSTRAINT `subscription_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subscription_products`
+--
+
+LOCK TABLES `subscription_products` WRITE;
+/*!40000 ALTER TABLE `subscription_products` DISABLE KEYS */;
+/*!40000 ALTER TABLE `subscription_products` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping events for database 'conectagro'
 --
 
