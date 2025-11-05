@@ -170,18 +170,30 @@
     <div class="container my-5">
         <!-- Suscripción Activa -->
         <div id="activeSubscription" class="mb-5" style="display: none;">
-            <h2 class="mb-4">Tu Suscripción Activa</h2>
+            <h2 class="mb-4">Suscripción Activa</h2>
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h5 class="card-title">Detalles de la Suscripción</h5>
-                            <p class="card-text">
-                                <strong>Tipo:</strong> <span id="subscriptionType"></span><br>
-                                <strong>Fecha de inicio:</strong> <span id="startDate"></span><br>
-                                <strong>Fecha de fin:</strong> <span id="endDate"></span><br>
-                                <strong>Día de entrega:</strong> <span id="deliveryDay"></span>
-                            </p>
+                            <h5 class="card-title mb-3">Detalles de la Suscripción</h5>
+                            <div class="subscription-details">
+                                <div class="mb-2">
+                                    <strong class="fs-6">Tipo:</strong> 
+                                    <span id="subscriptionType" class="fs-6"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong class="fs-6">Fecha de inicio:</strong> 
+                                    <span id="startDate" class="fs-6"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong class="fs-6">Fecha de fin:</strong> 
+                                    <span id="endDate" class="fs-6"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong class="fs-6">Día de entrega:</strong> 
+                                    <span id="deliveryDay" class="fs-6"></span>
+                                </div>
+                            </div>
                             <div class="d-flex gap-2">
                                 <button class="btn btn-outline-danger" onclick="cancelSubscription()">
                                     Cancelar Suscripción
