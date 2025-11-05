@@ -1,7 +1,6 @@
 import connectiondb from "../database/database.js";
 import { publishLowStock } from "./product-checker.js";
 
-
 // Función para enviar el resumen del pedido al microservicio de email
 async function sendOrderSummary(userId, orderId) {
   try {
@@ -90,6 +89,104 @@ async function sendOrderSummary(userId, orderId) {
   } catch (error) {
     console.error("❌ Error en sendOrderSummary:", error);
     console.error("⚠️ Verifica la conexión con el microservicio y los datos enviados");
+  }
+}
+
+async function sendOrderSummaryToProducers(orderId) {
+  try {
+    console.log(`🔄 Iniciando envío de resumen de pedido a productores - ID Pedido: ${orderId}`);
+
+    const orderQuery = `
+      SELECT order_id, order_date, status 
+      FROM orders 
+      WHERE order_id = ?
+    `;
+    const orderData = await queryAsync(orderQuery, [orderId]);
+
+    if (!orderData || orderData.length === 0) {
+      console.error("Pedido no encontrado");
+      return;
+    }
+
+    const order = orderData[0];
+
+    const productsQuery = `
+      SELECT 
+        p.product_name,
+        oi.quantity,
+        oi.price,
+        pr.producer_id,
+        u.first_name AS producer_name,
+        pr.contact_email,
+        pr.contact_phone
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.product_id
+      JOIN producers pr ON p.producer_id = pr.producer_id
+      JOIN users u ON pr.user_id = u.user_id
+      WHERE oi.order_id = ?;
+    `;
+
+    const items = await queryAsync(productsQuery, [orderId]);
+
+    if (!items || items.length === 0) {
+      console.log("No se encontraron productos para este pedido.");
+      return;
+    }
+
+    const producers = {};
+    for (const item of items) {
+      if (!producers[item.producer_id]) {
+        producers[item.producer_id] = {
+          producer: {
+            id: item.producer_id,
+            name: item.producer_name,
+            email: item.contact_email,
+            phone: item.contact_phone || "N/A"
+          },
+          products: []
+        };
+      }
+      producers[item.producer_id].products.push({
+        name: item.product_name,
+        quantity: item.quantity,
+        price: parseFloat(item.price)
+      });
+    }
+
+    for (const producerId in producers) {
+      const { producer, products } = producers[producerId];
+
+      const orderSummaryData = {
+        producer,
+        order: {
+          id: `ORD-${order.order_id}`,
+          date: order.order_date,
+          status: getStatusInSpanish(order.status),
+          products
+        }
+      };
+      console.log("Data:", JSON.stringify(orderSummaryData, null, 2));
+
+      const url = `${process.env.MESSAGE_MICROSERVICE_URL}/enviar-mensaje`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderSummaryData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`Error al notificar a ${producer.name}:`, errorData);
+        continue;
+      }
+
+      const result = await response.json();
+    }
+    console.log("Envío de resúmenes completado para todos los productores.");
+
+  } catch (error) {
+    console.error("Error en el envío:", error);
   }
 }
 
@@ -192,6 +289,10 @@ async function createOrder(req, res) {
         // 8. Enviar el resumen del pedido al microservicio de email (asíncrono)
         sendOrderSummary(userId, orderId).catch(error => {
           console.error("Error al enviar el resumen del pedido por email:", error);
+        });
+
+        sendOrderSummaryToProducers(orderId).catch(error => {
+          console.error("Error al enviar las notificaciones a los productores:", error);
         });
         
         res.status(201).json({ 
@@ -411,5 +512,6 @@ function getOrderDetails(req, res) {
 export const methods = {
   createOrder,
   getUserOrders,
-  getOrderDetails
+  getOrderDetails,
+  sendOrderSummaryToProducers
 };
