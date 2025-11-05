@@ -182,9 +182,14 @@
                                 <strong>Fecha de fin:</strong> <span id="endDate"></span><br>
                                 <strong>Día de entrega:</strong> <span id="deliveryDay"></span>
                             </p>
-                            <button class="btn btn-outline-danger" onclick="cancelSubscription()">
-                                Cancelar Suscripción
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-danger" onclick="cancelSubscription()">
+                                    Cancelar Suscripción
+                                </button>
+                                <button class="btn btn-success" onclick="addMoreProducts()">
+                                    <i class="bi bi-plus-circle me-2"></i>Agregar Productos
+                                </button>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <h5>Productos Suscritos</h5>

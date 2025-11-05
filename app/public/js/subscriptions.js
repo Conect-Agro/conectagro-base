@@ -23,56 +23,83 @@ function initializeDeliveryDays() {
 // Cargar suscripción activa
 async function loadActiveSubscription() {
   try {
-    const response = await fetch('/api/subscriptions/active');
-    const subscription = await response.json();
-    console.log('Datos completos de la suscripción:', subscription);
+        const response = await fetch('/api/subscriptions/active');
+        const subscription = await response.json();
+        console.log('Datos completos de la suscripción:', subscription);
 
-    if (subscription) {
-      document.getElementById('activeSubscription').style.display = 'block';
-      document.getElementById('subscriptionPlans').style.display = 'none';
+        if (subscription) {
+            document.getElementById('activeSubscription').style.display = 'block';
+            document.getElementById('subscriptionPlans').style.display = 'none';
 
-      document.getElementById('subscriptionType').textContent = getSubscriptionTypeText(subscription.subscription_type);
-      document.getElementById('startDate').textContent = new Date(subscription.start_date).toLocaleDateString();
-      document.getElementById('endDate').textContent = new Date(subscription.end_date).toLocaleDateString();
-      document.getElementById('deliveryDay').textContent = `Día ${subscription.delivery_day}`;
+            document.getElementById('subscriptionType').textContent = getSubscriptionTypeText(subscription.subscription_type);
+            document.getElementById('startDate').textContent = new Date(subscription.start_date).toLocaleDateString();
+            document.getElementById('endDate').textContent = new Date(subscription.end_date).toLocaleDateString();
+            document.getElementById('deliveryDay').textContent = `Día ${subscription.delivery_day}`;
 
-      const productsContainer = document.getElementById('subscribedProducts');
-      const products = Array.isArray(subscription.products) ? subscription.products : [];
+            const productsContainer = document.getElementById('subscribedProducts');
+            const products = Array.isArray(subscription.products) ? subscription.products : [];
 
-      if (products.length > 0) {
-        productsContainer.innerHTML = products.map(product => {
-          // Adaptar nombres del backend
-          const name = product.product_name || product.name || 'Producto sin nombre';
-          const image = product.image_url || product.imageUrl || null;
-          const price = parseFloat(product.price) || 0;
-          const quantity = product.quantity || 0;
+            if (products.length > 0) {
+                productsContainer.innerHTML = products.map(product => {
+                    const name = product.product_name || product.name || 'Producto sin nombre';
+                    const image = product.image_url || product.imageUrl || null;
+                    const price = parseFloat(product.price) || 0;
+                    const quantity = product.quantity || 0;
+                    const productId = product.product_id || product.productId;
 
-          return `
-            <div class="col-md-6">
-              <div class="card product-card">
-                ${image ? `<img src="${image}" class="card-img-top product-img" alt="${name}">` : ''}
-                <div class="card-body">
-                  <h5 class="card-title">${name}</h5>
-                  <p class="card-text">
-                    Cantidad: ${quantity}<br>
-                    Precio: $${price.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } else {
-        productsContainer.innerHTML = `<p>No hay productos asociados a esta suscripción.</p>`;
-      }
+                    return `
+                        <div class="col-md-3 col-6" id="product-container-${productId}">
+                            <div class="card product-card h-100 position-relative">
+                                <button type="button" 
+                                        class="btn-close position-absolute top-0 end-0 m-2 bg-white" 
+                                        style="z-index: 1;" 
+                                        onclick="removeProductFromSubscription(${productId})"
+                                        aria-label="Eliminar producto">
+                                </button>
+                                ${image ? `<img src="${image}" class="card-img-top product-img" alt="${name}">` : ''}
+                                <div class="card-body">
+                                    <h5 class="card-title">${name}</h5>
+                                    <p class="card-text text-success fw-bold">$${price.toFixed(2)}</p>
+                                    <p class="card-text">
+                                        <small class="text-muted">Cantidad: ${quantity}</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                productsContainer.innerHTML = `<p>No hay productos asociados a esta suscripción.</p>`;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading subscription:', error);
     }
-
-  } catch (error) {
-    console.error('Error loading subscription:', error);
-  }
 }
 
+// Reemplazar la función removeProductFromSubscription
+async function removeProductFromSubscription(productId) {
+    try {
+        const response = await fetch(`/api/subscriptions/products/${productId}`, {
+            method: 'DELETE'
+        });
 
+        if (!response.ok) throw new Error('Error removing product');
+
+        const productContainer = document.getElementById(`product-container-${productId}`);
+        if (productContainer) {
+            productContainer.remove();
+        }
+
+        const productsContainer = document.getElementById('subscribedProducts');
+        if (!productsContainer.children.length) {
+            productsContainer.innerHTML = `<p>No hay productos asociados a esta suscripción.</p>`;
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 
 // Seleccionar plan
 async function selectPlan(plan) {
@@ -153,19 +180,9 @@ function updateQuantity(productId, change) {
 
 // Validar selección de productos antes de crear suscripción
 async function createSubscription() {
-    if (selectedProducts.size === 0) {
-        alert('Por favor, selecciona al menos un producto');
-        return;
-
-        
-    }
+    if (selectedProducts.size === 0 || !document.getElementById('deliveryDaySelect').value) return;
 
     const deliveryDay = document.getElementById('deliveryDaySelect').value;
-    if (!deliveryDay) {
-        alert('Por favor, selecciona un día de entrega');
-        return;
-    }
-
     const products = Array.from(selectedProducts.entries()).map(([productId, quantity]) => ({
         productId,
         quantity
@@ -189,18 +206,44 @@ async function createSubscription() {
         productSelectionModal.hide();
         loadActiveSubscription();
         
-        // Mostrar mensaje de éxito
-        alert('¡Suscripción creada exitosamente!');
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al crear la suscripción');
     }
 }
 
-// Cancelar suscripción
-async function cancelSubscription() {
-    if (!confirm('¿Estás seguro de que deseas cancelar tu suscripción?')) return;
+// Reemplazar la función updateSubscriptionProducts
+async function updateSubscriptionProducts() {
+    if (selectedProducts.size === 0) return;
+
+    const products = Array.from(selectedProducts.entries()).map(([productId, quantity]) => ({
+        productId,
+        quantity
+    }));
     
+    try {
+        const response = await fetch('/api/subscriptions/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ products })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error al actualizar productos');
+        }
+        
+        productSelectionModal.hide();
+        await loadActiveSubscription();
+        selectedProducts.clear();
+        
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Reemplazar la función cancelSubscription
+async function cancelSubscription() {
     try {
         const response = await fetch('/api/subscriptions/cancel', {
             method: 'DELETE'
@@ -211,10 +254,8 @@ async function cancelSubscription() {
         document.getElementById('activeSubscription').style.display = 'none';
         document.getElementById('subscriptionPlans').style.display = 'block';
         
-        alert('Suscripción cancelada exitosamente');
     } catch (error) {
         console.error('Error:', error);
-        alert('Error al cancelar la suscripción');
     }
 }
 
@@ -226,4 +267,64 @@ function getSubscriptionTypeText(type) {
         'annual': 'Anual'
     };
     return types[type] || type;
+}
+
+// Función para agregar más productos
+async function addMoreProducts() {
+    selectedProducts = new Map(); // Resetear productos seleccionados
+    
+    // Obtener el tipo de suscripción actual
+    const subscriptionType = document.getElementById('subscriptionType').textContent;
+    switch(subscriptionType) {
+        case 'Mensual':
+            selectedPlan = 'monthly';
+            break;
+        case 'Semestral':
+            selectedPlan = 'biannual';
+            break;
+        case 'Anual':
+            selectedPlan = 'annual';
+            break;
+        default:
+            selectedPlan = 'monthly';
+    }
+    
+    try {
+        await loadProducts();
+        
+        // Ocultar el select de día de entrega ya que ya está establecido
+        const deliveryDaySelect = document.getElementById('deliveryDaySelect');
+        if (deliveryDaySelect) {
+            deliveryDaySelect.closest('.mb-5').style.display = 'none';
+        }
+        
+        // Cambiar el título y texto del botón del modal
+        const modalTitle = document.querySelector('.modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = 'Agregar Productos a tu Suscripción';
+        }
+        
+        const confirmButton = document.querySelector('.modal-footer .btn-success');
+        if (confirmButton) {
+            confirmButton.textContent = 'Agregar Productos';
+            confirmButton.onclick = updateSubscriptionProducts;
+        }
+        
+        productSelectionModal.show();
+    } catch (error) {
+        console.error('Error al preparar la adición de productos:', error);
+        alert('Error al cargar los productos. Por favor, intenta nuevamente.');
+    }
+}
+
+// Modificar la función createSubscription existente para restaurar el comportamiento original del modal
+function createSubscription() {
+    // ... código existente ...
+    
+    // Restaurar el texto del botón después de crear la suscripción
+    const confirmButton = document.querySelector('.modal-footer .btn-success');
+    if (confirmButton) {
+        confirmButton.textContent = 'Confirmar Suscripción';
+        confirmButton.onclick = createSubscription;
+    }
 }

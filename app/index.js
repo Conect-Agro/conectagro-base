@@ -214,6 +214,8 @@ app.post("/api/subscriptions", authMiddleware, subscriptionsController.createSub
 app.get("/api/subscriptions/active", authMiddleware, subscriptionsController.getActiveSubscription);
 app.put("/api/subscriptions/delivery-day", authMiddleware, subscriptionsController.updateDeliveryDay);
 app.delete("/api/subscriptions/cancel", authMiddleware, subscriptionsController.cancelSubscription);
+app.delete("/api/subscriptions/products/:productId", authMiddleware, subscriptionsController.removeSubscriptionProduct);
+app.post("/api/subscriptions/products", authMiddleware, subscriptionsController.addSubscriptionProducts);
 
 // Endpoint para métricas
 app.get("/metrics", async (req, res) => {

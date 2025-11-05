@@ -20,7 +20,7 @@ function createSubscription(req, res) {
   const query = `
     INSERT INTO subscriptions 
     (user_id, start_date, end_date, delivery_day, subscription_type) 
-    VALUES (?, ?, ?, ?, ?)
+    VALUES
   `;
 
   connectiondb.query(
@@ -137,9 +137,185 @@ function cancelSubscription(req, res) {
   });
 }
 
+// Agregar esta nueva función al controlador
+function removeSubscriptionProduct(req, res) {
+    const userId = req.user.id_user;
+    const productId = req.params.productId;
+
+    // Primero verificamos que el usuario tenga una suscripción activa
+    const checkQuery = `
+        SELECT sp.subscription_product_id, s.subscription_id 
+        FROM subscriptions s
+        JOIN subscription_products sp ON s.subscription_id = sp.subscription_id
+        WHERE s.user_id = ? AND s.is_active = TRUE AND sp.product_id = ?
+    `;
+
+    connectiondb.query(checkQuery, [userId, productId], (error, results) => {
+        if (error) {
+            console.error("Error checking subscription product:", error);
+            return res.status(500).json({ error: "Error al verificar el producto" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Producto no encontrado en la suscripción" });
+        }
+
+        // Eliminar el producto de la suscripción
+        const deleteQuery = `
+            DELETE FROM subscription_products 
+            WHERE subscription_product_id = ?
+        `;
+
+        connectiondb.query(deleteQuery, [results[0].subscription_product_id], (error) => {
+            if (error) {
+                console.error("Error removing subscription product:", error);
+                return res.status(500).json({ error: "Error al eliminar el producto" });
+            }
+
+            // Verificar si quedan productos en la suscripción
+            const checkRemainingQuery = `
+                SELECT COUNT(*) as count 
+                FROM subscription_products 
+                WHERE subscription_id = ?
+            `;
+
+            connectiondb.query(checkRemainingQuery, [results[0].subscription_id], (error, countResults) => {
+                if (error) {
+                    console.error("Error checking remaining products:", error);
+                    return res.status(200).json({ message: "Producto eliminado exitosamente" });
+                }
+
+                // Si no quedan productos, cancelar la suscripción
+                if (countResults[0].count === 0) {
+                    const cancelQuery = `
+                        UPDATE subscriptions 
+                        SET is_active = FALSE 
+                        WHERE subscription_id = ?
+                    `;
+
+                    connectiondb.query(cancelQuery, [results[0].subscription_id], (error) => {
+                        if (error) {
+                            console.error("Error canceling empty subscription:", error);
+                        }
+                    });
+                }
+
+                res.status(200).json({ message: "Producto eliminado exitosamente" });
+            });
+        });
+    });
+}
+
+// Agregar al objeto methods:
+
+async function addSubscriptionProducts(req, res) {
+    const userId = req.user.id_user;
+    const { products } = req.body;
+    
+    if (!products || !Array.isArray(products) || products.length === 0) {
+        return res.status(400).json({ error: "No se proporcionaron productos válidos" });
+    }
+
+    const getSubscriptionQuery = `
+        SELECT subscription_id 
+        FROM subscriptions 
+        WHERE user_id = ? AND is_active = TRUE
+        LIMIT 1
+    `;
+    
+    connectiondb.query(getSubscriptionQuery, [userId], (error, results) => {
+        if (error) {
+            console.error("Error getting subscription:", error);
+            return res.status(500).json({ error: "Error al obtener la suscripción" });
+        }
+        
+        if (results.length === 0) {
+            return res.status(404).json({ error: "No se encontró una suscripción activa" });
+        }
+        
+        const subscriptionId = results[0].subscription_id;
+
+        // Procesar cada producto uno por uno para manejar duplicados
+        let processed = 0;
+        let errors = [];
+
+        products.forEach(product => {
+            // Verificar si el producto ya existe en la suscripción
+            const checkExistingQuery = `
+                SELECT subscription_product_id, quantity 
+                FROM subscription_products 
+                WHERE subscription_id = ? AND product_id = ?
+            `;
+
+            connectiondb.query(checkExistingQuery, [subscriptionId, product.productId], (error, existingProduct) => {
+                if (error) {
+                    errors.push(`Error verificando producto ${product.productId}`);
+                    if (processed === products.length - 1) {
+                        finishProcessing();
+                    }
+                    return;
+                }
+
+                if (existingProduct.length > 0) {
+                    // El producto ya existe, actualizar cantidad
+                    const newQuantity = existingProduct[0].quantity + product.quantity;
+                    const updateQuery = `
+                        UPDATE subscription_products 
+                        SET quantity = ?
+                        WHERE subscription_product_id = ?
+                    `;
+
+                    connectiondb.query(updateQuery, [newQuantity, existingProduct[0].subscription_product_id], (error) => {
+                        if (error) {
+                            errors.push(`Error actualizando producto ${product.productId}`);
+                        }
+                        processed++;
+                        if (processed === products.length) {
+                            finishProcessing();
+                        }
+                    });
+                } else {
+                    // El producto no existe, insertarlo
+                    const insertQuery = `
+                        INSERT INTO subscription_products 
+                        (subscription_id, product_id, quantity)
+                        VALUES (?, ?, ?)
+                    `;
+
+                    connectiondb.query(insertQuery, [subscriptionId, product.productId, product.quantity], (error) => {
+                        if (error) {
+                            errors.push(`Error insertando producto ${product.productId}`);
+                        }
+                        processed++;
+                        if (processed === products.length) {
+                            finishProcessing();
+                        }
+                    });
+                }
+            });
+        });
+
+        function finishProcessing() {
+            if (errors.length > 0) {
+                return res.status(500).json({ 
+                    error: "Hubo errores procesando algunos productos",
+                    details: errors
+                });
+            }
+            
+            res.status(200).json({ 
+                message: "Productos agregados exitosamente a la suscripción"
+            });
+        }
+    });
+}
+
+// Agregar el método al objeto methods
 export const methods = {
   createSubscription,
   getActiveSubscription,
   updateDeliveryDay,
-  cancelSubscription
+  cancelSubscription,
+  removeSubscriptionProduct,
+  addSubscriptionProducts
 };
