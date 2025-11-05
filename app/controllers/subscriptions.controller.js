@@ -7,10 +7,17 @@ function createSubscription(req, res) {
   
   let months;
   switch(subscriptionType) {
-    case 'monthly': months = 1; break;
-    case 'biannual': months = 6; break;
-    case 'annual': months = 12; break;
-    default: return res.status(400).json({ error: "Tipo de suscripción inválido" });
+    case 'monthly': 
+      months = 1; 
+      break;
+    case 'biannual': 
+      months = 6; 
+      break;
+    case 'annual': 
+      months = 12; 
+      break;
+    default: 
+      return res.status(400).json({ error: "Tipo de suscripción inválido" });
   }
 
   const startDate = new Date();
@@ -19,8 +26,8 @@ function createSubscription(req, res) {
 
   const query = `
     INSERT INTO subscriptions 
-    (user_id, start_date, end_date, delivery_day, subscription_type) 
-    VALUES
+    (user_id, start_date, end_date, delivery_day, subscription_type, is_active) 
+    VALUES (?, ?, ?, ?, ?, TRUE)
   `;
 
   connectiondb.query(

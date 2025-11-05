@@ -7,6 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     productSelectionModal = new bootstrap.Modal(document.getElementById('productSelectionModal'));
     loadActiveSubscription();
     initializeDeliveryDays();
+
+    // Agregar evento para cuando el modal se cierre
+    document.getElementById('productSelectionModal').addEventListener('hidden.bs.modal', function () {
+        const deliveryDaySelect = document.getElementById('deliveryDaySelect');
+        const deliveryDayContainer = deliveryDaySelect.closest('.mb-5');
+        deliveryDayContainer.style.display = 'block'; // Restaurar visibilidad
+        
+        const modalTitle = document.querySelector('.modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = 'Selecciona tus Productos';
+        }
+        
+        const confirmButton = document.querySelector('.modal-footer .btn-success');
+        if (confirmButton) {
+            confirmButton.textContent = 'Confirmar Suscripción';
+            confirmButton.onclick = createSubscription;
+        }
+    });
 });
 
 // Inicializar select de días de entrega
@@ -106,10 +124,27 @@ async function selectPlan(plan) {
     selectedPlan = plan;
     try {
         await loadProducts();
+        
+        // Asegurarnos que el selector de día esté visible para nueva suscripción
+        const deliveryDaySelect = document.getElementById('deliveryDaySelect');
+        const deliveryDayContainer = deliveryDaySelect.closest('.mb-5');
+        deliveryDayContainer.style.display = 'block';
+        
+        // Restaurar título y botón original
+        const modalTitle = document.querySelector('.modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = 'Selecciona tus Productos';
+        }
+        
+        const confirmButton = document.querySelector('.modal-footer .btn-success');
+        if (confirmButton) {
+            confirmButton.textContent = 'Confirmar Suscripción';
+            confirmButton.onclick = createSubscription;
+        }
+        
         productSelectionModal.show();
     } catch (error) {
         console.error('Error al cargar el plan:', error);
-        alert('Error al cargar los productos. Por favor, intenta nuevamente.');
     }
 }
 
@@ -180,9 +215,16 @@ function updateQuantity(productId, change) {
 
 // Validar selección de productos antes de crear suscripción
 async function createSubscription() {
-    if (selectedProducts.size === 0 || !document.getElementById('deliveryDaySelect').value) return;
-
     const deliveryDay = document.getElementById('deliveryDaySelect').value;
+    
+    if (selectedProducts.size === 0) {
+        return; // Salir silenciosamente sin crear suscripción
+    }
+
+    if (!deliveryDay) {
+        return; // Salir silenciosamente si no hay día seleccionado
+    }
+
     const products = Array.from(selectedProducts.entries()).map(([productId, quantity]) => ({
         productId,
         quantity
@@ -196,15 +238,20 @@ async function createSubscription() {
             },
             body: JSON.stringify({
                 subscriptionType: selectedPlan,
-                deliveryDay,
+                deliveryDay: parseInt(deliveryDay),
                 products
             })
         });
         
-        if (!response.ok) throw new Error('Error creating subscription');
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Error creating subscription');
+        }
         
         productSelectionModal.hide();
-        loadActiveSubscription();
+        selectedProducts.clear(); // Limpiar selección
+        await loadActiveSubscription();
         
     } catch (error) {
         console.error('Error:', error);
@@ -271,9 +318,8 @@ function getSubscriptionTypeText(type) {
 
 // Función para agregar más productos
 async function addMoreProducts() {
-    selectedProducts = new Map(); // Resetear productos seleccionados
+    selectedProducts = new Map(); 
     
-    // Obtener el tipo de suscripción actual
     const subscriptionType = document.getElementById('subscriptionType').textContent;
     switch(subscriptionType) {
         case 'Mensual':
@@ -292,13 +338,11 @@ async function addMoreProducts() {
     try {
         await loadProducts();
         
-        // Ocultar el select de día de entrega ya que ya está establecido
+        // Aquí cambiamos para manejar diferente la visibilidad del selector
         const deliveryDaySelect = document.getElementById('deliveryDaySelect');
-        if (deliveryDaySelect) {
-            deliveryDaySelect.closest('.mb-5').style.display = 'none';
-        }
+        const deliveryDayContainer = deliveryDaySelect.closest('.mb-5');
+        deliveryDayContainer.style.display = 'none'; // Ocultamos para agregar productos
         
-        // Cambiar el título y texto del botón del modal
         const modalTitle = document.querySelector('.modal-title');
         if (modalTitle) {
             modalTitle.textContent = 'Agregar Productos a tu Suscripción';
@@ -313,18 +357,5 @@ async function addMoreProducts() {
         productSelectionModal.show();
     } catch (error) {
         console.error('Error al preparar la adición de productos:', error);
-        alert('Error al cargar los productos. Por favor, intenta nuevamente.');
-    }
-}
-
-// Modificar la función createSubscription existente para restaurar el comportamiento original del modal
-function createSubscription() {
-    // ... código existente ...
-    
-    // Restaurar el texto del botón después de crear la suscripción
-    const confirmButton = document.querySelector('.modal-footer .btn-success');
-    if (confirmButton) {
-        confirmButton.textContent = 'Confirmar Suscripción';
-        confirmButton.onclick = createSubscription;
     }
 }
