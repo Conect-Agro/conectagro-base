@@ -1,0 +1,36 @@
+{
+  "name": "microservice-messaging",
+  "version": "1.0.0",
+  "description": "Microservicio de mensajería para notificar pedidos vía WhatsApp y SMS usando Twilio.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "keywords": [
+    "twilio",
+    "whatsapp",
+    "sms",
+    "microservice",
+    "notifications"
+  ],
+  "author": "Katalina Torres",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2",
+    "twilio": "^5.10.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {}
+  }
+}
