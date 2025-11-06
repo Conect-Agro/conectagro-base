@@ -4,32 +4,44 @@ import { publishLowStock } from "./product-checker.js";
 // Función para enviar el resumen del pedido al microservicio de email
 async function sendOrderSummary(userId, orderId) {
   try {
-    console.log(`🔄 Iniciando envío de resumen de pedido - ID: ${orderId} para usuario ID: ${userId}`);
-    
+    console.log(
+      `🔄 Iniciando envío de resumen de pedido - ID: ${orderId} para usuario ID: ${userId}`
+    );
+
     // 1. Obtener datos del usuario
-    const userQuery = "SELECT username, email, document_number FROM users WHERE user_id = ?";
-    console.log(`📝 Ejecutando consulta de usuario: ${userQuery} con ID: ${userId}`);
+    const userQuery =
+      "SELECT username, email, document_number FROM users WHERE user_id = ?";
+    console.log(
+      `📝 Ejecutando consulta de usuario: ${userQuery} con ID: ${userId}`
+    );
     const userData = await queryAsync(userQuery, [userId]);
-    
+
     if (!userData || userData.length === 0) {
-      console.error("❌ Usuario no encontrado para enviar el resumen del pedido");
+      console.error(
+        "❌ Usuario no encontrado para enviar el resumen del pedido"
+      );
       return;
     }
     const user = userData[0];
     console.log(`✅ Usuario encontrado: ${user.name}, Email: ${user.email}`);
-    
+
     // 2. Obtener datos del pedido
-    const orderQuery = "SELECT order_id, order_date, status FROM orders WHERE order_id = ?";
-    console.log(`📝 Ejecutando consulta de pedido: ${orderQuery} con ID: ${orderId}`);
+    const orderQuery =
+      "SELECT order_id, order_date, status FROM orders WHERE order_id = ?";
+    console.log(
+      `📝 Ejecutando consulta de pedido: ${orderQuery} con ID: ${orderId}`
+    );
     const orderData = await queryAsync(orderQuery, [orderId]);
-    
+
     if (!orderData || orderData.length === 0) {
       console.error("❌ Pedido no encontrado para enviar resumen");
       return;
     }
     const order = orderData[0];
-    console.log(`✅ Pedido encontrado: #${order.order_id}, Fecha: ${order.order_date}`);
-    
+    console.log(
+      `✅ Pedido encontrado: #${order.order_id}, Fecha: ${order.order_date}`
+    );
+
     // 3. Obtener productos del pedido
     const productsQuery = `
       SELECT p.product_name as nombre, oi.quantity as cantidad, oi.price as precio
@@ -37,64 +49,84 @@ async function sendOrderSummary(userId, orderId) {
       JOIN products p ON oi.product_id = p.product_id
       WHERE oi.order_id = ?
     `;
-    console.log(`📝 Ejecutando consulta de productos del pedido con ID: ${orderId}`);
+    console.log(
+      `📝 Ejecutando consulta de productos del pedido con ID: ${orderId}`
+    );
     const products = await queryAsync(productsQuery, [orderId]);
     // Convertir los precios a números
-    products.forEach(product => {
+    products.forEach((product) => {
       product.precio = parseFloat(product.precio);
     });
     console.log(`✅ Productos encontrados: ${products.length} items`);
-    
+
     // 4. Crear el objeto de datos para la solicitud
     const orderSummaryData = {
       usuario: {
         nombre: user.username,
         email: user.email,
-        telefono: user.phone || "3212827709"
+        telefono: user.phone || "3212827709",
       },
       pedido: {
         id: `ORD-${order.order_id}`,
         fecha: order.order_date,
         estado: getStatusInSpanish(order.status),
-        productos: products
-      }
-    };
-    
-    console.log(`📧 Preparando envío de email a: ${user.email} para el pedido: ORD-${order.order_id}`);
-    console.log(`🔍 Datos a enviar al microservicio:`, JSON.stringify(orderSummaryData, null, 2));
-    
-    // 5. Enviar la solicitud al microservicio
-    console.log(`🌐 Enviando solicitud a: ${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`);
-    const response = await fetch(`${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
+        productos: products,
       },
-      body: JSON.stringify(orderSummaryData)
-    });
-    
+    };
+
+    console.log(
+      `📧 Preparando envío de email a: ${user.email} para el pedido: ORD-${order.order_id}`
+    );
+    console.log(
+      `🔍 Datos a enviar al microservicio:`,
+      JSON.stringify(orderSummaryData, null, 2)
+    );
+
+    // 5. Enviar la solicitud al microservicio
+    console.log(
+      `🌐 Enviando solicitud a: ${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`
+    );
+    const response = await fetch(
+      `${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderSummaryData),
+      }
+    );
+
     if (!response.ok) {
       const errorData = await response.json();
-      console.error(`❌ Error al enviar el resumen de pedido (${response.status}):`, errorData);
-      console.error(`⚠️ Verifica que el microservicio de email esté ejecutándose en ${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`);
+      console.error(
+        `❌ Error al enviar el resumen de pedido (${response.status}):`,
+        errorData
+      );
+      console.error(
+        `⚠️ Verifica que el microservicio de email esté ejecutándose en ${process.env.EMAIL_MICROSERVICE_URL}${process.env.EMAIL_MICROSERVICE_ENDPOINT}`
+      );
       return;
     }
-    
+
     const result = await response.json();
     console.log(`✅ Resumen de pedido enviado exitosamente:`);
     console.log(`   📨 Email enviado a: ${user.email}`);
     console.log(`   📃 Pedido: ORD-${order.order_id}`);
-    console.log(`   🆔 ID del mensaje: ${result.messageId || 'No disponible'}`);
-    
+    console.log(`   🆔 ID del mensaje: ${result.messageId || "No disponible"}`);
   } catch (error) {
     console.error("❌ Error en sendOrderSummary:", error);
-    console.error("⚠️ Verifica la conexión con el microservicio y los datos enviados");
+    console.error(
+      "⚠️ Verifica la conexión con el microservicio y los datos enviados"
+    );
   }
 }
 
 async function sendOrderSummaryToProducers(orderId) {
   try {
-    console.log(`🔄 Iniciando envío de resumen de pedido a productores - ID Pedido: ${orderId}`);
+    console.log(
+      `🔄 Iniciando envío de resumen de pedido a productores - ID Pedido: ${orderId}`
+    );
 
     const orderQuery = `
       SELECT order_id, order_date, status 
@@ -141,15 +173,15 @@ async function sendOrderSummaryToProducers(orderId) {
             id: item.producer_id,
             name: item.producer_name,
             email: item.contact_email,
-            phone: item.contact_phone || "N/A"
+            phone: item.contact_phone || "N/A",
           },
-          products: []
+          products: [],
         };
       }
       producers[item.producer_id].products.push({
         name: item.product_name,
         quantity: item.quantity,
-        price: parseFloat(item.price)
+        price: parseFloat(item.price),
       });
     }
 
@@ -162,8 +194,8 @@ async function sendOrderSummaryToProducers(orderId) {
           id: `ORD-${order.order_id}`,
           date: order.order_date,
           status: getStatusInSpanish(order.status),
-          products
-        }
+          products,
+        },
       };
       console.log("Data:", JSON.stringify(orderSummaryData, null, 2));
 
@@ -172,7 +204,7 @@ async function sendOrderSummaryToProducers(orderId) {
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderSummaryData)
+        body: JSON.stringify(orderSummaryData),
       });
 
       if (!response.ok) {
@@ -184,7 +216,6 @@ async function sendOrderSummaryToProducers(orderId) {
       const result = await response.json();
     }
     console.log("Envío de resúmenes completado para todos los productores.");
-
   } catch (error) {
     console.error("Error en el envío:", error);
   }
@@ -193,12 +224,12 @@ async function sendOrderSummaryToProducers(orderId) {
 // Función auxiliar para convertir el estado del pedido al español
 function getStatusInSpanish(status) {
   const statusMap = {
-    'pending': 'Pendiente',
-    'processing': 'En proceso',
-    'completed': 'Completado',
-    'cancelled': 'Cancelado'
+    pending: "Pendiente",
+    processing: "En proceso",
+    completed: "Completado",
+    cancelled: "Cancelado",
   };
-  
+
   return statusMap[status] || status;
 }
 
@@ -216,18 +247,18 @@ function queryAsync(query, params) {
 async function createOrder(req, res) {
   const userId = req.user.id_user;
   const { addressId } = req.body;
-  
+
   if (!addressId) {
     return res.status(400).json({ error: "Address ID is required" });
   }
-  
+
   // Iniciar transacción
   connectiondb.beginTransaction(async (err) => {
     if (err) {
       console.error("Error starting transaction:", err);
       return res.status(500).json({ error: "Server error" });
     }
-    
+
     try {
       // 1. Obtener el carrito del usuario
       const cartId = await getCartId(userId);
@@ -235,49 +266,59 @@ async function createOrder(req, res) {
         connectiondb.rollback();
         return res.status(400).json({ error: "Cart is empty" });
       }
-      
+
       // 2. Obtener los items del carrito
       const cartItems = await getCartItems(cartId);
       if (cartItems.length === 0) {
         connectiondb.rollback();
         return res.status(400).json({ error: "Cart is empty" });
       }
-      
+
       // 3. Calcular el total
       let total = 0;
       for (const item of cartItems) {
         const productInfo = await getProductInfo(item.product_id);
         if (!productInfo) {
           connectiondb.rollback();
-          return res.status(400).json({ error: `Product ${item.product_id} not found` });
+          return res
+            .status(400)
+            .json({ error: `Product ${item.product_id} not found` });
         }
-        
+
         // Verificar stock
         if (productInfo.stock < item.quantity) {
           connectiondb.rollback();
-          return res.status(400).json({ 
-            error: `Only ${productInfo.stock} items available for ${productInfo.product_name}` 
+          return res.status(400).json({
+            error: `Only ${productInfo.stock} items available for ${productInfo.product_name}`,
           });
         }
-        
+
         total += productInfo.price * item.quantity;
       }
-      
+
       // 4. Crear el pedido
       const orderId = await createNewOrder(userId, addressId, total);
-      
+
       // 5. Insertar los productos del pedido
       for (const item of cartItems) {
         const productInfo = await getProductInfo(item.product_id);
-        await addOrderItem(orderId, item.product_id, item.quantity, productInfo.price);
-        
+        await addOrderItem(
+          orderId,
+          item.product_id,
+          item.quantity,
+          productInfo.price
+        );
+
         // 6. Actualizar el stock
-        await updateProductStock(item.product_id, productInfo.stock - item.quantity);
+        await updateProductStock(
+          item.product_id,
+          productInfo.stock - item.quantity
+        );
       }
-      
+
       // 7. Vaciar el carrito
       await clearCart(cartId);
-      
+
       // Confirmar la transacción
       connectiondb.commit((err) => {
         if (err) {
@@ -285,23 +326,28 @@ async function createOrder(req, res) {
           connectiondb.rollback();
           return res.status(500).json({ error: "Server error" });
         }
-        
+
         // 8. Enviar el resumen del pedido al microservicio de email (asíncrono)
-        sendOrderSummary(userId, orderId).catch(error => {
-          console.error("Error al enviar el resumen del pedido por email:", error);
+        sendOrderSummary(userId, orderId).catch((error) => {
+          console.error(
+            "Error al enviar el resumen del pedido por email:",
+            error
+          );
         });
 
-        sendOrderSummaryToProducers(orderId).catch(error => {
-          console.error("Error al enviar las notificaciones a los productores:", error);
+        sendOrderSummaryToProducers(orderId).catch((error) => {
+          console.error(
+            "Error al enviar las notificaciones a los productores:",
+            error
+          );
         });
-        
-        res.status(201).json({ 
-          success: true, 
+
+        res.status(201).json({
+          success: true,
           message: "Order created successfully",
-          orderId: orderId
+          orderId: orderId,
         });
       });
-      
     } catch (error) {
       connectiondb.rollback();
       console.error("Error in createOrder:", error);
@@ -388,7 +434,7 @@ function updateProductStock(productId, newStock) {
       [newStock, productId],
       (error, result) => {
         if (error) return reject(error);
-        
+
         // Después de actualizar, verificar si el stock está bajo
         connectiondb.query(
           "SELECT product_id, product_name, stock FROM products WHERE product_id = ?",
@@ -401,7 +447,7 @@ function updateProductStock(productId, newStock) {
                 await publishLowStock({
                   id: product.product_id,
                   name: product.product_name,
-                  stock: product.stock
+                  stock: product.stock,
                 });
               }
             }
@@ -430,7 +476,7 @@ function clearCart(cartId) {
 // Obtener pedidos del usuario
 function getUserOrders(req, res) {
   const userId = req.user.id_user;
-  
+
   const query = `
     SELECT o.order_id, o.order_date, o.total, o.status,
            d.address, d.city, d.postal_code, d.country
@@ -439,13 +485,13 @@ function getUserOrders(req, res) {
     WHERE o.user_id = ?
     ORDER BY o.order_date DESC
   `;
-  
+
   connectiondb.query(query, [userId], (error, results) => {
     if (error) {
       console.error("Error fetching orders:", error);
       return res.status(500).json({ error: "Server error" });
     }
-    
+
     res.json(results);
   });
 }
@@ -454,7 +500,7 @@ function getUserOrders(req, res) {
 function getOrderDetails(req, res) {
   const userId = req.user.id_user;
   const orderId = req.params.orderId;
-  
+
   // Verificar que el pedido pertenece al usuario
   connectiondb.query(
     "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
@@ -464,13 +510,13 @@ function getOrderDetails(req, res) {
         console.error("Error fetching order:", error);
         return res.status(500).json({ error: "Server error" });
       }
-      
+
       if (orderResults.length === 0) {
         return res.status(404).json({ error: "Order not found" });
       }
-      
+
       const order = orderResults[0];
-      
+
       // Obtener dirección
       connectiondb.query(
         "SELECT * FROM directions WHERE id_direction = ?",
@@ -480,7 +526,7 @@ function getOrderDetails(req, res) {
             console.error("Error fetching address:", error);
             return res.status(500).json({ error: "Server error" });
           }
-          
+
           // Obtener items del pedido
           const query = `
             SELECT oi.quantity, oi.price, 
@@ -490,17 +536,17 @@ function getOrderDetails(req, res) {
             JOIN products p ON oi.product_id = p.product_id
             WHERE oi.order_id = ?
           `;
-          
+
           connectiondb.query(query, [orderId], (error, itemResults) => {
             if (error) {
               console.error("Error fetching order items:", error);
               return res.status(500).json({ error: "Server error" });
             }
-            
+
             res.json({
               order: order,
               address: addressResults[0],
-              items: itemResults
+              items: itemResults,
             });
           });
         }
@@ -513,5 +559,5 @@ export const methods = {
   createOrder,
   getUserOrders,
   getOrderDetails,
-  sendOrderSummaryToProducers
+  sendOrderSummaryToProducers,
 };

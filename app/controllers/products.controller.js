@@ -20,7 +20,7 @@ function getAllProducts(req, res) {
     WHERE p.is_active = 1
     ORDER BY p.product_id DESC
   `;
-  
+
   connectiondb.query(query, (error, results) => {
     if (error) {
       console.error("Error fetching products:", error);
@@ -33,14 +33,14 @@ function getAllProducts(req, res) {
 // Obtener productos por categoría
 function getProductsByCategory(req, res) {
   const categoryId = req.params.categoryId;
-  
+
   const query = `
     SELECT p.*, c.category_name 
     FROM products p 
     JOIN categories c ON p.category_id = c.category_id
     WHERE p.is_active = 1 AND p.category_id = ?
   `;
-  
+
   connectiondb.query(query, [categoryId], (error, results) => {
     if (error) {
       console.error("Error fetching products by category:", error);
@@ -60,9 +60,9 @@ function getFeaturedProducts(req, res) {
     JOIN categories c ON p.category_id = c.category_id
     WHERE p.is_active = 1
     ORDER BY p.product_id DESC
-    LIMIT 3
+    LIMIT 5
   `;
-  
+
   connectiondb.query(query, (error, results) => {
     if (error) {
       console.error("Error fetching featured products:", error);
@@ -75,7 +75,7 @@ function getFeaturedProducts(req, res) {
 // Buscar productos
 function searchProducts(req, res) {
   const searchTerm = `%${req.query.term}%`;
-  
+
   const query = `
     SELECT p.*, c.category_name 
     FROM products p 
@@ -83,7 +83,7 @@ function searchProducts(req, res) {
     WHERE p.is_active = 1 
       AND (p.product_name LIKE ? OR p.description LIKE ?)
   `;
-  
+
   connectiondb.query(query, [searchTerm, searchTerm], (error, results) => {
     if (error) {
       console.error("Error searching products:", error);
@@ -98,5 +98,5 @@ export const methods = {
   getAllProducts,
   getProductsByCategory,
   getFeaturedProducts,
-  searchProducts
+  searchProducts,
 };
