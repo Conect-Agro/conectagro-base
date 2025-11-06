@@ -1,0 +1,30 @@
+# Render.com configuration file
+# Este archivo ayuda a Render a entender cómo manejar tu servicio
+
+# Comando de build (opcional, Render usará npm install por defecto)
+buildCommand: npm install
+
+# Comando para iniciar el servicio
+startCommand: node src/index.js
+
+# Variables de entorno sugeridas para Render
+env:
+  NODE_ENV: production
+  PORT: $PORT  # Render asignará automáticamente
+  
+# Health check endpoint
+healthCheckPath: /health
+
+# Configuraciones adicionales recomendadas:
+# 1. Configurar auto-deploy desde tu repositorio Git
+# 2. Establecer las variables de entorno necesarias:
+#    - TELEGRAM_BOT_TOKEN
+#    - TELEGRAM_CHAT_ID  
+#    - RABBITMQ_URL
+#    - RABBITMQ_QUEUE_NAME
+#    - RENDER_SERVICE_URL (la URL que Render te asigne)
+
+# Notas importantes:
+# - Render suspende servicios gratuitos después de 15 minutos de inactividad
+# - El keep-alive service incluido ayudará a mantener el servicio activo
+# - Asegúrate de configurar todas las variables de entorno necesarias

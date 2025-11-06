@@ -118,8 +118,9 @@ function setTokenCookie(res, token) {
 }
 
 async function saveRegister(req, res) {
-  const { first_name_person, last_name_person, document_number_person, user_name, email_user, password } = req.body;
+  const { first_name_person, last_name_person, document_number_person, user_name, email_user, password, role, producer_data } = req.body;
   const passwordhash = await bcryptjs.hash(password, 8);
+  const isProducer = role === 'productor';
 
   const queryUser = "INSERT INTO users SET ?";
     const valuesUser = {
@@ -160,7 +161,8 @@ async function saveRegister(req, res) {
 
       const userId = result.insertId;
 
-    const queryRole = "SELECT role_id FROM roles WHERE role_name = 'cliente'";
+    const roleName = isProducer ? 'productor' : 'cliente';
+    const queryRole = `SELECT role_id FROM roles WHERE role_name = '${roleName}'`;
     connectiondb.query(queryRole, (error, roleResult) => {
       if (error || roleResult.length === 0) {
         console.error("Error fetching role:", error);
@@ -176,11 +178,42 @@ async function saveRegister(req, res) {
           return res.status(400).json({ status: "Error", message: "Error assigning role" });
         }
 
-        return res.status(201).json({
-          status: "ok",
-          message: "Registro exitoso. Ahora inicia sesión con tus credenciales",
-          redirect: "/login",
-        });
+        // Si es productor, insertar datos adicionales en la tabla producers
+        if (isProducer && producer_data) {
+          const queryProducer = "INSERT INTO producers SET ?";
+          const producerValues = {
+            user_id: userId,
+            farm_name: producer_data.farm_name,
+            nit: producer_data.nit,
+            location: producer_data.location,
+            farm_size: producer_data.farm_size,
+            production_type_id: producer_data.production_type_id,
+            contact_phone: producer_data.contact_phone,
+            contact_email: producer_data.contact_email
+          };
+
+          connectiondb.query(queryProducer, producerValues, (error) => {
+            if (error) {
+              console.error("Error saving producer data:", error);
+              return res.status(400).json({ 
+                status: "Error", 
+                message: "Usuario creado pero error al guardar datos del productor" 
+              });
+            }
+
+            return res.status(201).json({
+              status: "ok",
+              message: "Registro de productor exitoso. Ahora inicia sesión con tus credenciales",
+              redirect: "/login",
+            });
+          });
+        } else {
+          return res.status(201).json({
+            status: "ok",
+            message: "Registro exitoso. Ahora inicia sesión con tus credenciales",
+            redirect: "/login",
+          });
+        }
       });
     });
   });

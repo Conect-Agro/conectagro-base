@@ -8,11 +8,14 @@ import { methods as productsController } from "./controllers/products.controller
 import { methods as cartController } from "./controllers/cart.controller.js";
 import { methods as addressesController } from "./controllers/addresses.controller.js";
 import { methods as ordersController } from "./controllers/orders.controller.js";
+import { methods as producersController } from "./controllers/producers.controller.js";
+import { methods as subscriptionsController } from "./controllers/subscriptions.controller.js";
 import { authMiddleware } from "./middlewares/authorization.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import prometheus from "prom-client";
-import dotenv from "dotenv";
+import prometheus from 'prom-client';
+import dotenv from 'dotenv';
+import connectiondb from './database/database.js';
 
 dotenv.config();
 
@@ -29,7 +32,8 @@ const app = express();
 
 // Configuration
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Aumentar límite para imágenes Base64
+app.use(express.urlencoded({ limit: '50mb', extended: true })); // También para urlencoded
 app.use(cookieParser());
 app.use(cors());
 
@@ -126,6 +130,19 @@ app.post("/api/login", authentication.login);
 app.post("/api/recoverPassword", emailHelper.sendEmail);
 app.post("/api/changePassword", emailHelper.changePassword);
 
+// API de tipos de producción
+app.get("/api/production-types", (req, res) => {
+  const query = "SELECT id, name, category, description FROM production_types WHERE is_active = 1 ORDER BY category, name";
+  
+  connectiondb.query(query, (error, results) => {
+    if (error) {
+      console.error("Error fetching production types:", error);
+      return res.status(500).json({ status: "Error", message: "Error al obtener tipos de producción" });
+    }
+    res.json(results);
+  });
+});
+
 // API de productos
 app.get("/api/categories", productsController.getAllCategories);
 app.get("/api/products", productsController.getAllProducts);
@@ -171,10 +188,43 @@ app.get(
   ordersController.getOrderDetails
 );
 
+// API de productores (requieren autenticación y rol de productor)
+app.get("/api/producer/profile", authMiddleware, authorization.onlyProductor, producersController.getProducerProfile);
+app.put("/api/producer/profile", authMiddleware, authorization.onlyProductor, producersController.updateProducerProfile);
+app.get("/api/producer/metrics", authMiddleware, authorization.onlyProductor, producersController.getDashboardMetrics);
+
+// Gestión de productos del productor
+app.get("/api/producer/products", authMiddleware, authorization.onlyProductor, producersController.getProducerProducts);
+app.get("/api/producer/products/:productId", authMiddleware, authorization.onlyProductor, producersController.getProductById);
+app.post("/api/producer/products", authMiddleware, authorization.onlyProductor, producersController.createProduct);
+app.put("/api/producer/products/:productId", authMiddleware, authorization.onlyProductor, producersController.updateProduct);
+app.delete("/api/producer/products/:productId", authMiddleware, authorization.onlyProductor, producersController.deleteProduct);
+
+// Gestión de pedidos del productor
+app.get("/api/producer/orders", authMiddleware, authorization.onlyProductor, producersController.getProducerOrders);
+app.get("/api/producer/orders/:orderId", authMiddleware, authorization.onlyProductor, producersController.getOrderDetails);
+app.put("/api/producer/orders/:orderId/status", authMiddleware, authorization.onlyProductor, producersController.updateOrderStatus);
+
+// Notificaciones del productor
+app.get("/api/producer/notifications", authMiddleware, authorization.onlyProductor, producersController.getNotifications);
+app.put("/api/producer/notifications/read", authMiddleware, authorization.onlyProductor, producersController.markNotificationsAsRead);
+
+// API de suscripciones (requieren autenticación)
+app.post("/api/subscriptions", authMiddleware, subscriptionsController.createSubscription);
+app.get("/api/subscriptions/active", authMiddleware, subscriptionsController.getActiveSubscription);
+app.put("/api/subscriptions/delivery-day", authMiddleware, subscriptionsController.updateDeliveryDay);
+app.delete("/api/subscriptions/cancel", authMiddleware, subscriptionsController.cancelSubscription);
+app.delete("/api/subscriptions/products/:productId", authMiddleware, subscriptionsController.removeSubscriptionProduct);
+app.post("/api/subscriptions/products", authMiddleware, subscriptionsController.addSubscriptionProducts);
+
 // Endpoint para métricas
 app.get("/metrics", async (req, res) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
+});
+
+app.get("/subscriptions", authMiddleware, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "views", "subscriptions.html"));
 });
 
 const PORT = process.env.PORT || 3000;
