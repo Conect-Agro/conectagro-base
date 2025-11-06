@@ -368,11 +368,40 @@ class ConectAgroStore {
 
     container.innerHTML = carouselHTML;
 
+    // Crear indicadores del carousel
+    this.createCarouselIndicators(groupedProducts.length);
+
     // Configurar botones de carrito para productos destacados
     this.setupFeaturedAddToCartButtons();
 
     // Inicializar carousel con configuración avanzada
     this.initializeFeaturedCarousel();
+  }
+
+  /**
+   * Crear indicadores del carousel
+   */
+  createCarouselIndicators(slideCount) {
+    const indicatorsContainer = document.getElementById(
+      "featured-carousel-indicators"
+    );
+    if (!indicatorsContainer || slideCount <= 1) return;
+
+    const indicatorsHTML = Array.from(
+      { length: slideCount },
+      (_, index) => `
+      <button
+        type="button"
+        data-bs-target="#featuredCarousel"
+        data-bs-slide-to="${index}"
+        class="${index === 0 ? "active" : ""}"
+        aria-current="${index === 0 ? "true" : "false"}"
+        aria-label="Slide ${index + 1}"
+      ></button>
+    `
+    ).join("");
+
+    indicatorsContainer.innerHTML = indicatorsHTML;
   }
 
   /**
@@ -557,13 +586,16 @@ class ConectAgroStore {
     return `
       <div class="col-lg-4 col-md-6 mb-3">
         <div class="featured-product-card position-relative">
+          <span class="badge category-badge-special position-absolute" 
+                style="top: 10px; left: 10px; z-index: 15; background: ${this.getCategoryBadgeStyle(
+                  product.category_name
+                )} !important;">
+            ${product.category_name}
+          </span>
           ${
             product.is_featured
-              ? '<span class="badge featured-badge-special position-absolute" style="top: 10px; left: 10px; z-index: 15;">🔥 Destacado</span>'
-              : ""
-          }
-          ${
-            product.is_organic
+              ? '<span class="badge featured-badge-special position-absolute" style="top: 10px; right: 10px; z-index: 15;">🔥 Destacado</span>'
+              : product.is_organic
               ? '<span class="badge organic-badge-special position-absolute" style="top: 10px; right: 10px; z-index: 15;">🌱 Orgánico</span>'
               : ""
           }
@@ -577,17 +609,18 @@ class ConectAgroStore {
           </div>
           <div class="featured-card-body">
             <h5 class="featured-card-title">${product.product_name}</h5>
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="featured-card-price">$${parseFloat(
                 product.price
-              ).toFixed(2)}</span>
+              ).toLocaleString("es-CO", {
+                style: "currency",
+                currency: "COP",
+                minimumFractionDigits: 0,
+              })}</span>
               <div class="rating-stars">
                 ${"★".repeat(5)} <small class="text-muted">(4.8)</small>
               </div>
             </div>
-            <p class="featured-card-category">
-              <i class="bi bi-tag me-1"></i>${product.category_name}
-            </p>
             <button class="btn featured-add-to-cart w-100" 
                     data-product-id="${product.product_id}">
               <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
@@ -675,14 +708,17 @@ class ConectAgroStore {
     return `
       <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
         <div class="card product-card h-100 position-relative hover-lift">
-          ${
-            product.is_organic
-              ? '<span class="badge organic-badge">Orgánico</span>'
-              : ""
-          }
+          <span class="badge category-badge" 
+                style="background: ${this.getCategoryBadgeStyle(
+                  product.category_name
+                )} !important;">
+            ${product.category_name}
+          </span>
           ${
             product.is_featured
-              ? '<span class="badge featured-badge">Destacado</span>'
+              ? '<span class="badge featured-badge" style="top: 0; right: 0;">🔥</span>'
+              : product.is_organic
+              ? '<span class="badge organic-badge" style="top: 0; right: 0;">🌱</span>'
               : ""
           }
           <div class="product-img-container">
@@ -694,7 +730,11 @@ class ConectAgroStore {
             <h5 class="card-title">${product.product_name}</h5>
             <p class="card-text text-success fw-bold">$${parseFloat(
               product.price
-            ).toFixed(2)}</p>
+            ).toLocaleString("es-CO", {
+              style: "currency",
+              currency: "COP",
+              minimumFractionDigits: 0,
+            })}</p>
             <p class="card-text small text-muted">Categoría: ${
               product.category_name
             }</p>
@@ -833,6 +873,9 @@ class ConectAgroStore {
    * Crear HTML para item del carrito
    */
   createCartItemHTML(item) {
+    const price = parseFloat(item.price);
+    const subtotal = parseFloat(item.subtotal || 0);
+
     return `
       <div class="card mb-3 hover-lift">
         <div class="card-body">
@@ -843,16 +886,20 @@ class ConectAgroStore {
                    style="width: 60px; height: 60px; object-fit: cover;">
               <div>
                 <h6 class="mb-1 fw-bold">${item.product_name}</h6>
-                <small class="text-muted">$${parseFloat(item.price).toFixed(
-                  2
-                )} x ${item.quantity}</small>
+                <small class="text-muted">$${price.toLocaleString("es-CO", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })} x ${item.quantity}</small>
               </div>
             </div>
             <div class="d-flex align-items-center">
               <span class="fw-bold me-3 text-success fs-5">
-                $${parseFloat(item.subtotal || 0).toFixed(2)}
+                $${subtotal.toLocaleString("es-CO", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}
               </span>
-              <button class="btn btn-sm btn-outline-danger delete-item" 
+              <button class="btn btn-sm delete-item" 
                       data-product-id="${item.product_id}"
                       title="Eliminar producto">
                 <i class="bi bi-trash"></i>
@@ -922,7 +969,7 @@ class ConectAgroStore {
    * Actualizar totales del carrito
    */
   updateCartTotals(subtotal) {
-    const shipping = subtotal > 0 ? 2.0 : 0;
+    const shipping = subtotal > 0 && subtotal < 100000 ? 10000 : 0; // $10.000 COP de envío, gratis si es mayor a $100.000
     const total = subtotal + shipping;
 
     const elements = {
@@ -933,10 +980,23 @@ class ConectAgroStore {
     };
 
     if (elements.subtotal)
-      elements.subtotal.textContent = `$${subtotal.toFixed(2)}`;
+      elements.subtotal.textContent = `$${subtotal.toLocaleString("es-CO", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`;
     if (elements.shipping)
-      elements.shipping.textContent = `$${shipping.toFixed(2)}`;
-    if (elements.total) elements.total.textContent = `$${total.toFixed(2)}`;
+      elements.shipping.textContent =
+        shipping > 0
+          ? `$${shipping.toLocaleString("es-CO", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}`
+          : "Gratis";
+    if (elements.total)
+      elements.total.textContent = `$${total.toLocaleString("es-CO", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`;
     if (elements.checkoutBtn) elements.checkoutBtn.disabled = subtotal === 0;
   }
 
@@ -1122,6 +1182,28 @@ class ConectAgroStore {
       chunks.push(array.slice(i, i + size));
     }
     return chunks;
+  }
+
+  /**
+   * Obtener color dinámico para categoría
+   */
+  getCategoryBadgeStyle(categoryName) {
+    const categoryColors = {
+      frutas: "linear-gradient(135deg, #ff6b35, #f7931e)",
+      verduras: "linear-gradient(135deg, #4caf50, #66bb6a)",
+      lácteos: "linear-gradient(135deg, #2196f3, #64b5f6)",
+      cereales: "linear-gradient(135deg, #ff9800, #ffb74d)",
+      carnes: "linear-gradient(135deg, #e53935, #ef5350)",
+      procesados: "linear-gradient(135deg, #9c27b0, #ba68c8)",
+      bebidas: "linear-gradient(135deg, #00bcd4, #4dd0e1)",
+      condimentos: "linear-gradient(135deg, #795548, #a1887f)",
+      granos: "linear-gradient(135deg, #607d8b, #90a4ae)",
+    };
+
+    const defaultColor = "linear-gradient(135deg, #6c757d, #868e96)";
+    const categoryKey = categoryName.toLowerCase();
+
+    return categoryColors[categoryKey] || defaultColor;
   }
 }
 

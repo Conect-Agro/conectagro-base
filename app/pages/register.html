@@ -6,7 +6,10 @@
     <title>Registrarse</title>
     <link rel="icon" type="image/png" href="assets/logo.png" />
     <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <script src="register.js" defer></script>
   </head>
   <body>
@@ -36,7 +39,11 @@
             name="document_number_person"
             id="document_number_person"
             placeholder="Ingresa tu numero de documento"
-            required pattern="\d+" title="Only numbers are allowed" title="Solo números" maxlength="10"
+            required
+            pattern="\d+"
+            title="Only numbers are allowed"
+            title="Solo números"
+            maxlength="10"
           />
           <label for="user_name" class="sr-only">Usuario</label>
           <input
@@ -60,13 +67,13 @@
             placeholder="Ingresa tu contraseña"
             required
           />
-          
+
           <!-- Campos adicionales para productores -->
           <div id="producer-fields" class="hidden">
             <h3 class="section-title">
               <i class="fas fa-seedling"></i> Información del Productor
             </h3>
-            
+
             <div class="input-group">
               <label for="farm_name" class="sr-only">Nombre de la Finca</label>
               <div class="input-wrapper">
@@ -79,7 +86,7 @@
                 />
               </div>
             </div>
-            
+
             <div class="input-group">
               <label for="nit" class="sr-only">NIT</label>
               <div class="input-wrapper">
@@ -92,7 +99,7 @@
                 />
               </div>
             </div>
-            
+
             <div class="input-group">
               <label for="location" class="sr-only">Ubicación</label>
               <div class="input-wrapper">
@@ -105,7 +112,7 @@
                 />
               </div>
             </div>
-            
+
             <div class="input-group">
               <label for="farm_size" class="sr-only">Tamaño de la Finca</label>
               <div class="input-wrapper">
@@ -119,9 +126,11 @@
                 />
               </div>
             </div>
-            
+
             <div class="input-group">
-              <label for="production_type_id" class="sr-only">Tipo de Producción</label>
+              <label for="production_type_id" class="sr-only"
+                >Tipo de Producción</label
+              >
               <div class="input-wrapper">
                 <i class="fas fa-leaf input-icon"></i>
                 <select name="production_type_id" id="production_type_id">
@@ -130,9 +139,11 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="input-group">
-              <label for="contact_phone" class="sr-only">Teléfono de Contacto</label>
+              <label for="contact_phone" class="sr-only"
+                >Teléfono de Contacto</label
+              >
               <div class="input-wrapper">
                 <i class="fas fa-phone input-icon"></i>
                 <input
@@ -143,9 +154,11 @@
                 />
               </div>
             </div>
-            
+
             <div class="input-group">
-              <label for="contact_email" class="sr-only">Email de Contacto</label>
+              <label for="contact_email" class="sr-only"
+                >Email de Contacto</label
+              >
               <div class="input-wrapper">
                 <i class="fas fa-envelope input-icon"></i>
                 <input
@@ -157,7 +170,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="container-button">
             <button type="submit">
               Registrarse
@@ -166,10 +179,12 @@
               </div>
             </button>
           </div>
-            <p class="error hidden">Error al Registrarse, intentelo de nuevo.</p>
-          <p class="account-text">Ya tienes una cuenta? - <a href="/">Ingresar</a></p>
+          <p class="error hidden">Error al Registrarse, intentelo de nuevo.</p>
+          <p class="account-text">
+            Ya tienes una cuenta? - <a href="/login">Ingresar</a>
+          </p>
         </form>
       </div>
     </main>
   </body>
-</html> 
+</html>
