@@ -610,7 +610,7 @@ class ConectAgroStore {
           <div class="featured-card-body">
             <h5 class="featured-card-title">${product.product_name}</h5>
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="featured-card-price">$${parseFloat(
+              <span class="featured-card-price">${parseFloat(
                 product.price
               ).toLocaleString("es-CO", {
                 style: "currency",
@@ -728,7 +728,7 @@ class ConectAgroStore {
           </div>
           <div class="card-body">
             <h5 class="card-title">${product.product_name}</h5>
-            <p class="card-text text-success fw-bold">$${parseFloat(
+            <p class="card-text text-success fw-bold">${parseFloat(
               product.price
             ).toLocaleString("es-CO", {
               style: "currency",
@@ -886,7 +886,7 @@ class ConectAgroStore {
                    style="width: 60px; height: 60px; object-fit: cover;">
               <div>
                 <h6 class="mb-1 fw-bold">${item.product_name}</h6>
-                <small class="text-muted">$${price.toLocaleString("es-CO", {
+                <small class="text-muted">${price.toLocaleString("es-CO", {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
                 })} x ${item.quantity}</small>
