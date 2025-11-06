@@ -219,6 +219,17 @@ services:
       - ./microservice-sendGrip/.env
     depends_on:
       - app
+  
+  microservice-sms:
+    build: 
+      context: ./microservice-sms
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3005"  
+    env_file:
+      - ./microservice-sendGrip/.env
+    depends_on:
+      - rabbitmq
 
 volumes:
   mysql_master_data: {} # Nuevo volumen para el master

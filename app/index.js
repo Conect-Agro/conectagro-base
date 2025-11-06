@@ -9,6 +9,7 @@ import { methods as cartController } from "./controllers/cart.controller.js";
 import { methods as addressesController } from "./controllers/addresses.controller.js";
 import { methods as ordersController } from "./controllers/orders.controller.js";
 import { methods as producersController } from "./controllers/producers.controller.js";
+import { methods as subscriptionsController } from "./controllers/subscriptions.controller.js";
 import { authMiddleware } from "./middlewares/authorization.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -208,10 +209,22 @@ app.put("/api/producer/orders/:orderId/status", authMiddleware, authorization.on
 app.get("/api/producer/notifications", authMiddleware, authorization.onlyProductor, producersController.getNotifications);
 app.put("/api/producer/notifications/read", authMiddleware, authorization.onlyProductor, producersController.markNotificationsAsRead);
 
+// API de suscripciones (requieren autenticación)
+app.post("/api/subscriptions", authMiddleware, subscriptionsController.createSubscription);
+app.get("/api/subscriptions/active", authMiddleware, subscriptionsController.getActiveSubscription);
+app.put("/api/subscriptions/delivery-day", authMiddleware, subscriptionsController.updateDeliveryDay);
+app.delete("/api/subscriptions/cancel", authMiddleware, subscriptionsController.cancelSubscription);
+app.delete("/api/subscriptions/products/:productId", authMiddleware, subscriptionsController.removeSubscriptionProduct);
+app.post("/api/subscriptions/products", authMiddleware, subscriptionsController.addSubscriptionProducts);
+
 // Endpoint para métricas
 app.get("/metrics", async (req, res) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
+});
+
+app.get("/subscriptions", authMiddleware, (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "views", "subscriptions.html"));
 });
 
 const PORT = process.env.PORT || 3000;
