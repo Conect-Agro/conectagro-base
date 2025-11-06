@@ -91,3 +91,5 @@ For open source projects, say how it is licensed.
 
 ## Project status
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Conect-Agro/conectagro-base?utm_source=oss&utm_medium=github&utm_campaign=Conect-Agro%2Fconectagro-base&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
