@@ -49,10 +49,19 @@ async function loadActiveSubscription() {
             document.getElementById('activeSubscription').style.display = 'block';
             document.getElementById('subscriptionPlans').style.display = 'none';
 
+            // Mostrar detalles de la suscripción
             document.getElementById('subscriptionType').textContent = getSubscriptionTypeText(subscription.subscription_type);
             document.getElementById('startDate').textContent = new Date(subscription.start_date).toLocaleDateString();
             document.getElementById('endDate').textContent = new Date(subscription.end_date).toLocaleDateString();
             document.getElementById('deliveryDay').textContent = `Día ${subscription.delivery_day}`;
+
+            // Calcular el total
+            const total = subscription.products.reduce((sum, product) => {
+                return sum + (parseFloat(product.price) * product.quantity);
+            }, 0);
+
+            // Actualizar el total en el span
+            document.getElementById('totalAmount').textContent = total.toLocaleString('es-CO');
 
             const productsContainer = document.getElementById('subscribedProducts');
             const products = Array.isArray(subscription.products) ? subscription.products : [];
@@ -104,11 +113,26 @@ async function removeProductFromSubscription(productId) {
 
         if (!response.ok) throw new Error('Error removing product');
 
+        // Eliminar el producto visualmente
         const productContainer = document.getElementById(`product-container-${productId}`);
         if (productContainer) {
             productContainer.remove();
         }
 
+        // Recalcular el total
+        const response2 = await fetch('/api/subscriptions/active');
+        const subscription = await response2.json();
+        
+        if (subscription && subscription.products) {
+            const total = subscription.products.reduce((sum, product) => {
+                return sum + (parseFloat(product.price) * product.quantity);
+            }, 0);
+            
+            // Actualizar el total en la vista
+            document.getElementById('totalAmount').textContent = total.toLocaleString('es-CO');
+        }
+
+        // Verificar si quedan productos
         const productsContainer = document.getElementById('subscribedProducts');
         if (!productsContainer.children.length) {
             productsContainer.innerHTML = `<p>No hay productos asociados a esta suscripción.</p>`;

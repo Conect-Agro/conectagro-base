@@ -127,6 +127,23 @@
             padding: 1rem;
             margin: 0.5rem 0;
         }
+
+        /* Agregar estos estilos para el footer sticky */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container.my-5 {
+            flex: 1;
+            margin-bottom: 0 !important;
+            padding-bottom: 3rem;
+        }
+
+        footer {
+            margin-top: auto;
+        }
     </style>
 </head>
 <body>
@@ -194,6 +211,12 @@
                                     <span id="deliveryDay" class="fs-6"></span>
                                 </div>
                             </div>
+                            <div class="mt-4 p-3">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <span class="text-success me-2 fw-bold">Total a pagar:</span>
+                                    <span class="price-highlight">$<span id="totalAmount">0</span></span>
+                                </div>
+                            </div>
                             <div class="d-flex gap-2">
                                 <button class="btn btn-outline-danger" onclick="cancelSubscription()">
                                     Cancelar Suscripción
@@ -226,7 +249,6 @@
                         <ul class="subscription-features list-unstyled">
                             <li><i class="bi bi-check-circle"></i> Entrega mensual</li>
                             <li><i class="bi bi-check-circle"></i> Productos frescos</li>
-                            <li><i class="bi bi-check-circle"></i> Descuento 5%</li>
                         </ul>
                         <button class="btn btn-success w-100" onclick="selectPlan('monthly')">
                             Seleccionar Plan
@@ -241,7 +263,6 @@
                         <div class="price-highlight mb-3">$55.000</div>
                         <ul class="subscription-features list-unstyled">
                             <li><i class="bi bi-check-circle"></i> 6 meses de entregas</li>
-                            <li><i class="bi bi-check-circle"></i> Descuento 10%</li>
                             <li><i class="bi bi-check-circle"></i> Productos premium</li>
                         </ul>
                         <button class="btn btn-success w-100" onclick="selectPlan('biannual')">
@@ -257,7 +278,6 @@
                         <div class="price-highlight mb-3">$110.000</div>
                         <ul class="subscription-features list-unstyled">
                             <li><i class="bi bi-check-circle"></i> 12 meses de entregas</li>
-                            <li><i class="bi bi-check-circle"></i> Descuento 15%</li>
                             <li><i class="bi bi-check-circle"></i> Envío prioritario</li>
                         </ul>
                         <button class="btn btn-success w-100" onclick="selectPlan('annual')">
