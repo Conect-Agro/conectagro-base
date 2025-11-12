@@ -106,3 +106,125 @@ document.addEventListener('DOMContentLoaded', function() {
         cardObserver.observe(card);
     });
 });
+
+// Footer functionality
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId) || document.querySelector(`[data-section="${sectionId}"]`);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+function openFAQ() {
+    // Placeholder for FAQ functionality
+    alert('Próximamente: Sección de Preguntas Frecuentes');
+}
+
+function openHelp() {
+    // Placeholder for Help Center
+    alert('Próximamente: Centro de Ayuda');
+}
+
+function openTerms() {
+    // Placeholder for Terms and Conditions
+    alert('Próximamente: Términos y Condiciones');
+}
+
+function openPrivacy() {
+    // Placeholder for Privacy Policy
+    alert('Próximamente: Política de Privacidad');
+}
+
+function openGuarantee() {
+    // Placeholder for Quality Guarantee
+    alert('Próximamente: Garantía de Calidad');
+}
+
+function openReturns() {
+    // Placeholder for Returns Policy
+    alert('Próximamente: Política de Devoluciones');
+}
+
+function subscribeNewsletter(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const email = form.querySelector('input[type="email"]').value;
+    
+    if (email) {
+        // Show success message
+        const button = form.querySelector('button');
+        const originalContent = button.innerHTML;
+        
+        button.innerHTML = '<i class="fas fa-check"></i>';
+        button.style.background = 'var(--accent-color)';
+        button.disabled = true;
+        
+        // Show toast notification
+        showToast('¡Gracias! Te has suscrito exitosamente al boletín.', 'success');
+        
+        // Reset form after 2 seconds
+        setTimeout(() => {
+            form.reset();
+            button.innerHTML = originalContent;
+            button.style.background = '';
+            button.disabled = false;
+        }, 2000);
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        `;
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        background: ${type === 'success' ? 'var(--accent-color)' : 'var(--primary-color)'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
+    
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+            ${message}
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            toastContainer.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
