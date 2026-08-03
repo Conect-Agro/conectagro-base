@@ -74,12 +74,17 @@ class ConectAgroStore {
    */
   async loadInitialData() {
     try {
-      await Promise.all([
+      const results = await Promise.allSettled([
         this.loadCategories(),
         this.loadFeaturedProducts(),
         this.loadProducts(),
         this.loadCartItems(),
       ]);
+
+      const rejected = results.filter((result) => result.status === "rejected");
+      if (rejected.length > 0) {
+        console.error("Initial data load issues:", rejected);
+      }
 
       this.hideInitialLoading();
     } catch (error) {
@@ -117,16 +122,12 @@ class ConectAgroStore {
    * Configurar efecto parallax
    */
   setupParallax() {
+    const heroSection = document.querySelector(".hero-section");
+    if (!heroSection) return;
+
     window.addEventListener("scroll", () => {
       const scrolled = window.pageYOffset;
-      const parallaxElements = document.querySelectorAll(
-        ".hero-section::before, .hero-section::after"
-      );
-
-      parallaxElements.forEach((element, index) => {
-        const speed = index === 0 ? 0.5 : 0.3;
-        element.style.transform = `translateY(${scrolled * speed}px)`;
-      });
+      heroSection.style.backgroundPositionY = `${scrolled * 0.2}px`;
     });
   }
 
@@ -353,13 +354,12 @@ class ConectAgroStore {
     const carouselHTML = groupedProducts
       .map(
         (group, index) => `
-        <div class="carousel-item ${
-          index === 0 ? "active" : ""
-        }" data-slide-index="${index}">
+        <div class="carousel-item ${index === 0 ? "active" : ""
+          }" data-slide-index="${index}">
           <div class="row justify-content-center">
             ${group
-              .map((product) => this.createFeaturedProductHTML(product))
-              .join("")}
+            .map((product) => this.createFeaturedProductHTML(product))
+            .join("")}
           </div>
         </div>
       `
@@ -565,9 +565,8 @@ class ConectAgroStore {
             opacity: 1,
           },
           {
-            transform: `translate(${Math.cos(angle) * velocity}px, ${
-              Math.sin(angle) * velocity + gravity * 100
-            }px) scale(0) rotate(720deg)`,
+            transform: `translate(${Math.cos(angle) * velocity}px, ${Math.sin(angle) * velocity + gravity * 100
+              }px) scale(0) rotate(720deg)`,
             opacity: 0,
           },
         ],
@@ -588,22 +587,20 @@ class ConectAgroStore {
         <div class="featured-product-card position-relative">
           <span class="badge category-badge-special position-absolute" 
                 style="top: 10px; left: 10px; z-index: 15; background: ${this.getCategoryBadgeStyle(
-                  product.category_name
-                )} !important;">
+      product.category_name
+    )} !important;">
             ${product.category_name}
           </span>
-          ${
-            product.is_featured
-              ? '<span class="badge featured-badge-special position-absolute" style="top: 10px; right: 10px; z-index: 15;">🔥 Destacado</span>'
-              : product.is_organic
-              ? '<span class="badge organic-badge-special position-absolute" style="top: 10px; right: 10px; z-index: 15;">🌱 Orgánico</span>'
-              : ""
-          }
+          ${product.is_featured
+        ? '<span class="badge featured-badge-special position-absolute" style="top: 10px; right: 10px; z-index: 15;">🔥 Destacado</span>'
+        : product.is_organic
+          ? '<span class="badge organic-badge-special position-absolute" style="top: 10px; right: 10px; z-index: 15;">🌱 Orgánico</span>'
+          : ""
+      }
           <div class="featured-product-img-container">
-            <img src="${
-              product.image_url ||
-              "https://placehold.co/300x200?text=Producto+Fresco"
-            }"
+            <img src="${product.image_url ||
+      "https://placehold.co/300x200?text=Producto+Fresco"
+      }"
                  class="product-img" alt="${product.product_name}"
                  loading="lazy">
           </div>
@@ -611,12 +608,12 @@ class ConectAgroStore {
             <h5 class="featured-card-title">${product.product_name}</h5>
             <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="featured-card-price">${parseFloat(
-                product.price
-              ).toLocaleString("es-CO", {
-                style: "currency",
-                currency: "COP",
-                minimumFractionDigits: 0,
-              })}</span>
+        product.price
+      ).toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0,
+      })}</span>
               <div class="rating-stars">
                 ${"★".repeat(5)} <small class="text-muted">(4.8)</small>
               </div>
@@ -710,17 +707,16 @@ class ConectAgroStore {
         <div class="card product-card h-100 position-relative hover-lift">
           <span class="badge category-badge" 
                 style="background: ${this.getCategoryBadgeStyle(
-                  product.category_name
-                )} !important;">
+      product.category_name
+    )} !important;">
             ${product.category_name}
           </span>
-          ${
-            product.is_featured
-              ? '<span class="badge featured-badge" style="top: 0; right: 0;">🔥</span>'
-              : product.is_organic
-              ? '<span class="badge organic-badge" style="top: 0; right: 0;">🌱</span>'
-              : ""
-          }
+          ${product.is_featured
+        ? '<span class="badge featured-badge" style="top: 0; right: 0;">🔥</span>'
+        : product.is_organic
+          ? '<span class="badge organic-badge" style="top: 0; right: 0;">🌱</span>'
+          : ""
+      }
           <div class="product-img-container">
             <img src="${product.image_url || "https://placehold.co/300x300"}"
                  class="product-img" alt="${product.product_name}"
@@ -729,15 +725,14 @@ class ConectAgroStore {
           <div class="card-body">
             <h5 class="card-title">${product.product_name}</h5>
             <p class="card-text text-success fw-bold">${parseFloat(
-              product.price
-            ).toLocaleString("es-CO", {
-              style: "currency",
-              currency: "COP",
-              minimumFractionDigits: 0,
-            })}</p>
-            <p class="card-text small text-muted">Categoría: ${
-              product.category_name
-            }</p>
+        product.price
+      ).toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0,
+      })}</p>
+            <p class="card-text small text-muted">Categoría: ${product.category_name
+      }</p>
           </div>
           <div class="card-footer">
             <button class="btn btn-success w-100 add-to-cart pulse-animation" 
@@ -887,17 +882,17 @@ class ConectAgroStore {
               <div>
                 <h6 class="mb-1 fw-bold">${item.product_name}</h6>
                 <small class="text-muted">${price.toLocaleString("es-CO", {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })} x ${item.quantity}</small>
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })} x ${item.quantity}</small>
               </div>
             </div>
             <div class="d-flex align-items-center">
               <span class="fw-bold me-3 text-success fs-5">
                 $${subtotal.toLocaleString("es-CO", {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                })}
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })}
               </span>
               <button class="btn btn-sm delete-item" 
                       data-product-id="${item.product_id}"
@@ -988,9 +983,9 @@ class ConectAgroStore {
       elements.shipping.textContent =
         shipping > 0
           ? `$${shipping.toLocaleString("es-CO", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}`
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}`
           : "Gratis";
     if (elements.total)
       elements.total.textContent = `$${total.toLocaleString("es-CO", {
@@ -1149,9 +1144,8 @@ class ConectAgroStore {
             opacity: 1,
           },
           {
-            transform: `translate(${Math.cos(angle) * velocity}px, ${
-              Math.sin(angle) * velocity
-            }px) scale(0)`,
+            transform: `translate(${Math.cos(angle) * velocity}px, ${Math.sin(angle) * velocity
+              }px) scale(0)`,
             opacity: 0,
           },
         ],

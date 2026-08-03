@@ -7,3 +7,7 @@ GRANT SUPER, PROCESS, REPLICATION SLAVE, RELOAD ON *.* TO 'orchestrator_user'@'%
 GRANT SELECT ON mysql.slave_master_info TO 'orchestrator_user'@'%'; -- Para Orchestrator
 FLUSH PRIVILEGES;
 
+CREATE USER 'monitor'@'%' IDENTIFIED BY 'monitor';
+GRANT USAGE, REPLICATION CLIENT ON *.* TO 'monitor'@'%';
+FLUSH PRIVILEGES;
+

@@ -30,7 +30,7 @@ function getAllProducts(req, res) {
         orderBy = "p.product_id DESC"; // Could be based on sales or views
         break;
       case "newest":
-        orderBy = "p.created_at DESC, p.product_id DESC";
+        orderBy = "p.product_id DESC";
         break;
       case "rating":
         orderBy = "p.product_id DESC"; // Could be based on ratings
@@ -56,14 +56,10 @@ function getAllProducts(req, res) {
     p.description,
     CAST(p.price AS UNSIGNED) AS price,
     p.stock,
-    p.unit,
     p.image_url,
     p.category_id,
     c.category_name,
-    p.origin,
-    p.is_active,
-    p.created_at,
-    p.updated_at
+    p.is_active
   FROM products p
   JOIN categories c ON p.category_id = c.category_id
   ${whereClause}

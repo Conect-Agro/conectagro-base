@@ -30,9 +30,7 @@ mysql_variables=
 
 mysql_servers =
 (
-    { address="mysql-master", port=3306, hostgroup=10, max_connections=100 },
-    { address="mysql-slave1", port=3306, hostgroup=20, max_connections=100 },
-    { address="mysql-slave2", port=3306, hostgroup=20, max_connections=100 }
+    { address="mysql-master", port=3306, hostgroup=10, max_connections=100 }
 )
 
 mysql_users =
@@ -46,7 +44,7 @@ mysql_query_rules =
         rule_id=100,
         active=1,
         match_digest="^SELECT",
-        destination_hostgroup=20,
+        destination_hostgroup=10,
         apply=1
     },
     {
